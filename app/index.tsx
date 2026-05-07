@@ -1,11 +1,26 @@
 import { ThemedText, ThemedView } from "@/components/themed";
-import { useAppTheme } from "@/hooks/useAppTheme";
+import { useStyles } from "@/hooks/useStyles";
 import { useRouter } from "expo-router";
 import { ScrollView, Pressable, StyleSheet } from "react-native";
 
 import { Header } from '@/components/landing_page/Header'
 
 export default function LandingScreen() {
+    const { styles } = useStyles((theme, c) => ({
+        screen: { flex: 1, justifyContent: "center", alignItems: "center", gap: 24 },
+        buttonPrimary: {
+            paddingHorizontal: theme.spacing.xxl,
+            paddingVertical: theme.spacing.lg,
+            borderRadius: theme.borderRadius.md,
+            backgroundColor: c("palette.primary"),
+        },
+        buttonSecondary: {
+            paddingHorizontal: theme.spacing.xxl,
+            paddingVertical: theme.spacing.lg,
+            borderRadius: theme.borderRadius.md,
+            backgroundColor: c("palette.secondary"),
+        },
+    }));
     const router = useRouter();
     const { color } = useAppTheme();
 
