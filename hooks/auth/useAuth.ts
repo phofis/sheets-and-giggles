@@ -1,13 +1,14 @@
 import { currentUserQueryKey, fetchCurrentUser } from "@/hooks/data/useCurrentUser";
 import { queryClient, queryPersister } from "@/lib/queryClient";
 import { supabase } from "@/lib/supabase";
-import type { Session, User } from "@supabase/supabase-js";
+import type { AuthChangeEvent, Session, User } from "@supabase/supabase-js";
 import { useEffect, useState } from "react";
 
 export interface UseAuthResult {
     session: Session | null;
     user: User | null;
     loading: boolean;
+    lastEvent: AuthChangeEvent | null;
     signOut: () => Promise<void>;
 }
 
@@ -26,6 +27,7 @@ async function purgePersistedCache() {
 export function useAuth(): UseAuthResult {
     const [session, setSession] = useState<Session | null>(null);
     const [loading, setLoading] = useState(true);
+    const [lastEvent, setLastEvent] = useState<AuthChangeEvent | null>(null);
 
     useEffect(() => {
         let cancelled = false;
@@ -43,6 +45,7 @@ export function useAuth(): UseAuthResult {
             if (cancelled) return;
             setSession(nextSession);
             setLoading(false);
+            setLastEvent(event);
 
             if (event === "SIGNED_IN" || event === "INITIAL_SESSION") {
                 if (nextSession) {
@@ -68,6 +71,7 @@ export function useAuth(): UseAuthResult {
         session,
         user: session?.user ?? null,
         loading,
+        lastEvent,
         signOut,
     };
 }
