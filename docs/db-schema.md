@@ -8,7 +8,7 @@ The app stores user accounts, character sheets, reusable character catalogs, and
 
 | Table | Purpose |
 | ----- | ------- |
-| `users` | User accounts. Default-user today, Google/Apple OAuth later. |
+| `users` | User accounts. Email signups plus Google/Apple OAuth. |
 | `races` | Searchable catalog of official and custom races. |
 | `classes` | Searchable catalog of official and custom classes. |
 | `subclasses` | Subclass options grouped under each class. |
@@ -26,8 +26,11 @@ The app stores user accounts, character sheets, reusable character catalogs, and
 
 ### Authentication state
 
-- **Now (early development):** the database holds a single seeded "default" user. The mobile app has no login screen and every read/write uses this user's `id`.
-- **Later:** Google and Apple OAuth become the only ways to sign up and log in. Each successful OAuth sign-up creates a new `users` row. Supabase natively supports both providers for Expo via `supabase-js`.
+The mobile app supports three planned sign-in paths, all writing into `public.users` on first sign-in:
+
+- **Email/password** via Supabase email auth. The new row's `auth_provider = 'email'`; uniqueness is enforced through Supabase Auth on the `email` column.
+- **Google OAuth** via `supabase-js`. The new row's `auth_provider = 'google'` and `auth_provider_id` stores the Google `sub`.
+- **Apple OAuth** via `supabase-js`. The new row's `auth_provider = 'apple'` and `auth_provider_id` stores the Apple `sub`.
 
 ## Conventions
 
@@ -39,12 +42,13 @@ The app stores user accounts, character sheets, reusable character catalogs, and
 - Computed game values (saving-throw totals, skill modifiers, etc.) are **not** stored. They are derived in app code from ability scores, level, and proficiency lists. Only the inputs are persisted.
 - Row-level security (RLS) is enabled on every table in the exposed `public` schema.
 
-## Migrations
+## Schema layout
 
-- Every schema change lives in `supabase/migrations/<UTC-yyyymmddHHMMSS>_<snake_case_description>.sql` **before** it is applied to any database. The filename layout matches what the Supabase CLI expects, so `supabase migration up` / `supabase db pull` can be adopted later without renaming.
-- Apply each file via the Supabase MCP `execute_sql` (or `supabase db query` once the CLI is wired up) so the SQL on disk is byte-for-byte what runs against the database.
+- The canonical SQL lives in [`supabase/`](../supabase/), one file per table, named after the table (`users.sql`, `races.sql`, …). Each file is self-contained: it creates the table together with the enums, indexes, triggers, RLS policies, and (where applicable) views that belong to it.
+- [`supabase/setup.sql`](../supabase/setup.sql) holds the shared `update_updated_at()` trigger function used by every mutable table.
+- [`supabase/main.sql`](../supabase/main.sql) sources the per-table files in dependency order via `\i`. Apply with `psql "$DATABASE_URL" -v ON_ERROR_STOP=1 -f supabase/main.sql`, or run the listed files individually through Supabase CLI / MCP `execute_sql` in the same order.
 - After applying, run `get_advisors` (security + performance) and address any flagged issues.
-- **Never** edit a previously-applied migration. Write a follow-up file (the next UTC timestamp, descriptive name like `harden_users_rls_and_function.sql`) and apply it the same way.
+- The SQL snippets embedded in this document describe the **logical intent** of each table and its policies. The on-disk files in `supabase/` bake in the Supabase-recommended hardenings (`(SELECT auth.uid())` wrapping for RLS performance, `TO authenticated` on policies, `SET search_path = ''` on functions, `security_invoker = true` on views). If you change anything here, update the matching `supabase/<table>.sql` file too.
 
 ## Entity relationships
 
@@ -83,7 +87,7 @@ graph LR
 ### Enum types
 
 ```sql
-CREATE TYPE auth_provider AS ENUM ('default', 'google', 'apple');
+CREATE TYPE auth_provider AS ENUM ('email', 'google', 'apple');
 
 CREATE TYPE ability_score AS ENUM ('STR', 'DEX', 'CON', 'INT', 'WIS', 'CHA');
 
@@ -170,9 +174,9 @@ CREATE TRIGGER set_updated_at
 
 ### Column notes
 
-- `auth_provider` - how the account was created. `'default'` is reserved for the seeded development user. Once OAuth is live, only `'google'` and `'apple'` are accepted by the app.
-- `auth_provider_id` - the user's unique id at the OAuth provider (Google `sub`, Apple `sub`). `NULL` only for the default user.
-- `email` / `avatar_url` - taken from the provider when available. May be `NULL` if the provider does not supply them.
+- `auth_provider` - how the account was created. `'email'` for Supabase email/password signups, `'google'` and `'apple'` for OAuth.
+- `auth_provider_id` - the user's unique id at the OAuth provider (Google `sub`, Apple `sub`). `NULL` for email signups; the email itself lives in the `email` column and is uniqueness-enforced by Supabase Auth.
+- `email` / `avatar_url` - for OAuth users this is taken from the provider when available and may be `NULL`. For email signups, `email` is always populated.
 - `display_name` - required for every user; UI fallback when no avatar is available.
 
 ### Indexes
@@ -183,23 +187,7 @@ CREATE UNIQUE INDEX users_provider_unique
   WHERE auth_provider_id IS NOT NULL;
 ```
 
-The partial index keeps the default user (`auth_provider_id IS NULL`) from blocking future OAuth inserts that share `NULL`.
-
-### Default-user seed
-
-```sql
-INSERT INTO users (id, auth_provider, auth_provider_id, email, display_name, avatar_url)
-VALUES (
-  '00000000-0000-0000-0000-000000000001',
-  'default',
-  NULL,
-  NULL,
-  'Default Adventurer',
-  NULL
-);
-```
-
-The mobile app keeps this `id` in a config constant and uses it for every query until OAuth is wired up.
+The partial filter scopes uniqueness to OAuth rows. Email signups carry `auth_provider_id IS NULL` and are excluded from this index — they don't need to be unique on `(auth_provider, auth_provider_id)` because their identity is the `email` column, which Supabase Auth already keeps unique.
 
 ### RLS policies
 
@@ -1107,9 +1095,9 @@ Senders retain full control over their own shares (insert, select, update, delet
 ## Follow-ups (out of scope for this document)
 
 - Install and configure `supabase-js` inside the Expo app.
-- Seed scripts for the default user, official races, official classes, and the initial spells catalog.
+- Seed scripts for the official races, official classes, and the initial spells catalog.
 - Repository / data-access layer to replace the mock `*Service` files in `services/`.
-- Google and Apple OAuth integration via Supabase Auth (sign-up, sign-in, account linking).
+- Email, Google, and Apple sign-in flows via Supabase Auth (sign-up, sign-in, account linking).
 - Class-feature data (currently a static registry in `services/ClassService.ts`); promote to tables when needed.
 - `item_shares` table and the QR-code share flow described under [Planned features](#qr-code-item-transfer).
 - `pg_cron` job for expiring stale `item_shares` rows.
