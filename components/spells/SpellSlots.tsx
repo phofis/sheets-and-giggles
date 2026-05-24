@@ -6,6 +6,8 @@ import { ThemedView } from "@/components/themed/ThemedView";
 import { SpellSlotButton } from "./SpellSlotButton";
 import { ThemedHeadline } from "../themed";
 
+//TODO Add the ability to unclick spellslots
+//TODO fix error with 
 interface SpellSlotState {
     [level: number]: number; // level -> current used count
 }
@@ -49,6 +51,7 @@ export function SpellSlots() {
         resetContainer: {
             alignItems: "flex-end",
             marginBottom: t.spacing.xs,
+            marginRight: t.spacing.md,
         },
         resetButton: {
             paddingHorizontal: t.spacing.sm,
@@ -60,7 +63,7 @@ export function SpellSlots() {
             fontSize: 12,
         },
         slotsWrapper: {
-            alignItems: "center",
+            alignItems: "flex-start",
         },
         levelRow: {
             flexDirection: "row",
