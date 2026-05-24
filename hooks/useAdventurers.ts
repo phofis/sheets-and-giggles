@@ -1,70 +1,46 @@
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/lib/supabase";
+import { useAuth } from "@/hooks/auth";
+
 export type Adventurer = {
-    id: number;
+    id: string;
     name: string;
     class: string;
-    subclass: string;
+    subclass: string | null;
     race: string;
     hp: number;
     maxHp: number;
     armorClass: number;
-    image?: number;
+    photoUri: string | null;
     level: number;
 };
 
-export default function useAdventurers() {
-    const fetchAdventurers = (): Adventurer[] => {
-        return [
-            {
-                id: 1,
-                name: "Valerius The Bold",
-                class: "armorer",
-                subclass: "dwarf-armorer",
-                race: "dwarf",
-                hp: 20,
-                maxHp: 21,
-                armorClass: 20,
-                image: require("@/assets/images/Valerius.png"),
-                level: 12,
-            },
-            {
-                id: 2,
-                name: "Lyra",
-                class: "wizard",
-                subclass: "elf-wizard",
-                race: "elf",
-                hp: 7,
-                maxHp: 15,
-                armorClass: 4,
-                image: require("@/assets/images/Lyra.png"),
-                level: 5,
-            },
-            {
-                id: 3,
-                name: "Lyra",
-                class: "swordmage",
-                subclass: "elf-swordmage",
-                race: "elf",
-                hp: 3,
-                maxHp: 15,
-                armorClass: 12,
-                image: require("@/assets/images/Lyra.png"),
-                level: 13
-            } ,         
-            {
-                id: 4,
-                name: "Lyra",
-                class: "swordmage",
-                subclass: "elf-swordmage",
-                race: "elf",
-                hp: 3,
-                maxHp: 15,
-                armorClass: 12,
-                image: require("@/assets/images/Lyra.png"),
-                level: 11
-            }
-        ];
-    };
+export function useAdventurers() {
+    const { user } = useAuth();
 
-return { fetchAdventurers };
-    
+    return useQuery<Adventurer[]>({
+        queryKey: ["adventurers", user?.id],
+        queryFn: async () => {
+            const { data, error } = await supabase
+                .from("characters")
+                .select("*, classes(name), races(name), subclasses(name)")
+                .eq("user_id", user!.id);
+
+            if (error) throw error;
+
+            return data.map((row) => ({
+                id: row.id,
+                name: row.name,
+                class: row.classes?.name ?? "Unknown",
+                subclass: row.subclasses?.name ?? null,
+                race: row.races?.name ?? "Unknown",
+                hp: row.hp_current,
+                maxHp: row.hp_max,
+                armorClass: row.armor_class,
+                photoUri: row.photo_uri,
+                level: row.level,
+            }));
+        },
+        enabled: !!user?.id,
+    });
 }

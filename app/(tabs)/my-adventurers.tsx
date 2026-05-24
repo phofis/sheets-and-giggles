@@ -1,7 +1,7 @@
-import { Image, ScrollView, TouchableOpacity, View } from "react-native";
+import { Image, ScrollView, TouchableOpacity, View, ActivityIndicator } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "@/components/themed";
-import useAdventurers from "@/hooks/useAdventurers";
+import { useAdventurers } from "@/hooks/useAdventurers";
 import AdventurerCard from "@/components/adventurers/AdventurerCard";
 
 export default function MyAdventurers() {
@@ -36,8 +36,7 @@ export default function MyAdventurers() {
         },
     }));
 
-    const { fetchAdventurers } = useAdventurers();
-    const adventurers = fetchAdventurers();
+    const { data: adventurers = [], isLoading } = useAdventurers();
 
     return (
         <>
@@ -52,6 +51,9 @@ export default function MyAdventurers() {
                 <ThemedText color="text.body" style={styles.subtitle}>
                     View and manage your adventurers here.
                 </ThemedText>
+                {isLoading ? (
+                    <ActivityIndicator size="large" />
+                ) : (
                 <View style={styles.cardsContainer}>
                     {adventurers.map((adv) => (
                         <AdventurerCard key={adv.id} adv={adv} />
@@ -65,6 +67,7 @@ export default function MyAdventurers() {
                         </ThemedText>
                     </TouchableOpacity>
                 </View>
+                )}
             </ScrollView>
         </>
     );
