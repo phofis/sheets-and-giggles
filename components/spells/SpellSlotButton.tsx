@@ -4,12 +4,9 @@ import { ThemedView } from "@/components/themed/ThemedView";
 
 interface SpellSlotButtonProps {
     isUsed: boolean;
-    onPress: () => void;
 }
-//TODO: Connect to DB
 //TODO: Change color
-//
-export function SpellSlotButton({ isUsed, onPress }: SpellSlotButtonProps) {
+export function SpellSlotButton({ isUsed}: SpellSlotButtonProps) {
     const { styles, color } = useStyles((t, c) => ({
         container: {
             width: 36,
@@ -20,21 +17,16 @@ export function SpellSlotButton({ isUsed, onPress }: SpellSlotButtonProps) {
             alignItems: "center",
         },
         unused: {
-            backgroundColor: "transparent",
-            borderColor: c("border.strong"),     
-
+            borderColor: c("palette.tertiary"),
         },
         used: {
-            backgroundColor: c("palette.primary"),
-            borderColor: c("border.strong"),
+            backgroundColor: c("palette.tertiary"),
         },
-    }));
+    }))
 
     const containerStyle = isUsed ? styles.used : styles.unused;
 
     return (
-        <Pressable onPress={onPress}>
-            <ThemedView style={[styles.container, containerStyle]} />
-        </Pressable>
+        <ThemedView style={[styles.container, containerStyle]} />
     );
 }

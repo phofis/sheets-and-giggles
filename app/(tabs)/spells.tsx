@@ -23,7 +23,7 @@ export default function SpellsScreen() {
 
     return (
         <ThemedView backgroundColor="surface.background" style={styles.container}>
-            /*{/* {isLoading ? (
+            {/* {isLoading ? (
                 <ThemedView style={styles.empty}>
                     <ThemedText color="text.muted" variant="body">
                         Loading spells...
