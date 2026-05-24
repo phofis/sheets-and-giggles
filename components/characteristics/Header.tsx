@@ -2,9 +2,11 @@ import { ThemedHeadline, ThemedStatContainer, ThemedText, ThemedView } from "@/c
 import { View, ActivityIndicator } from "react-native";
 import { useCharacter } from "@/hooks/character";
 import { useStyles } from "@/hooks/useStyles";
+import { CharacterHeader } from "@/types/character";
 
-export const Header = ({ characterId }: { characterId: string }) => {
-    const { character, isLoading } = useCharacter(characterId);
+
+
+export const Header = ({characterHeader}:{characterHeader:CharacterHeader} ) => {
     const { styles } = useStyles((theme, c) => ({
         screen: { flex: 1, marginBottom: 20, marginTop: 35 },
         scrollView: { flex: 1, alignSelf: "stretch" },
@@ -45,8 +47,6 @@ export const Header = ({ characterId }: { characterId: string }) => {
         labelText: { fontSize: 12, fontWeight: "bold", textTransform: "uppercase" },
     }));
 
-    if (isLoading || !character) return <ActivityIndicator />;
-
     return (
         <ThemedView>
             {/** IDENTITY PROFILE TAG */}
@@ -59,7 +59,7 @@ export const Header = ({ characterId }: { characterId: string }) => {
             {/** CHARACTER NAME */}
             <ThemedView style={styles.heading}>
                 <ThemedHeadline color="text.heading" style={styles.headingTitle}>
-                    {character?.name}
+                    {characterHeader.name}
                 </ThemedHeadline>
             </ThemedView>
 
@@ -70,14 +70,14 @@ export const Header = ({ characterId }: { characterId: string }) => {
                     label="Level"
                     labelColor="buttonPrimary.text"
                     mode="pill"
-                    value={`${character?.level} ${character?.class}`}
+                    value={`${characterHeader.level} ${characterHeader.class}`}
                 />
                 <ThemedStatContainer
                     backgroundColor="buttonSecondary.background"
                     label="Inspiration:"
                     labelColor="buttonSecondary.text"
                     mode="pill"
-                    value={character?.inspiration}
+                    value={characterHeader.inspiration}
                 />
             </View>
             {/** TODO: consider adding a level here */}

@@ -1,9 +1,7 @@
 import { ListItem} from "./lists";
 import { BoxListItem } from "@/components/themed";
-
+import { Database } from "@/types/supabase";
 // TODO: modify if necessary
-export type CharacterClass = "Paladin" | "Fighter" | "Cleric" | "Wizard" | "Rogue";
-export type CharacterRace = "Elf" | "Dwarf" | "Human" | "Dragonborn";
 export type AbilityKey = "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
 
 export interface AbilityValue {
@@ -35,8 +33,8 @@ export interface CharacterInfo {
     name: string;
     photoUri: string;
     level: number;
-    class: CharacterClass;
-    race: CharacterRace;
+    class: string;
+    race: string;
     inspiration: number;
     ac: number;
     hp: {
@@ -47,26 +45,12 @@ export interface CharacterInfo {
     proficientSaves: AbilityKey[];
 }
 export interface BiometricEntry {
-    key: keyof CharacterBiometrics;
     label: string;
     value: string;
 }
-export interface CharacterBiometrics {
-    alignment: string,
-    gender: string,
-    eyes: string,
-    size: string,
-    height: string,
-    age: string,
-    faith: string,
-    skin: string,
-};
-
-export interface CharacterValues {
-    background: string,
-    personalityTraits: string[],
-    ideals: string[],
-    bonds: string[],
-    flaws: string[]
-
+export interface CharacterHeader {
+    name: Database["public"]["Tables"]["characters"]["Row"]["name"],
+    level: Database["public"]["Tables"]["characters"]["Row"]["level"],
+    class: Database["public"]["Tables"]["classes"]["Row"]["name"],
+    inspiration: Database["public"]["Tables"]["characters"]["Row"]["inspiration"]
 }

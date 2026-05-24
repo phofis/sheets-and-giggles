@@ -1,12 +1,11 @@
 import React from "react";
-import { View, ActivityIndicator } from "react-native";
-import { ThemedGrid, ThemedText, ThemedView } from "@/components/themed";
+import { View } from "react-native";
+import { ThemedGrid, ThemedText } from "@/components/themed";
 import { BoxWithGlow } from ".././BoxWithGlow";
-import { useBiometrics } from "@/hooks/character";
 import { useStyles } from "@/hooks/useStyles";
+import { BiometricEntry } from "@/types/character";
 
-export const BiometricsGrid = ({ characterId }: { characterId: string }) => {
-    const { data: entries, isLoading } = useBiometrics(characterId);
+export const BiometricsGrid = ({ biometricEntries }: { biometricEntries: BiometricEntry[] }) => {
     const { styles, color } = useStyles((theme, c) => ({
         loadingContainer: { height: 120, justifyContent: "center", alignItems: "center" },
         textContainer: { flex: 1, justifyContent: "center" },
@@ -19,19 +18,11 @@ export const BiometricsGrid = ({ characterId }: { characterId: string }) => {
         decorationSpacer: { width: 10 },
     }));
 
-    if (isLoading || !entries) {
-        return (
-            <ThemedView style={styles.loadingContainer}>
-                <ActivityIndicator color={color("palette.primary")} />
-            </ThemedView>
-        );
-    }
-
     return (
         <ThemedGrid
             columnGap={12}
             columns={2}
-            data={entries}
+            data={biometricEntries}
             renderItem={(item) => (
                 <BoxWithGlow glow={false}>
                     <View style={styles.textContainer}>
