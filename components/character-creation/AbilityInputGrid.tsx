@@ -99,9 +99,9 @@ export const AbilityInputGrid: React.FC<AbilityInputGridProps> = ({
                                     </ThemedText>
 
                                     <TextInput
-                                        style={styles.abilityInput}
                                         keyboardType="number-pad"
                                         maxLength={2}
+                                        style={styles.abilityInput}
                                         value={currentScore ? currentScore.toString() : ""}
                                         onChangeText={(text) => {
                                             // Strip non-numeric characters and parse

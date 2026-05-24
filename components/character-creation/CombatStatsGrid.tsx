@@ -87,14 +87,14 @@ export const CombatStatsGrid: React.FC<CombatStatsGridProps> = ({ stats, onChang
 
                                 <View style={styles.inputRow}>
                                     <TextInput
-                                        style={[
-                                            styles.input,
-                                            // { color: theme.colors.semantic.info }
-                                        ]}
                                         keyboardType="number-pad"
                                         maxLength={3}
                                         placeholder="0"
                                         placeholderTextColor="rgba(255,255,255,0.2)"
+                                        style={[
+                                            styles.input,
+                                            // { color: theme.colors.semantic.info }
+                                        ]}
                                         value={currentValue !== 0 ? currentValue.toString() : ""}
                                         onChangeText={(text) => {
                                             // Ensure we only pass valid numbers or 0 back to state

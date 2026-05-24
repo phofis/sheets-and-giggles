@@ -1,6 +1,5 @@
 import React from "react";
-import {Text} from "react-native"
-import { View, TextInput, TouchableOpacity } from "react-native";
+import {Text, View, TextInput, TouchableOpacity } from "react-native"
 import { ThemedText } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
 
@@ -49,7 +48,7 @@ export const LabeledInput: React.FC<LabeledInputProps> = ({
     }));
 
     const content = isDropdown ? (
-        <TouchableOpacity style={styles.inputBox} onPress={onPress} activeOpacity={0.7}>
+        <TouchableOpacity activeOpacity={0.7} style={styles.inputBox} onPress={onPress}>
             <ThemedText style={{ color: value ? styles.inputText.color : "rgba(255, 255, 255, 0.4)" }}>
                 {value || placeholder}
             </ThemedText>
@@ -57,9 +56,9 @@ export const LabeledInput: React.FC<LabeledInputProps> = ({
     ) : (
         <View style={styles.inputBox}>
             <TextInput
-                style={styles.inputText}
                 placeholder={placeholder}
                 placeholderTextColor="rgba(255, 255, 255, 0.4)"
+                style={styles.inputText}
                 value={value}
                 onChangeText={onChangeText}
             />

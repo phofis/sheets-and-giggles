@@ -205,7 +205,7 @@ export const DynamicStringListCard: React.FC<DynamicStringListCardProps> = ({
                         <Text style={styles.headerTitle}>{title}</Text>
                     </View>
                     {addButton &&
-                        <TouchableOpacity onPress={() => setIsModalVisible(true)} activeOpacity={0.7}>
+                        <TouchableOpacity activeOpacity={0.7} onPress={() => setIsModalVisible(true)}>
                             <Text style={styles.addButton}>+ ADD</Text>
                         </TouchableOpacity>}
                 </View>
@@ -224,7 +224,7 @@ export const DynamicStringListCard: React.FC<DynamicStringListCardProps> = ({
                                     <Text style={styles.bullet}>•</Text>
                                     <Text style={styles.itemText}>{item}</Text>
                                     {onRemove && (
-                                        <TouchableOpacity onPress={() => onRemove(index)} activeOpacity={0.7}>
+                                        <TouchableOpacity activeOpacity={0.7} onPress={() => onRemove(index)}>
                                             <Text style={styles.removeIcon}>close</Text>
                                         </TouchableOpacity>
                                     )}
@@ -235,18 +235,18 @@ export const DynamicStringListCard: React.FC<DynamicStringListCardProps> = ({
                 </View>
             </HighlightedView>
 
-            <Modal visible={isModalVisible} transparent animationType="fade" onRequestClose={handleCancel}>
+            <Modal transparent animationType="fade" visible={isModalVisible} onRequestClose={handleCancel}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
 
                         <Text style={styles.modalTitle}>Add {title}</Text>
                         <TextInput
-                            style={styles.input}
+                            autoFocus
                             placeholder={`Enter ${title.toLowerCase()}...`}
                             placeholderTextColor="rgba(255,255,255,0.4)"
+                            style={styles.input}
                             value={inputText}
                             onChangeText={setInputText}
-                            autoFocus
                         />
                         <View style={styles.modalActions}>
                             <TouchableOpacity style={styles.modalButton} onPress={handleCancel}>

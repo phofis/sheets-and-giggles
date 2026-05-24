@@ -93,32 +93,32 @@ export default function CreateHero({ initialData, onNext }: CreateHeroProps) {
         <ThemedView backgroundColor="surface.background" style={styles.screen}>
             <ScrollView contentContainerStyle={styles.scrollContentContainer} style={styles.scrollView}>
                 <ThemedView style={styles.content}>
-                    <Header title={"Create Hero"} subtitle={"Define your origin and calling in the realms."} currentStep={1} totalSteps={5} />
+                    <Header currentStep={1} subtitle={"Define your origin and calling in the realms."} title={"Create Hero"} totalSteps={5} />
                     <View style={{ gap: 24 }}>
                         <SingleAnswerInput
+                        placeholder={"Enter a legendary name..."}
+                        title={"Character Name"}
                         value={charName}
                         onChangeText={setCharName}
-                        title={"Character Name"}
-                        placeholder={"Enter a legendary name..."}
                         />
 
                         <View style={styles.headerRow}><ThemedText color="text.heading" variant="headline">Select Race</ThemedText></View>
-                        <TouchableOpacity style={styles.checkboxContainer} onPress={() => setIsCustomRaceChecked(!isCustomRaceChecked)} activeOpacity={0.7}>
+                        <TouchableOpacity activeOpacity={0.7} style={styles.checkboxContainer} onPress={() => setIsCustomRaceChecked(!isCustomRaceChecked)}>
                             <Checkbox value={isCustomRaceChecked} onValueChange={setIsCustomRaceChecked} />
                             <ThemedText color="text.muted" variant="label">Allow custom races</ThemedText>
                         </TouchableOpacity>
-                        {isCustomRaceChecked && isLoadingCustomRaces && <View style={styles.loadingContainer}><ActivityIndicator size="small" color="#9b59b6" /></View>}
-                        <SelectionGrid options={finalRaceOptions} selectedValue={selectedRace} onSelect={setSelectedRace} accentColor="purple" />
+                        {isCustomRaceChecked && isLoadingCustomRaces && <View style={styles.loadingContainer}><ActivityIndicator color="#9b59b6" size="small" /></View>}
+                        <SelectionGrid accentColor="purple" options={finalRaceOptions} selectedValue={selectedRace} onSelect={setSelectedRace} />
 
                         <View style={styles.headerRow}><ThemedText color="text.heading" variant="headline">Select Class</ThemedText></View>
-                        <TouchableOpacity style={styles.checkboxContainer} onPress={() => setIsCustomClassChecked(!isCustomClassChecked)} activeOpacity={0.7}>
+                        <TouchableOpacity activeOpacity={0.7} style={styles.checkboxContainer} onPress={() => setIsCustomClassChecked(!isCustomClassChecked)}>
                             <Checkbox value={isCustomClassChecked} onValueChange={setIsCustomClassChecked} />
                             <ThemedText color="text.muted" variant="label">Allow custom classes</ThemedText>
                         </TouchableOpacity>
-                        {isCustomClassChecked && isLoadingCustomClasses && <View style={styles.loadingContainer}><ActivityIndicator size="small" color="#9b59b6" /></View>}
-                        <SelectionGrid options={finalClassOptions} selectedValue={selectedClass} onSelect={setSelectedClass} accentColor="purple" />
+                        {isCustomClassChecked && isLoadingCustomClasses && <View style={styles.loadingContainer}><ActivityIndicator color="#9b59b6" size="small" /></View>}
+                        <SelectionGrid accentColor="purple" options={finalClassOptions} selectedValue={selectedClass} onSelect={setSelectedClass} />
 
-                        <PathDetails selectedRaceOption={activeRaceObject} selectedClassOption={activeClassObject} />
+                        <PathDetails selectedClassOption={activeClassObject} selectedRaceOption={activeRaceObject} />
 
                         <NextStepButton
                             onPress={() => {

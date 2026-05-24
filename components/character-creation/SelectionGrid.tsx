@@ -112,8 +112,8 @@ export const SelectionGrid: React.FC<SelectionGridProps> = ({
                         <TouchableOpacity
                             key={option.id}
                             activeOpacity={0.7}
-                            onPress={() => onSelect(option.id)}
                             style={[styles.card, isActive && styles.cardActive]}
+                            onPress={() => onSelect(option.id)}
                         >
                             <View style={styles.iconContainer}>
                                 {option.icon(iconVectorColor)}

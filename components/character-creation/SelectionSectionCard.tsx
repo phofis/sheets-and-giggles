@@ -117,8 +117,8 @@ export const SelectionSectionCard: React.FC<SelectionSectionCardProps> = ({
 
             {/* Dropdown Trigger */}
             <TouchableOpacity
-                style={styles.trigger}
                 activeOpacity={0.7}
+                style={styles.trigger}
                 onPress={() => setIsOpen(!isOpen)}
             >
                 <Text
@@ -141,16 +141,16 @@ export const SelectionSectionCard: React.FC<SelectionSectionCardProps> = ({
                         return (
                             <TouchableOpacity
                                 key={option.id}
-                                onPress={() => {
-                                    onSelect(option.id);
-                                    setIsOpen(false);
-                                }}
                                 activeOpacity={0.7}
                                 style={[
                                     styles.menuItem,
                                     isLast && { borderBottomWidth: 0 },
                                     isSelected && styles.menuItemActive
                                 ]}
+                                onPress={() => {
+                                    onSelect(option.id);
+                                    setIsOpen(false);
+                                }}
                             >
                                 <Text
                                     style={isSelected ? styles.menuItemTextActive : styles.menuItemText}

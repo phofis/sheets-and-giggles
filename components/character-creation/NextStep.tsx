@@ -32,10 +32,10 @@ export const NextStepButton: React.FC<NextStepButtonProps> = ({
 
     return (
         <TouchableOpacity
+            activeOpacity={0.8}
+            disabled={disabled}
             style={styles.button}
             onPress={onPress}
-            disabled={disabled}
-            activeOpacity={0.8}
         >
             <Text style={styles.text}>Next Step →</Text>
         </TouchableOpacity>

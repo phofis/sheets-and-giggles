@@ -164,32 +164,32 @@ export default function CharacterCreationScreen() {
             {currentStep === 2 && (
                 <PersonalityAndBackground
                     initialData={characterData}
-                    onNext={handleNextStep}
                     onBack={handlePreviousStep}
+                    onNext={handleNextStep}
                 />
             )}
 
             {currentStep === 3 && (
                 <AbilitySheet
                     initialData={characterData}
-                    onNext={handleNextStep}
                     onBack={handlePreviousStep}
+                    onNext={handleNextStep}
                 />
             )}
 
             {currentStep === 4 && (
                 <SpellsSheet
                     initialData={characterData}
-                    onNext={handleNextStep}
                     onBack={handlePreviousStep}
+                    onNext={handleNextStep}
                 />
             )}
 
             {currentStep === 5 && (
                 <InventorySheet
                     initialData={characterData}
-                    onNext={handleNextStep}
                     onBack={handlePreviousStep}
+                    onNext={handleNextStep}
                 />
             )}
 

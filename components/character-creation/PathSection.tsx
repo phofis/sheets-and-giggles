@@ -66,9 +66,9 @@ export const PathSection: React.FC<PathSectionProps> = ({
     return (
         <View style={styles.container}>
             <TouchableOpacity
+                activeOpacity={0.7}
                 style={styles.headerRow}
                 onPress={toggleSection}
-                activeOpacity={0.7}
             >
                 <View style={styles.titleContainer}>
                     {iconRenderer(accentColor)}

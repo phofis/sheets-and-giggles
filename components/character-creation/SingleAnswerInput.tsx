@@ -58,24 +58,24 @@ export const SingleAnswerInput: React.FC<SingleAnswerInputProps> = ({
             <View style={[styles.inputWrapper, { minHeight }]}>
                 <View style={styles.iconWrapper}>
                     {/* Embedded SVG Pencil Icon */}
-                    <Svg width={18} height={18} viewBox="0 0 24 24" fill="none">
+                    <Svg fill="none" height={18} viewBox="0 0 24 24" width={18}>
                         <Path
                             d="M12 20h9M16.5 3.5a2.121 2.121 0 013 3L7 19l-4 1 1-4L16.5 3.5z"
                             stroke={styles.input.color}
-                            strokeWidth={2}
                             strokeLinecap="round"
                             strokeLinejoin="round"
+                            strokeWidth={2}
                         />
                     </Svg>
                 </View>
                 <TextInput
-                    onChangeText={onChangeText}
+                    multiline={true}
                     placeholder={placeholder}
                     placeholderTextColor={styles.input.color}
+                    scrollEnabled={true}
                     style={styles.input}
                     value={value}
-                    multiline={true}
-                    scrollEnabled={true}
+                    onChangeText={onChangeText}
                 />
             </View>
         </View>

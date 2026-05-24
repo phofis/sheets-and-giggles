@@ -48,19 +48,19 @@ export const PathDetails: React.FC<PathDetailsProps> = ({
 
             {selectedRaceOption && (
                 <PathSection
-                    title={`${selectedRaceOption.label} Heritage`}
+                    accentColor={styles.raceAccent.color}
                     description={selectedRaceOption.description ?? "No heritage data available."}
                     iconRenderer={(color) => selectedRaceOption.icon(color ?? "")}
-                    accentColor={styles.raceAccent.color}
+                    title={`${selectedRaceOption.label} Heritage`}
                 />
             )}
 
             {selectedClassOption && (
                 <PathSection
-                    title={`${selectedClassOption.label} Calling`}
+                    accentColor={styles.classAccent.color}
                     description={selectedClassOption.description ?? "No calling data available."}
                     iconRenderer={(color) => selectedClassOption.icon(color ?? "")}
-                    accentColor={styles.classAccent.color}
+                    title={`${selectedClassOption.label} Calling`}
                 />
             )}
         </View>

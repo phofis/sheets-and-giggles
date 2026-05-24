@@ -74,26 +74,26 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
             <ScrollView contentContainerStyle={styles.scrollContentContainer} style={styles.scrollView}>
                 <ThemedView style={styles.content}>
 
-                    <TouchableOpacity onPress={onBack} style={styles.backButton}>
+                    <TouchableOpacity style={styles.backButton} onPress={onBack}>
                         <ThemedText color="text.muted" style={{ fontWeight: "bold" }}>← Back to Origin</ThemedText>
                     </TouchableOpacity>
 
                     <Header
-                        title={"Personality & Background"}
-                        subtitle={`Flesh out the history of ${initialData.name}.`}
                         currentStep={2}
+                        subtitle={`Flesh out the history of ${initialData.name}.`}
+                        title={"Personality & Background"}
                         totalSteps={5}
                     />
 
                     <SingleAnswerInput
-                        value={charBackground}
-                        onChangeText={setCharacterBackground}
-                        title={"Background Story"}
                         minHeight={150}
                         placeholder={"Tell the tale of your character's origins, their defining moments, and what set them on their current path..."}
+                        title={"Background Story"}
+                        value={charBackground}
+                        onChangeText={setCharacterBackground}
                     />
 
-                    <SectionCard title="Physical Characteristics" iconLigature="accessibility_new" iconColor={styles.cardIcon.color}>
+                    <SectionCard iconColor={styles.cardIcon.color} iconLigature="accessibility_new" title="Physical Characteristics">
                         <View style={{ gap: 16 }}>
                             <View style={{ flexDirection: "row", gap: 16 }}>
                                 <LabeledInput flex={1} label="Age" placeholder="e.g. 24" value={age} onChangeText={setAge} />
@@ -111,15 +111,15 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
                     </SectionCard>
 
                     <SelectionSectionCard
-                        title="Alignment"
+                        iconColor={styles.cardIcon.color}
                         iconLigature="balance"
                         options={getAlignmentOptions()}
                         selectedValue={alignment}
+                        title="Alignment"
                         onSelect={setAlignment}
-                        iconColor={styles.cardIcon.color}
                     />
 
-                    <SectionCard title="Faith / Deity" iconLigature="account_balance" iconColor={styles.cardIcon.color}>
+                    <SectionCard iconColor={styles.cardIcon.color} iconLigature="account_balance" title="Faith / Deity">
                         <LabeledInput
                             label=""
                             placeholder="Who do you worship?"
@@ -128,7 +128,7 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
                         />
                     </SectionCard>
 
-                    <SectionCard title="Known Languages" iconLigature="language" iconColor={styles.cardIcon.color}>
+                    <SectionCard iconColor={styles.cardIcon.color} iconLigature="language" title="Known Languages">
                         <LabeledInput
                             label=""
                             placeholder="e.g. Common, Elvish, Dwarvish"
@@ -139,56 +139,56 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
 
 
                     <DynamicStringListCard
-                        title="Personality Traits"
-                        iconLigature="psychology"
                         accentColor={styles.traits.color}
                         emptyIconLigature="person_search"
-                        emptyTitle="No personality traits added yet."
                         emptySubtitle="What defines your character's day-to-day behavior?"
+                        emptyTitle="No personality traits added yet."
+                        iconLigature="psychology"
                         items={traits}
+                        title="Personality Traits"
                         onAddItem={(item) => setTraits(prev => [...prev, item])}
                         onRemove={(index) => setTraits(prev => prev.filter((_, i) => i !== index))}
                     />
 
                     <DynamicStringListCard
-                        title="Ideals"
-                        iconLigature="lightbulb"
                         accentColor={styles.ideas.color}
                         emptyIconLigature="wb_incandescent"
-                        emptyTitle="No ideals added yet."
                         emptySubtitle="What are the core principles that drive your character?"
+                        emptyTitle="No ideals added yet."
+                        iconLigature="lightbulb"
                         items={ideals}
+                        title="Ideals"
                         onAddItem={(item) => setIdeals(prev => [...prev, item])}
                         onRemove={(index) => setIdeals(prev => prev.filter((_, i) => i !== index))}
                     />
 
                     <DynamicStringListCard
-                        title="Bonds"
-                        iconLigature="link"
                         accentColor={styles.bonds.color}
                         emptyIconLigature="handshake"
-                        emptyTitle="No bonds added yet."
                         emptySubtitle="Who or what is your character deeply tied to?"
+                        emptyTitle="No bonds added yet."
+                        iconLigature="link"
                         items={bonds}
+                        title="Bonds"
                         onAddItem={(item) => setBonds(prev => [...prev, item])}
                         onRemove={(index) => setBonds(prev => prev.filter((_, i) => i !== index))}
                     />
 
                     <DynamicStringListCard
-                        title="Flaws"
-                        iconLigature="warning"
                         accentColor={styles.flaws.color}
                         emptyIconLigature="mood_bad"
-                        emptyTitle="No flaws added yet."
                         emptySubtitle="What is your character's hidden vice or weakness?"
+                        emptyTitle="No flaws added yet."
+                        iconLigature="warning"
                         items={flaws}
+                        title="Flaws"
                         onAddItem={(item) => setFlaws(prev => [...prev, item])}
                         onRemove={(index) => setFlaws(prev => prev.filter((_, i) => i !== index))}
                     />
 
                     <NextStepButton
-                        onPress={handleNext}
                         disabled={false}
+                        onPress={handleNext}
                     />
 
                 </ThemedView>
