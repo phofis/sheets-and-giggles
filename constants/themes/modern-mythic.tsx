@@ -71,6 +71,11 @@ export const modernMythicTheme: AppTheme = {
             text: COLORS.almostBlack,
             border: COLORS.dirtyYellow,
         },
+        buttonMystic: {
+            background: COLORS.mysticBlue,
+            text: COLORS.white,
+            border: COLORS.mysticBlue,
+        },
     },
 
     // ── Typography ────────────────────────────────────────────────────────

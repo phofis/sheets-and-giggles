@@ -4,6 +4,7 @@ import { ThemedView } from "./ThemedView";
 import { CollapsibleCard } from "../CollapsibleCard";
 import { Feature, originTypeToDisplayName } from "@/types/feature";
 
+//TODO: change feature colors based on origin
 export interface ThemedFeatureContainerProps {
     feature: Feature;
 }
@@ -41,7 +42,7 @@ export function ThemedFeatureContainer({ feature }: ThemedFeatureContainerProps)
 
     const header = (
         <ThemedView style={styles.titleRow}>
-            <ThemedText color="palette.primary" style={styles.name} variant="label">
+            <ThemedText color="text.heading" style={styles.name} variant="label">
                 {feature.name}
             </ThemedText>
             <ThemedText color="text.muted" style={styles.origin_type} variant="body">
@@ -67,7 +68,7 @@ export function ThemedFeatureContainer({ feature }: ThemedFeatureContainerProps)
             header={header}
             shortContent={shortContent}
             fullContent={fullContent}
-            glowColor="palette.primary"
+            glowColor="card.softGlow"
         />
     );
 }

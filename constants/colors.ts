@@ -27,7 +27,8 @@ const COLORS = {
     // Buttons:
     dirtyPurple: '#d0bcff1a',
     lessDirtyPurple: '#A078FFCC',
-
+    mysticGray:  '#9CA3AF33',
+    mysticBlue: '#2e353f',
     dirtyYellow: '#ffdb3c33',
     milky: '#ffe16d',
 

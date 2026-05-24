@@ -83,6 +83,7 @@ export interface ThemeColors {
     glow: ThemeGlowColors;
     buttonPrimary: ThemeButtonColors;
     buttonSecondary: ThemeButtonColors;
+    buttonMystic: ThemeButtonColors;
 }
 
 
@@ -97,7 +98,8 @@ export type ThemeColorKey =
     | `card.${keyof ThemeCardColors}`
     | `glow.${keyof ThemeGlowColors}`
     | `buttonPrimary.${keyof ThemeButtonColors}`
-    | `buttonSecondary.${keyof ThemeButtonColors}`;
+    | `buttonSecondary.${keyof ThemeButtonColors}`
+    | `buttonMystic.${keyof ThemeButtonColors}`;
 
 // ---------------------------------------------------------------------------
 // Typography
