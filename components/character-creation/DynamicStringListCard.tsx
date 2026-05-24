@@ -17,6 +17,7 @@ interface DynamicStringListCardProps {
     glow?: boolean;
     backgroundColor?: ThemeColorKey;
     glowColor?: ThemeColorKey;
+    addButton?: boolean
 }
 
 export const DynamicStringListCard: React.FC<DynamicStringListCardProps> = ({
@@ -32,6 +33,7 @@ export const DynamicStringListCard: React.FC<DynamicStringListCardProps> = ({
     glow = true,
     backgroundColor = "card.background",
     glowColor = "card.softGlow",
+    addButton = true,
 }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [inputText, setInputText] = useState("");
@@ -202,9 +204,10 @@ export const DynamicStringListCard: React.FC<DynamicStringListCardProps> = ({
                         <Text style={styles.headerIcon}>{iconLigature}</Text>
                         <Text style={styles.headerTitle}>{title}</Text>
                     </View>
-                    <TouchableOpacity onPress={() => setIsModalVisible(true)} activeOpacity={0.7}>
-                        <Text style={styles.addButton}>+ ADD</Text>
-                    </TouchableOpacity>
+                    {addButton &&
+                        <TouchableOpacity onPress={() => setIsModalVisible(true)} activeOpacity={0.7}>
+                            <Text style={styles.addButton}>+ ADD</Text>
+                        </TouchableOpacity>}
                 </View>
 
                 <View style={styles.content}>
@@ -235,6 +238,7 @@ export const DynamicStringListCard: React.FC<DynamicStringListCardProps> = ({
             <Modal visible={isModalVisible} transparent animationType="fade" onRequestClose={handleCancel}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
+
                         <Text style={styles.modalTitle}>Add {title}</Text>
                         <TextInput
                             style={styles.input}

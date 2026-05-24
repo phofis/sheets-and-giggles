@@ -5,21 +5,21 @@ import { useStyles } from "@/hooks/useStyles";
 
 interface SectionCardProps {
     title: string;
-    iconLigature: string;
+    iconLigature: string; // Material Icon string
     children: React.ReactNode;
-    iconColor: string;
+    iconColor?: string;
 }
 
 export const SectionCard: React.FC<SectionCardProps> = ({
     title,
     iconLigature,
     children,
-    iconColor
+    iconColor, // Default to your purple accent
 }) => {
     const { styles } = useStyles((t, c) => ({
         card: {
             backgroundColor: "transparent", // Appears transparent/dark in the screenshot
-            // borderRadius: t.radii.lg,
+            borderRadius: 12,
             borderWidth: 1,
             borderColor: "rgba(255, 255, 255, 0.15)", // Subtle border
             padding: t.spacing.lg,

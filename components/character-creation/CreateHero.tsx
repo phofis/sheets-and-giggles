@@ -122,14 +122,14 @@ export default function CreateHero({ initialData, onNext }: CreateHeroProps) {
 
                         <NextStepButton
                             onPress={() => {
-                                if (!charName.trim() || !selectedRace || !selectedClass) return;
+                                // if (!charName.trim() || !selectedRace || !selectedClass) return;
                                 onNext({
                                     name: charName.trim(),
                                     raceId: selectedRace,
                                     classId: selectedClass
                                 });
                             }}
-                            disabled={charName.trim().length === 0 || !selectedRace || !selectedClass}
+                            // disabled={charName.trim().length === 0 || !selectedRace || !selectedClass}
                         />
                     </View>
                 </ThemedView>

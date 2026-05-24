@@ -33,20 +33,22 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
         flaws: { color: c("semantic.error") },
     }));
 
-    const [age, setAge] = useState<string>("");
-    const [height, setHeight] = useState<string>("");
-    const [size, setSize] = useState<string>("");
-    const [gender, setGender] = useState<string>("");
-    const [eyes, setEyes] = useState<string>("");
-    const [skin, setSkin] = useState<string>("");
-    const [faith, setFaith] = useState<string>("");
+    // Properly initialize state from initialData to prevent data loss on backward navigation
+    const [age, setAge] = useState<string>(initialData.age || "");
+    const [height, setHeight] = useState<string>(initialData.height || "");
+    const [size, setSize] = useState<string>(initialData.size || "");
+    const [gender, setGender] = useState<string>(initialData.gender || "");
+    const [eyes, setEyes] = useState<string>(initialData.eyes || "");
+    const [skin, setSkin] = useState<string>(initialData.skin || "");
+    const [faith, setFaith] = useState<string>(initialData.faith || "");
+    const [knownLanguages, setKnownLanguages] = useState<string>(initialData.knownLanguages || "");
     const [alignment, setAlignment] = useState<string | null>(initialData.alignment || null);
     const [charBackground, setCharacterBackground] = useState<string>(initialData.background || "");
 
-    const [traits, setTraits] = useState<string[]>([]);
-    const [ideals, setIdeals] = useState<string[]>([]);
-    const [bonds, setBonds] = useState<string[]>([]);
-    const [flaws, setFlaws] = useState<string[]>([]);
+    const [traits, setTraits] = useState<string[]>(initialData.traits || []);
+    const [ideals, setIdeals] = useState<string[]>(initialData.ideals || []);
+    const [bonds, setBonds] = useState<string[]>(initialData.bonds || []);
+    const [flaws, setFlaws] = useState<string[]>(initialData.flaws || []);
 
     const handleNext = () => {
         onNext({
@@ -57,6 +59,7 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
             eyes,
             skin,
             faith,
+            knownLanguages,
             alignment: alignment ?? undefined,
             background: charBackground,
             traits,
@@ -124,6 +127,16 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
                             onChangeText={setFaith}
                         />
                     </SectionCard>
+
+                    <SectionCard title="Known Languages" iconLigature="language" iconColor={styles.cardIcon.color}>
+                        <LabeledInput
+                            label=""
+                            placeholder="e.g. Common, Elvish, Dwarvish"
+                            value={knownLanguages}
+                            onChangeText={setKnownLanguages}
+                        />
+                    </SectionCard>
+
 
                     <DynamicStringListCard
                         title="Personality Traits"

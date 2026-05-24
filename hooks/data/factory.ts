@@ -102,6 +102,6 @@ export function useCatalogQuery<TData>(
     return useQuery<TData>({
         queryKey: ["catalog", catalogName],
         queryFn: fetcher,
-        staleTime: TWENTY_FOUR_HOURS,
+        staleTime: 0, // change to TWENTY_FOUR_HOURS
     });
 }
