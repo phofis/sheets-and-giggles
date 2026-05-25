@@ -1,4 +1,3 @@
-import { Spell } from "@/types/spells";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "../themed/ThemedText";
 import { ThemedView } from "../themed/ThemedView";
