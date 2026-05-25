@@ -2,8 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import { ThemedGrid, ThemedText } from "@/components/themed";
 import { BoxWithGlow } from ".././BoxWithGlow";
-import { ABILITY_LABELS } from "@/services/CharacterService";
-import { AbilityScores } from "@/types/character";
+import { ABILITY_LABELS , AbilityScores } from "@/types/character";
 import { useStyles } from "@/hooks/useStyles";
 
 export const AbilityGrid = ({ abilities }: { abilities: AbilityScores }) => {
