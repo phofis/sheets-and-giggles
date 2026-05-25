@@ -13,7 +13,7 @@ interface SelectionSectionCardProps {
     options: SelectionOption[];
     selectedValue: string | null;
     onSelect: (id: string) => void;
-    iconColor: string; // Typically passed from parent as c("palette.secondary")
+    iconColor: string;
 }
 
 export const SelectionSectionCard: React.FC<SelectionSectionCardProps> = ({
@@ -33,7 +33,7 @@ export const SelectionSectionCard: React.FC<SelectionSectionCardProps> = ({
             borderColor: c("border.default"),
             padding: t.spacing.lg,
             marginBottom: t.spacing.lg,
-            borderRadius: t.borderRadius?.lg || 12,
+            borderRadius: 12,
         },
         headerRow: {
             flexDirection: "row",
@@ -83,7 +83,7 @@ export const SelectionSectionCard: React.FC<SelectionSectionCardProps> = ({
             borderColor: c("border.default"),
             backgroundColor: c("card.background"),
             borderRadius: t.borderRadius?.md || 8,
-            overflow: "hidden", // Ensures active background doesn't bleed out of rounded corners
+            overflow: "hidden",
         },
         menuItem: {
             padding: t.spacing.md,
@@ -91,7 +91,7 @@ export const SelectionSectionCard: React.FC<SelectionSectionCardProps> = ({
             borderBottomColor: c("border.default"),
         },
         menuItemActive: {
-            backgroundColor: c("surface.overlay") || c("card.softGlow") || "rgba(180, 136, 255, 0.15)", // Fallback if your theme lacks an active state token
+            backgroundColor: c("surface.overlay") || c("card.softGlow") || "rgba(180, 136, 255, 0.15)",
         },
         menuItemText: {
             fontSize: 16,
@@ -104,7 +104,6 @@ export const SelectionSectionCard: React.FC<SelectionSectionCardProps> = ({
         }
     }));
 
-    // Find the currently selected object to display its label
     const selectedOption = options.find(opt => opt.id === selectedValue);
 
     return (

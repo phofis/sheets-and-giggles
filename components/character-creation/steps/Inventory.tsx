@@ -225,7 +225,7 @@ export default function InventorySheet({ initialData, onNext, onBack }: Inventor
                         onRemoveItem={(index) => setEquipment(prev => prev.filter((_, i) => i !== index))}
                     />
 
-                    <NextStepButton onPress={handleNext} disabled={false} />
+                    <NextStepButton onPress={handleNext} disabled={false} text={"Finish"}/>
 
                 </ThemedView>
             </ScrollView>

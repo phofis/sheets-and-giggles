@@ -8,7 +8,7 @@ import { NextStepButton } from "../NextStep";
 import { CharacterDraftState, AbilityScores, CombatStats } from "@/app/character-creation";
 import { SectionCard } from "../SectionCard";
 import { AbilityInputGrid } from "../AbilityInputGrid";
-import { CombatStatsGrid } from "../CombatStatsGrid"
+import { CombatStatsGrid } from "../CombatStatsGrid";
 import { SkillSelectionList } from "../SkillSelectionList";
 
 interface AbilitySheetProps {
@@ -35,15 +35,34 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
         abilities: { color: c("palette.tertiary") },
         combat: { color: c("palette.tertiary") },
         skills: { color: c("palette.secondary") },
+        // ─── Added Validation Warning Style ───
+        validationWarning: {
+            color: c("semantic.error") || "#ff4444",
+            textAlign: "center",
+            marginBottom: t.spacing.sm,
+            fontFamily: t.typography.bodyFont
+        }
     }));
 
-    // Isolate state mappings
     const [abilityScores, setAbilityScores] = useState<AbilityScores>(initialData.abilityScores);
     const [combatStats, setCombatStats] = useState<CombatStats>(initialData.combatStats);
-
     const [skills, setSkills] = useState<string[]>(initialData.skills);
+    const [savingThrowProficiencies, setSavingThrowProficiencies] = useState<(keyof AbilityScores)[]>([]);
 
-    // 2. Define the selection toggler
+    const areAbilitiesValid = Object.values(abilityScores).every(
+        (score) => typeof score === "number" && !isNaN(score) && score > 0
+    );
+
+    const areCombatStatsValid =
+        typeof combatStats.hp === "number" && combatStats.hp > 0 &&
+        typeof combatStats.ac === "number" && combatStats.ac > 0 &&
+        typeof combatStats.speed === "number" && combatStats.speed >= 0 &&
+        typeof combatStats.initiative === "number" && !isNaN(combatStats.initiative);
+
+
+    const isFormValid = areAbilitiesValid && areCombatStatsValid;
+    // ─────────────────────────────────────────────────────────────────────────
+
     const handleToggleSkill = (skillName: string) => {
         setSkills(prev =>
             prev.includes(skillName)
@@ -51,16 +70,6 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
                 : [...prev, skillName]
         );
     };
-
-    const handleNext = () => {
-        onNext({
-            abilityScores,
-            combatStats,
-            skills
-        });
-    };
-
-    const [savingThrowProficiencies, setSavingThrowProficiencies] = useState<(keyof AbilityScores)[]>([]);
 
     const handleScoreChange = (key: keyof AbilityScores, value: number) => {
         setAbilityScores(prev => ({ ...prev, [key]: value }));
@@ -74,9 +83,18 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
         );
     };
 
-
     const handleCombatStatChange = (key: keyof CombatStats, value: number) => {
         setCombatStats(prev => ({ ...prev, [key]: value }));
+    };
+
+    const handleNext = () => {
+        if (!isFormValid) return;
+
+        onNext({
+            abilityScores,
+            combatStats,
+            skills,
+        });
     };
 
     return (
@@ -95,15 +113,14 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
                         totalSteps={5}
                     />
 
-                    <SectionCard title="Combat Stats" iconLigature="shield" iconColor={styles.abilities.color}>
+                    <SectionCard title="Combat Stats *" iconLigature="shield" iconColor={styles.abilities.color}>
                         <CombatStatsGrid
                             stats={combatStats}
                             onChange={handleCombatStatChange}
                         />
                     </SectionCard>
 
-                    {/* Implement your SectionCards for Ability Scores here */}
-                    <SectionCard title="Ability Scores" iconLigature="fitness_center" iconColor={styles.combat.color}>
+                    <SectionCard title="Ability Scores *" iconLigature="fitness_center" iconColor={styles.combat.color}>
                         <AbilityInputGrid
                             scores={abilityScores}
                             proficiencies={savingThrowProficiencies}
@@ -112,6 +129,7 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
                         />
                     </SectionCard>
 
+                    {/* Skills are intentionally left without an asterisk to allow 0 selections if necessary */}
                     <SectionCard title="Skills" iconLigature="list" iconColor={styles.skills.color}>
                         <SkillSelectionList
                             availableSkills={ALL_AVAILABLE_SKILLS}
@@ -121,13 +139,16 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
                         />
                     </SectionCard>
 
-                    {/* Implement your SectionCards for Combat Stats here */}
-
-                    {/* Implement your DynamicStringListCard for Skills here */}
+                    {/* ─── UI Feedback & Progression Gate ─── */}
+                    {!isFormValid && (
+                        <ThemedText style={styles.validationWarning}>
+                            Please ensure all core abilities and combat stats (*) contain valid numbers above zero.
+                        </ThemedText>
+                    )}
 
                     <NextStepButton
                         onPress={handleNext}
-                        disabled={false} // Add validation logic if required (e.g., standard array sum verification)
+                        disabled={!isFormValid}
                     />
 
                 </ThemedView>

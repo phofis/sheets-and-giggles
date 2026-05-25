@@ -129,7 +129,6 @@ export const DynamicStringListCard: React.FC<DynamicStringListCardProps> = ({
             color: c("text.muted"),
             paddingHorizontal: t.spacing.xs,
         },
-        // Modal Styles
         modalOverlay: {
             flex: 1,
             backgroundColor: "rgba(0, 0, 0, 0.6)",

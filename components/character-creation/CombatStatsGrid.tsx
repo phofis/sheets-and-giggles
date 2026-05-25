@@ -99,7 +99,7 @@ export const CombatStatsGrid: React.FC<CombatStatsGridProps> = ({ stats, onChang
                                         value={currentValue !== 0 ? currentValue.toString() : ""}
                                         onChangeText={(text) => {
                                             // Ensure we only pass valid numbers or 0 back to state
-                                            const cleanText = text.replace(/[^0-9-]/g, ''); // allow negative for initiative
+                                            const cleanText = text.replace(/[^0-9-]/g, '');
                                             const numericValue = parseInt(cleanText, 10);
                                             onChange(config.key, isNaN(numericValue) ? 0 : numericValue);
                                         }}

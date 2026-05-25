@@ -9,7 +9,7 @@ interface LabeledInputProps {
     value: string;
     onChangeText?: (text: string) => void;
     flex?: number;
-    isDropdown?: boolean; // Changes behavior to a touchable selector
+    isDropdown?: boolean;
     onPress?: () => void;
 }
 

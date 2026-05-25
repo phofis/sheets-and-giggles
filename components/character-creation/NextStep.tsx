@@ -5,11 +5,13 @@ import { useStyles } from "@/hooks/useStyles";
 interface NextStepButtonProps {
     onPress: () => void;
     disabled?: boolean;
+    text? : string;
 }
 
 export const NextStepButton: React.FC<NextStepButtonProps> = ({
     onPress,
-    disabled = false
+    disabled = false,
+    text = "Next Step →"
 }) => {
     const { styles } = useStyles((t, c) => ({
         button: {
@@ -37,7 +39,7 @@ export const NextStepButton: React.FC<NextStepButtonProps> = ({
             style={styles.button}
             onPress={onPress}
         >
-            <Text style={styles.text}>Next Step →</Text>
+            <Text style={styles.text}>{text}</Text>
         </TouchableOpacity>
     );
 };

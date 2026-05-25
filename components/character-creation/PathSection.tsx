@@ -1,10 +1,8 @@
 import React, { useState } from "react";
 import { View, TouchableOpacity, Text, LayoutAnimation, UIManager, Platform } from "react-native";
-import { ThemedView, ThemedText } from "@/components/themed";
+import { ThemedText } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
-import { SelectionOption } from "./SelectionGrid";
 
-// Enable LayoutAnimation for Android
 if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }

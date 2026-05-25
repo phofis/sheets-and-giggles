@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { View, type ViewProps, Pressable, LayoutAnimation, Platform, UIManager } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
-import { ThemedText } from "@/components/themed"; // Adjust path as necessary
+import { ThemedText } from "@/components/themed";
 import { Ionicons } from "@expo/vector-icons";
 
-// Enable LayoutAnimation for Android smooth expansion
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
     UIManager.setLayoutAnimationEnabledExperimental(true);
 }

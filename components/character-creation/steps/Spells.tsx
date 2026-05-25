@@ -8,8 +8,6 @@ import { NextStepButton } from ".././NextStep";
 import { CharacterDraftState } from "@/app/character-creation";
 import { SelectionSectionCard } from ".././SelectionSectionCard";
 import { DynamicStringListCard } from ".././DynamicStringListCard";
-
-// Adjust this import path based on your exact file structure for the query factory
 import { useSpellsCatalog } from "@/hooks/useSpells";
 
 interface SpellsSheetProps {
@@ -114,10 +112,9 @@ export default function SpellsSheet({ initialData, onNext, onBack }: SpellsSheet
                                 emptySubtitle="Select a spell from the catalog above to add it to your spellbook."
                                 items={spells.map(spellId => {
                                     const foundSpell = spellsCatalog?.find(s => s.id === spellId);
-                                    // Fallback to the raw string if for some reason the catalog lookup fails
                                     return foundSpell ? foundSpell.name : spellId;
                                 })}
-                                // Preserves manual entry fallback if your DynamicStringListCard has a text input
+
                                 onAddItem={(item) => setSpells(prev => [...prev, item])}
                                 onRemove={handleRemoveSpell}
                                 addButton={false}

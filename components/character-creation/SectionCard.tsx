@@ -1,11 +1,10 @@
 import React from "react";
 import { View, Text } from "react-native";
-import { ThemedText } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
 
 interface SectionCardProps {
     title: string;
-    iconLigature: string; // Material Icon string
+    iconLigature: string;
     children: React.ReactNode;
     iconColor?: string;
 }
@@ -14,14 +13,14 @@ export const SectionCard: React.FC<SectionCardProps> = ({
     title,
     iconLigature,
     children,
-    iconColor, // Default to your purple accent
+    iconColor,
 }) => {
     const { styles } = useStyles((t, c) => ({
         card: {
-            backgroundColor: "transparent", // Appears transparent/dark in the screenshot
+            backgroundColor: "transparent",
             borderRadius: 12,
             borderWidth: 1,
-            borderColor: "rgba(255, 255, 255, 0.15)", // Subtle border
+            borderColor: c("border.default"),
             padding: t.spacing.lg,
             marginBottom: t.spacing.lg,
         },

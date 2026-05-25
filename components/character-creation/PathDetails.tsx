@@ -1,6 +1,6 @@
 import React from "react";
 import { View } from "react-native";
-import { ThemedView, ThemedText } from "@/components/themed";
+import { ThemedText } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
 import { PathSection } from "./PathSection";
 import { SelectionOption } from "./SelectionGrid";

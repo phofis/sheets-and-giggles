@@ -31,9 +31,16 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
         ideas: { color: c("palette.secondary") },
         bonds: { color: c("semantic.success") },
         flaws: { color: c("semantic.error") },
+        // ─── Added Validation Warning Style ───
+        validationWarning: {
+            color: c("semantic.error") || "#ff4444",
+            textAlign: "center",
+            marginBottom: t.spacing.sm,
+            fontFamily: t.typography.bodyFont
+        }
     }));
 
-    // Properly initialize state from initialData to prevent data loss on backward navigation
+    // State Initialization
     const [age, setAge] = useState<string>(initialData.age || "");
     const [height, setHeight] = useState<string>(initialData.height || "");
     const [size, setSize] = useState<string>(initialData.size || "");
@@ -50,7 +57,25 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
     const [bonds, setBonds] = useState<string[]>(initialData.bonds || []);
     const [flaws, setFlaws] = useState<string[]>(initialData.flaws || []);
 
+    // ─── Validation Logic Matrix ─────────────────────────────────────────────
+    // Evaluates to true strictly if all required nodes contain non-whitespace data.
+    // Note: 'faith' and array properties are excluded to allow for narrative flexibility.
+    const isFormValid =
+        charBackground.trim() !== "" &&
+        age.trim() !== "" &&
+        height.trim() !== "" &&
+        size.trim() !== "" &&
+        gender.trim() !== "" &&
+        eyes.trim() !== "" &&
+        skin.trim() !== "" &&
+        knownLanguages.trim() !== "" &&
+        alignment !== null;
+    // ─────────────────────────────────────────────────────────────────────────
+
     const handleNext = () => {
+        // Redundant gate to prevent execution if bypassed
+        if (!isFormValid) return;
+
         onNext({
             age,
             height,
@@ -96,22 +121,22 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
                     <SectionCard title="Physical Characteristics" iconLigature="accessibility_new" iconColor={styles.cardIcon.color}>
                         <View style={{ gap: 16 }}>
                             <View style={{ flexDirection: "row", gap: 16 }}>
-                                <LabeledInput flex={1} label="Age" placeholder="e.g. 24" value={age} onChangeText={setAge} />
-                                <LabeledInput flex={1} label="Height" placeholder="e.g. 5'10&quot;" value={height} onChangeText={setHeight} />
+                                <LabeledInput flex={1} label="Age *" placeholder="e.g. 24" value={age} onChangeText={setAge} />
+                                <LabeledInput flex={1} label="Height *" placeholder="e.g. 5'10&quot;" value={height} onChangeText={setHeight} />
                             </View>
                             <View style={{ flexDirection: "row", gap: 16 }}>
-                                <LabeledInput flex={1} label="Size" placeholder="e.g. Medium" value={size} onChangeText={setSize} />
-                                <LabeledInput flex={1} label="Gender" placeholder="e.g. Female" value={gender} onChangeText={setGender} />
+                                <LabeledInput flex={1} label="Size *" placeholder="e.g. Medium" value={size} onChangeText={setSize} />
+                                <LabeledInput flex={1} label="Gender *" placeholder="e.g. Female" value={gender} onChangeText={setGender} />
                             </View>
                             <View style={{ flexDirection: "row", gap: 16 }}>
-                                <LabeledInput flex={1} label="Eyes" placeholder="e.g. Hazel" value={eyes} onChangeText={setEyes} />
-                                <LabeledInput flex={1} label="Skin" placeholder="e.g. Fair" value={skin} onChangeText={setSkin} />
+                                <LabeledInput flex={1} label="Eyes *" placeholder="e.g. Hazel" value={eyes} onChangeText={setEyes} />
+                                <LabeledInput flex={1} label="Skin *" placeholder="e.g. Fair" value={skin} onChangeText={setSkin} />
                             </View>
                         </View>
                     </SectionCard>
 
                     <SelectionSectionCard
-                        title="Alignment"
+                        title="Alignment *"
                         iconLigature="balance"
                         options={getAlignmentOptions()}
                         selectedValue={alignment}
@@ -119,16 +144,17 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
                         iconColor={styles.cardIcon.color}
                     />
 
+                    {/* Faith is deliberately left un-asterisked as an optional parameter */}
                     <SectionCard title="Faith / Deity" iconLigature="account_balance" iconColor={styles.cardIcon.color}>
                         <LabeledInput
                             label=""
-                            placeholder="Who do you worship?"
+                            placeholder="Who do you worship? (Optional)"
                             value={faith}
                             onChangeText={setFaith}
                         />
                     </SectionCard>
 
-                    <SectionCard title="Known Languages" iconLigature="language" iconColor={styles.cardIcon.color}>
+                    <SectionCard title="Known Languages *" iconLigature="language" iconColor={styles.cardIcon.color}>
                         <LabeledInput
                             label=""
                             placeholder="e.g. Common, Elvish, Dwarvish"
@@ -186,9 +212,16 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
                         onRemove={(index) => setFlaws(prev => prev.filter((_, i) => i !== index))}
                     />
 
+                    {/* ─── UI Feedback & Progression Gate ─── */}
+                    {!isFormValid && (
+                        <ThemedText style={styles.validationWarning}>
+                            Please fill out all required fields (*) to continue.
+                        </ThemedText>
+                    )}
+
                     <NextStepButton
                         onPress={handleNext}
-                        disabled={false}
+                        disabled={!isFormValid}
                     />
 
                 </ThemedView>

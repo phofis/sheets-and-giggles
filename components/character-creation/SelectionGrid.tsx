@@ -107,7 +107,7 @@ export const SelectionGrid: React.FC<SelectionGridProps> = ({
                     const iconVectorColor = isActive
                         ? styles.iconContainer.activeColor
                         : styles.iconContainer.inactiveColor;
-                        
+
                     return (
                         <TouchableOpacity
                             key={option.id}

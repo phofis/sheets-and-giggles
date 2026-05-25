@@ -12,10 +12,8 @@ import { SelectionGrid, SelectionOption } from ".././SelectionGrid";
 import { getRaceOptions, getClassOptions, getCustomOption } from "@/constants/character-creation-setup";
 import { Checkbox } from "../../Checkbox";
 import { PathDetails } from ".././PathDetails";
-import { NextStepButton } from ".././NextStep";
-
-// Import the type from your main controller
-import { CharacterDraftState } from "@/app/character-creation"; // Adjust import path to where your main controller lives
+import { NextStepButton } from ".././NextStep";``
+import { CharacterDraftState } from "@/app/character-creation";
 
 interface CreateHeroProps {
     initialData: CharacterDraftState;
@@ -122,14 +120,14 @@ export default function CreateHero({ initialData, onNext }: CreateHeroProps) {
 
                         <NextStepButton
                             onPress={() => {
-                                // if (!charName.trim() || !selectedRace || !selectedClass) return;
+                                if (!charName.trim() || !selectedRace || !selectedClass) return;
                                 onNext({
                                     name: charName.trim(),
                                     raceId: selectedRace,
                                     classId: selectedClass
                                 });
                             }}
-                            // disabled={charName.trim().length === 0 || !selectedRace || !selectedClass}
+                            disabled={charName.trim().length === 0 || !selectedRace || !selectedClass}
                         />
                     </View>
                 </ThemedView>

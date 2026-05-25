@@ -9,7 +9,7 @@ interface SingleAnswerInputProps {
     onChangeText: (text: string) => void;
     title?: string;
     placeholder?: string;
-    minHeight?: number; // Added to interface
+    minHeight?: number;
 }
 
 export const SingleAnswerInput: React.FC<SingleAnswerInputProps> = ({
@@ -17,7 +17,7 @@ export const SingleAnswerInput: React.FC<SingleAnswerInputProps> = ({
     onChangeText,
     title = "Character Name",
     placeholder = "Enter a legendary name...",
-    minHeight = 50 // Defaults to standard height, pass 200 or 300 for text areas
+    minHeight = 50,
 }) => {
     const { styles } = useStyles((theme, c) => ({
         container: {
@@ -34,7 +34,6 @@ export const SingleAnswerInput: React.FC<SingleAnswerInputProps> = ({
             paddingHorizontal: theme.spacing.md,
             paddingVertical: theme.spacing.md,
             gap: theme.spacing.sm,
-            // Removed fixed minHeight from here so it can be dynamically injected
         },
         iconWrapper: {
             paddingTop: 2,
@@ -54,7 +53,6 @@ export const SingleAnswerInput: React.FC<SingleAnswerInputProps> = ({
             <ThemedText color="text.heading" variant="headline">
                 {title}
             </ThemedText>
-            {/* Merged the dynamic minHeight with the static styles */}
             <View style={[styles.inputWrapper, { minHeight }]}>
                 <View style={styles.iconWrapper}>
                     {/* Embedded SVG Pencil Icon */}
