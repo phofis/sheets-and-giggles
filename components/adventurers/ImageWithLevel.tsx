@@ -3,7 +3,7 @@ import { View, Image } from "react-native";
 import { ThemedText } from "../themed";
 
 type Props = {
-    image: number | undefined;
+    image: string | null | undefined;
     level: number;
 };
 
@@ -32,7 +32,7 @@ export default function ImageWithLevel({ image, level }: Props) {
     return (
         <View style={styles.image}>
             {image && (
-                <Image resizeMode="cover" source={image} style={styles.image} />
+                <Image resizeMode="cover" source={{ uri: image }} style={styles.image} />
             )}
             <View style={styles.levelStub}>
                 <ThemedText color="text.onSecondary" variant="body">

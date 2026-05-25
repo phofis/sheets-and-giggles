@@ -1,6 +1,7 @@
 import { Adventurer } from "@/hooks/useAdventurers";
 import { useStyles } from "@/hooks/useStyles";
 import { TouchableOpacity, View } from "react-native";
+import { useRouter } from "expo-router";
 import ImageWithLevel from "./ImageWithLevel";
 import { ThemedText } from "../themed";
 import { RightArrowIcon } from "../icons";
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export default function AdventurerHeader({ adventurer }: Props) {
+    const router = useRouter();
     const { styles } = useStyles((t, c) => ({
         upperView: {
             backgroundColor: c("card.background"),
@@ -32,7 +34,7 @@ export default function AdventurerHeader({ adventurer }: Props) {
 
     return (
         <View style={styles.upperView}>
-            <ImageWithLevel image={adventurer.image} level={adventurer.level} />
+            <ImageWithLevel image={adventurer.photoUri} level={adventurer.level} />
             <View style={styles.column}>
                 <ThemedText color="text.heading" style={{ fontSize: 24 }}>
                     {adventurer.name}
@@ -45,8 +47,8 @@ export default function AdventurerHeader({ adventurer }: Props) {
                 </ThemedText>
             </View>
             <View style={{ alignSelf: "center" }}>
-                <TouchableOpacity>
-                    <RightArrowIcon color="text.body" size={16} />
+                <TouchableOpacity onPress={() => router.push({ pathname: "/(tabs)/character-sheet", params: { characterId: adventurer.id } })}>
+                    <RightArrowIcon color="text.body" size={16}/>
                 </TouchableOpacity>
             </View>
         </View>

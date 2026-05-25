@@ -1,14 +1,17 @@
 import { TAB_ROUTES } from "@/constants/routes";
 import { useAppTheme } from "@/hooks/useAppTheme";
+import { CharacterIdProvider } from "@/context/CharacterIdContext";
 import { Ionicons } from "@expo/vector-icons";
-import { Tabs } from "expo-router";
+import { Tabs, useLocalSearchParams } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function TabsLayout() {
     const { theme, color } = useAppTheme();
     const insets = useSafeAreaInsets();
+    const { characterId } = useLocalSearchParams<{ characterId: string }>();
 
     return (
+        <CharacterIdProvider value={characterId}>
         <Tabs
             screenOptions={{
                 headerShown: false,
@@ -48,5 +51,6 @@ export default function TabsLayout() {
                 />
             ))}
         </Tabs>
+        </CharacterIdProvider>
     );
 }
