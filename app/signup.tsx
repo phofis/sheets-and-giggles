@@ -163,7 +163,7 @@ export default function SignupScreen() {
 
 
                     {/* Footer Section */}
-                    <SignupFooter handleRerouteToLogin={() => router.replace("/(tabs)/login")} />
+                    <SignupFooter handleRerouteToLogin={() => router.replace("/login")} />
 
                 </ThemedView>
             </ScrollView >

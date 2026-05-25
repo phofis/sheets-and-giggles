@@ -1,8 +1,9 @@
 import { ThemeProvider } from "@/context/ThemeContext";
 import { PERSIST_BUSTER, PERSIST_MAX_AGE, queryClient, queryPersister } from "@/lib/queryClient";
 import { useAppTheme } from "@/hooks/useAppTheme";
+import { useAuth } from "@/hooks/auth/useAuth";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
-import { Stack } from "expo-router";
+import { Stack, useRouter, useSegments } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
 import { useFonts } from "expo-font";
@@ -21,8 +22,29 @@ import {
 
 SplashScreen.preventAutoHideAsync();
 
+const PUBLIC_ROUTES = new Set(["login", "signup"]);
+
+function useProtectedRoute() {
+    const { session, loading } = useAuth();
+    const segments = useSegments();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (loading) return;
+        const first = segments[0];
+        const isPublic = first ? PUBLIC_ROUTES.has(first) : false;
+
+        if (!session && !isPublic) {
+            router.replace("/login");
+        } else if (session && isPublic) {
+            router.replace("/landing");
+        }
+    }, [session, loading, segments, router]);
+}
+
 function RootLayoutInner() {
     const { color } = useAppTheme();
+    useProtectedRoute();
 
     return (
         <PersistQueryClientProvider

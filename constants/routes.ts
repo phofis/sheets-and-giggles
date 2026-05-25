@@ -13,13 +13,6 @@ export interface RouteDefinition {
 
 export const TAB_ROUTES: readonly RouteDefinition[] = [
     {
-        name: "home",
-        title: "Home",
-        icon: "home",
-        iconOutline: "home-outline",
-        href: "/home",
-    },
-    {
         name: "characteristics",
         title: "Character",
         icon: "person",

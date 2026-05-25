@@ -61,7 +61,7 @@ export default function LandingView() {
                             />
                         }
                         title="Character List"
-                        onPress={() => router.replace("/(tabs)/my-adventurers")}
+                        onPress={() => router.push("/my-adventurers")}
                     />
                     {/** TODO: Change 12 to the real number of created heroes  */}
 
@@ -77,7 +77,7 @@ export default function LandingView() {
                             />
                         }
                         title="Create New Character"
-                        onPress={() => router.replace("/character-creation")}
+                        onPress={() => router.push("/character-creation")}
                     />
                 </ThemedView>
             </ScrollView>
