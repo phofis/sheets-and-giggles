@@ -1,12 +1,9 @@
-import { ThemedHeadline, ThemedStatContainer, ThemedText } from "@/components/themed";
+import { ThemedHeadline, ThemedText } from "@/components/themed";
 import { View} from "react-native";
-import { useAppTheme } from "@/hooks/useAppTheme";
 import { useStyles } from "@/hooks/useStyles";
 import { BookIcon } from '@/components/icons'
 
 export const MainHeader = () => {
-    const { theme, color } = useAppTheme();
-
     const { styles } = useStyles((t, c) => ({
         container: {
             alignItems: "center",

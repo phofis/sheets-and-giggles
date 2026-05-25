@@ -6,7 +6,7 @@ import { useStyles } from "@/hooks/useStyles";
 import { BiometricEntry } from "@/types/character";
 
 export const BiometricsGrid = ({ biometricEntries }: { biometricEntries: BiometricEntry[] }) => {
-    const { styles, color } = useStyles((theme, c) => ({
+    const { styles } = useStyles((theme, c) => ({
         loadingContainer: { height: 120, justifyContent: "center", alignItems: "center" },
         textContainer: { flex: 1, justifyContent: "center" },
         label: { fontSize: 10, fontWeight: "700", letterSpacing: 0.5, marginBottom: 2 },

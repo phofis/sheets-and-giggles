@@ -11,7 +11,6 @@ import { useCharacterSpellSlots ,
     useSpendSpellSlots,
     useResetSpellSlots,
 } from "@/hooks/data/useCharacterSpellSlots";
-import { useCharacter } from "@/hooks/data/useCharacter";
 const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde"; // TODO: get from context instead
 
 //TODO: add lazy updates - immiedately change UI, update server once every few seconds or on unmount
@@ -60,10 +59,8 @@ export function SpellSlots() {
 
     const {
         data: slots,
-        error,
         isLoading,
     } = useCharacterSpellSlots(characterId);
-    const { data: character } = useCharacter(characterId);
     if (isLoading) {
     }
     const spendSlots = useSpendSpellSlots(characterId);

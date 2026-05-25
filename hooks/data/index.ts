@@ -31,7 +31,7 @@ export {
 export {
     useCharacterSpellSlots,
     useUpsertSpellSlot,
-    useSpendSpellSlot,
+    useSpendSpellSlots,
     useResetSpellSlots,
 } from "./useCharacterSpellSlots";
 

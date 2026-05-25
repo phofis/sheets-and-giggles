@@ -1,5 +1,5 @@
 // components/login/ThemedInput.tsx
-import { View, TextInput, StyleSheet } from "react-native";
+import { View, TextInput } from "react-native";
 import { ThemedText } from "@/components/themed";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useStyles } from "@/hooks/useStyles";

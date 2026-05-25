@@ -7,7 +7,7 @@ interface SpellSlotButtonProps {
 }
 //TODO: Change color
 export function SpellSlotButton({ isUsed}: SpellSlotButtonProps) {
-    const { styles, color } = useStyles((t, c) => ({
+    const { styles } = useStyles((_, c) => ({
         container: {
             width: 36,
             height: 36,

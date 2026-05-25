@@ -2,7 +2,6 @@
 import { ThemeColorKey } from "@/constants/themes";
 import React from "react";
 import Svg, { Path } from "react-native-svg";
-import { useTheme } from "@react-navigation/native";
 import { useAppTheme } from "@/hooks/useAppTheme";
 interface IconProps {
     size?: number;
