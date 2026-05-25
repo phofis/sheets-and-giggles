@@ -2,7 +2,8 @@ import { supabase } from "@/lib/supabase";
 import type { Database } from "@/types/supabase";
 import { useCharacterQuery, useCharacterMutation } from "./factory";
 
-type FeatureRow = Database["public"]["Views"]["v_character_features"]["Row"];
+export type FeatureRow = Database["public"]["Views"]["v_character_features"]["Row"];
+export type OriginType = Database["public"]["Enums"]["feature_origin_type"];
 type FeatureInsert =
     Database["public"]["Tables"]["character_features"]["Insert"];
 

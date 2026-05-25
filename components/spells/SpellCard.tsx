@@ -5,11 +5,11 @@ import { ThemedView } from "../themed/ThemedView";
 import { CollapsibleCard } from "@/components/CollapsibleCard";
 import { ShortSpellCard } from "./ShortSpellCard";
 import { LongSpellCard } from "./LongSpellCard";
+import { CharacterSpellWithDetails } from "@/hooks/data/useCharacterSpells";
 
-export interface SpellCardProps {
-    spell: Spell;
+interface SpellCardProps {
+    spell: CharacterSpellWithDetails;
 }
-
 export function SpellCard({ spell }: SpellCardProps) {
     const { styles } = useStyles((t) => ({
         card: {
@@ -36,10 +36,10 @@ export function SpellCard({ spell }: SpellCardProps) {
     const header = (
         <ThemedView style={styles.titleRow}>
             <ThemedText color="text.heading" style={styles.title} variant="label">
-                {spell.name}
+                {spell.spells.name}
             </ThemedText>
             <ThemedText color="text.muted" style={styles.level} variant="body">
-                Level {spell.level}
+                Level {spell.spells.level}
             </ThemedText>
         </ThemedView>
     );

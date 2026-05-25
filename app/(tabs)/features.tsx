@@ -2,7 +2,9 @@ import { ThemedHeadline, ThemedView } from "@/components/themed";
 import { ThemedFeatureContainer} from "@/components/themed/ThemedFeatureContainer";
 import { ScrollView, View } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
-import { useFeatures,  } from "@/hooks/useFeatures";
+import { useCharacterFeatures, FeatureRow, OriginType} from "@/hooks/data/useCharacterFeatures";
+
+const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde"; //TODO: get from context instead
 
 export default function FeaturesAndTraitsScreen() {
     const { styles } = useStyles((theme) => ({
@@ -16,7 +18,7 @@ export default function FeaturesAndTraitsScreen() {
         list: { width: "95%" },
     }));
 
-    const { features, isLoading } = useFeatures();
+    const { data: features, isLoading } = useCharacterFeatures(characterId);
     if (isLoading) {
         //TODO: add spinner here
     }
@@ -28,8 +30,8 @@ export default function FeaturesAndTraitsScreen() {
                     Your Features
                 </ThemedHeadline>
                 <View style={styles.list}>
-                    {features.map((feature) => (
-                        <ThemedFeatureContainer key={feature.name} feature={feature} />
+                    {(features ?? []).map((feature) => (
+                        <ThemedFeatureContainer key={feature.feature_name} feature={feature} />
                     ))}
                 </View>
             </ScrollView>

@@ -5,6 +5,7 @@ import { ThemedText } from "../themed";
 import Svg, { Circle, Path } from "react-native-svg";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useState } from "react";
+import { ButtonRow } from "../ButtonRow";
 
 function CheckCircle({
     filled,
@@ -56,6 +57,8 @@ function CheckCircle({
     );
 }
 
+
+
 export default function DeathSaves() {
     const [successes, setSuccesses] = useState(0);
     const [failures, setFailures] = useState(0);
@@ -87,10 +90,6 @@ export default function DeathSaves() {
         column: {
             gap: t.spacing.xs,
         },
-        circles: {
-            flexDirection: "row",
-            gap: t.spacing.xs,
-        },
         label: {
             fontSize: 10,
             letterSpacing: 1,
@@ -104,33 +103,36 @@ export default function DeathSaves() {
                     Death Saves
                 </ThemedText>
             </View>
+
             <View style={styles.columns}>
                 <View style={styles.column}>
                     <ThemedText color="text.muted" style={styles.label}>
                         SUCCESSES
                     </ThemedText>
-                    <View style={styles.circles}>
-                        {[0, 1, 2].map((i) => (
-                            <Pressable key={i} onPress={() => toggleSuccess(i)}>
-                                <CheckCircle success filled={i < successes} />
-                            </Pressable>
-                        ))}
-                    </View>
+
+                    <ButtonRow
+                        count={3}
+                        selectedCount={successes}
+                        onPress={toggleSuccess}
+                        renderButton={(filled) => (
+                            <CheckCircle success filled={filled} />
+                        )}
+                    />
                 </View>
+
                 <View style={styles.column}>
                     <ThemedText color="text.muted" style={styles.label}>
                         FAILURES
                     </ThemedText>
-                    <View style={styles.circles}>
-                        {[0, 1, 2].map((i) => (
-                            <Pressable key={i} onPress={() => toggleFailure(i)}>
-                                <CheckCircle
-                                    filled={i < failures}
-                                    success={false}
-                                />
-                            </Pressable>
-                        ))}
-                    </View>
+
+                    <ButtonRow
+                        count={3}
+                        selectedCount={failures}
+                        onPress={toggleFailure}
+                        renderButton={(filled) => (
+                            <CheckCircle success={false} filled={filled} />
+                        )}
+                    />
                 </View>
             </View>
         </HighlightedView>

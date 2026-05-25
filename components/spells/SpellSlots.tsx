@@ -1,66 +1,44 @@
-import { useState } from "react";
 import { Pressable } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "@/components/themed/ThemedText";
 import { ThemedView } from "@/components/themed/ThemedView";
-import { SpellSlotButton } from "./SpellSlotButton";
 import { ThemedHeadline } from "../themed";
+import { ButtonRow } from "../ButtonRow";
+import { BoxWithGlow } from "../BoxWithGlow";
+import { SpellSlotButton } from "./SpellSlotButton";
 
-interface SpellSlotState {
-    [level: number]: number; // level -> current used count
-}
+import { useCharacterSpellSlots } from "@/hooks/data/useCharacterSpellSlots";
+import {
+    useSpendSpellSlots,
+    useResetSpellSlots,
+} from "@/hooks/data/useCharacterSpellSlots";
+import { useCharacter } from "@/hooks/data/useCharacter";
+const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde"; // TODO: get from context instead
 
-const SPELL_SLOT_MAXIMUMS: Record<number, number> = {
-    1: 4,
-    2: 3,
-    3: 3,
-    4: 3,
-    5: 1,
-    6: 0,
-    7: 0,
-    8: 0,
-    9: 0,
-};
-
+//TODO: add lazy updates - immiedately change UI, update server once every few seconds or on unmount
 export function SpellSlots() {
-    const [usedSlots, setUsedSlots] = useState<SpellSlotState>(() => {
-        // Initialize all slots as available (0 used)
-        const initial: SpellSlotState = {};
-        for (let i = 1; i <= 9; i++) {
-            initial[i] = 0;
-        }
-        return initial;
-    });
-
     const { styles } = useStyles((t, c) => ({
-        container: {
-            marginBottom: t.spacing.lg,
-            padding: t.spacing.md,
-            backgroundColor: c("surface.surfaceElevated"),
-            borderRadius: t.borderRadius.lg,
-            width: "95%",
-            alignSelf: "center",
-        },
         header: {
             alignItems: "center",
-            marginBottom: t.spacing.md,
-            marginTop: t.spacing.md,
+            marginBottom: t.spacing.lg,
+            marginTop: t.spacing.lg,
         },
         resetContainer: {
             alignItems: "flex-end",
             marginBottom: t.spacing.xs,
+            marginRight: t.spacing.md,
         },
         resetButton: {
             paddingHorizontal: t.spacing.sm,
             paddingVertical: t.spacing.xs,
-            backgroundColor: c("surface.surfaceElevated"),
+            backgroundColor: c("card.background"),
             borderRadius: t.borderRadius.sm,
         },
         resetButtonText: {
             fontSize: 12,
         },
         slotsWrapper: {
-            alignItems: "center",
+            alignItems: "flex-start",
         },
         levelRow: {
             flexDirection: "row",
@@ -81,78 +59,111 @@ export function SpellSlots() {
         },
     }));
 
-    const handleToggleSlot = (level: number) => {
-        setUsedSlots((prev) => {
-            const current = prev[level] || 0;
-            const max = SPELL_SLOT_MAXIMUMS[level] || 0;
-            const next = current < max ? current + 1 : current;
-            return { ...prev, [level]: next };
+    const {
+        data: slots,
+        error,
+        isLoading,
+    } = useCharacterSpellSlots(characterId);
+    const { data: character } = useCharacter(characterId);
+    if (isLoading) {
+    }
+    const spendSlots = useSpendSpellSlots(characterId);
+    const resetSlots = useResetSpellSlots(characterId);
+
+    const availableByLevel = Object.fromEntries(
+        (slots ?? []).map((s) => [s.level, s.current]),
+    );
+    const maxByLevel = Object.fromEntries(
+        (slots ?? []).map((s) => [s.level, s.max]),
+    );
+
+    const handleToggleSlot = (level: number, index: number) => {
+        const current = availableByLevel[level] ?? 0;
+        const max = maxByLevel[level] ?? 0;
+
+        const used = max - current;
+
+        const isUsed = index < used;
+        // change -1 to index - used so that  you can untoggle multiple slots at once but toggle only one at a time
+        const amount = isUsed ? -1 : 1;
+
+        spendSlots.mutate({
+            level,
+            amount,
         });
     };
 
     const handleResetAll = () => {
-        setUsedSlots({
-            1: 0,
-            2: 0,
-            3: 0,
-            4: 0,
-            5: 0,
-            6: 0,
-            7: 0,
-            8: 0,
-            9: 0,
-        });
+        resetSlots.mutate();
     };
-
+    const levelsToRender = Array.from({ length: 9 }, (_, i) => i + 1).filter(
+        (level) => (maxByLevel[level] ?? 0) > 0,
+    );
     return (
         <>
-        <ThemedView style={styles.header}>
-            <ThemedHeadline color="text.heading">
-                Spell Slots
-            </ThemedHeadline>
-        </ThemedView>
-            
-        <ThemedView style={styles.container}>
-            <ThemedView style={styles.slotsWrapper}>
-                {Array.from({ length: 9 }, (_, i) => i + 1).map((level) => {
-                    const max = SPELL_SLOT_MAXIMUMS[level];
-
-                    // Skip levels with max 0
-                    if (max === 0) {
-                        return null;
-                    }
-
-                    const used = usedSlots[level] || 0;
-
-                    return (
-                        <ThemedView key={level} style={styles.levelRow}>
-                            <ThemedText color="text.muted" style={styles.levelLabel} variant="body">
-                                Level {level}:
-                            </ThemedText>
-                            <ThemedView style={styles.slotsContainer}>
-                                {Array.from({ length: max }, (_, i) => {
-                                    const isUsed = i < used;
-                                    return (
-                                        <SpellSlotButton
-                                            key={i}
-                                            isUsed={isUsed}
-                                            onPress={() => handleToggleSlot(level)}
-                                        />
-                                    );
-                                })}
-                            </ThemedView>
-                        </ThemedView>
-                    );
-                })}
+            <ThemedView style={styles.header}>
+                <ThemedHeadline color="text.heading">
+                    Spell Slots
+                </ThemedHeadline>
             </ThemedView>
-        </ThemedView>
-        <ThemedView style={styles.resetContainer}>
+
+            <BoxWithGlow
+                style={{
+                    marginBottom: 16,
+                    padding: 16,
+                    borderRadius: 16,
+                    width: "95%",
+                    alignSelf: "center",
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                    height: "auto",
+                }}
+            >
+                <ThemedView style={styles.slotsWrapper}>
+                    {levelsToRender.map((level) => {
+                        const max = maxByLevel[level];
+                        if (max === 0) return null;
+
+                        const available = availableByLevel[level] ?? 0;
+
+                        return (
+                            <ThemedView key={level} style={styles.levelRow}>
+                                <ThemedText
+                                    color="text.muted"
+                                    style={styles.levelLabel}
+                                    variant="body"
+                                >
+                                    Level {level}:
+                                </ThemedText>
+
+                                <ButtonRow
+                                    count={max}
+                                    selectedCount={max - available}
+                                    onPress={(index) =>
+                                        handleToggleSlot(level, index)
+                                    }
+                                    style={styles.slotsContainer}
+                                    renderButton={(filled) => (
+                                        <SpellSlotButton isUsed={filled} />
+                                    )}
+                                />
+                            </ThemedView>
+                        );
+                    })}
+                </ThemedView>
+            </BoxWithGlow>
+
+            <ThemedView style={styles.resetContainer}>
                 <Pressable style={styles.resetButton} onPress={handleResetAll}>
-                    <ThemedText color="text.muted" style={styles.resetButtonText} variant="body">
+                    <ThemedText
+                        color="text.muted"
+                        style={styles.resetButtonText}
+                        variant="body"
+                    >
                         Reset All
                     </ThemedText>
                 </Pressable>
-        </ThemedView>
+            </ThemedView>
         </>
     );
 }
