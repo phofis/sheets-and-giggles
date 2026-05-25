@@ -1,36 +1,22 @@
-import { useState } from "react";
 import { Pressable } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "@/components/themed/ThemedText";
 import { ThemedView } from "@/components/themed/ThemedView";
-import { SpellSlotButton } from "./SpellSlotButton";
 import { ThemedHeadline } from "../themed";
 import { ButtonRow } from "../ButtonRow";
 import { BoxWithGlow } from "../BoxWithGlow";
+import { SpellSlotButton } from "./SpellSlotButton";
 
-interface SpellSlotState {
-    [level: number]: number;
-}
+import { useCharacterSpellSlots } from "@/hooks/data/useCharacterSpellSlots";
+import {
+    useSpendSpellSlots,
+    useResetSpellSlots,
+} from "@/hooks/data/useCharacterSpellSlots";
+import { useCharacter } from "@/hooks/data/useCharacter";
+const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde"; // TODO: get from context instead
 
-const SPELL_SLOT_MAXIMUMS: Record<number, number> = {
-    1: 4,
-    2: 3,
-    3: 3,
-    4: 3,
-    5: 1,
-    6: 0,
-    7: 0,
-    8: 0,
-    9: 0,
-};
-
+//TODO: add lazy updates - immiedately change UI, update server once every few seconds or on unmount
 export function SpellSlots() {
-    const [usedSlots, setUsedSlots] = useState<SpellSlotState>(() => {
-        const initial: SpellSlotState = {};
-        for (let i = 1; i <= 9; i++) initial[i] = 0;
-        return initial;
-    });
-
     const { styles } = useStyles((t, c) => ({
         header: {
             alignItems: "center",
@@ -73,22 +59,46 @@ export function SpellSlots() {
         },
     }));
 
+    const {
+        data: slots,
+        error,
+        isLoading,
+    } = useCharacterSpellSlots(characterId);
+    const { data: character } = useCharacter(characterId);
+    if (isLoading) {
+    }
+    const spendSlots = useSpendSpellSlots(characterId);
+    const resetSlots = useResetSpellSlots(characterId);
+
+    const availableByLevel = Object.fromEntries(
+        (slots ?? []).map((s) => [s.level, s.current]),
+    );
+    const maxByLevel = Object.fromEntries(
+        (slots ?? []).map((s) => [s.level, s.max]),
+    );
+
     const handleToggleSlot = (level: number, index: number) => {
-        setUsedSlots((prev) => {
-            const current = prev[level] || 0;
-            return {
-                ...prev,
-                [level]: index < current ? index : index + 1,
-            };
+        const current = availableByLevel[level] ?? 0;
+        const max = maxByLevel[level] ?? 0;
+
+        const used = max - current;
+
+        const isUsed = index < used;
+        // change -1 to index - used so that  you can untoggle multiple slots at once but toggle only one at a time
+        const amount = isUsed ? -1 : 1;
+
+        spendSlots.mutate({
+            level,
+            amount,
         });
     };
 
     const handleResetAll = () => {
-        const reset: SpellSlotState = {};
-        for (let i = 1; i <= 9; i++) reset[i] = 0;
-        setUsedSlots(reset);
+        resetSlots.mutate();
     };
-
+    const levelsToRender = Array.from({ length: 9 }, (_, i) => i + 1).filter(
+        (level) => (maxByLevel[level] ?? 0) > 0,
+    );
     return (
         <>
             <ThemedView style={styles.header}>
@@ -97,7 +107,6 @@ export function SpellSlots() {
                 </ThemedHeadline>
             </ThemedView>
 
-            {/* ZAMIENNIK container -> BoxWithGlow */}
             <BoxWithGlow
                 style={{
                     marginBottom: 16,
@@ -107,15 +116,15 @@ export function SpellSlots() {
                     alignSelf: "center",
                     flexDirection: "column",
                     alignItems: "flex-start",
-                    height: "auto", // ważne: override z BoxWithGlow
+                    height: "auto",
                 }}
             >
                 <ThemedView style={styles.slotsWrapper}>
-                    {Array.from({ length: 9 }, (_, i) => i + 1).map((level) => {
-                        const max = SPELL_SLOT_MAXIMUMS[level];
+                    {levelsToRender.map((level) => {
+                        const max = maxByLevel[level];
                         if (max === 0) return null;
 
-                        const used = usedSlots[level] || 0;
+                        const available = availableByLevel[level] ?? 0;
 
                         return (
                             <ThemedView key={level} style={styles.levelRow}>
@@ -129,7 +138,7 @@ export function SpellSlots() {
 
                                 <ButtonRow
                                     count={max}
-                                    selectedCount={used}
+                                    selectedCount={max - available}
                                     onPress={(index) =>
                                         handleToggleSlot(level, index)
                                     }

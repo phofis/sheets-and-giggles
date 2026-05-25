@@ -5,19 +5,4 @@ export type Feature = {
     shortDescription: string;
     description: string;
 };
-export function originTypeToDisplayName(origin_type: OriginType): string {
-    switch (origin_type) {
-        case "class":
-            return "Class Feature";
-        case "subclass":
-            return "Subclass Feature";
-        case "race":
-            return "Racial Trait";
-        case "background":
-            return "Background Feature";
-        case "feat":
-            return "Feat";
-        case "other":
-            return "Other";
-    }
-}
+

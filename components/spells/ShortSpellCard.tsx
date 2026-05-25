@@ -2,9 +2,10 @@ import { Spell } from "@/types/spells";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "../themed/ThemedText";
 import { ThemedView } from "../themed/ThemedView";
+import { CharacterSpellWithDetails } from "@/hooks/data/useCharacterSpells";
 
 export interface ShortSpellCardProps {
-    spell: Spell;
+    spell: CharacterSpellWithDetails;
 }
 
 export function ShortSpellCard({ spell }: ShortSpellCardProps) {
@@ -35,10 +36,10 @@ export function ShortSpellCard({ spell }: ShortSpellCardProps) {
     return (
         <ThemedView style={styles.container}>
             <ThemedText color="text.muted" style={styles.magicSchool} variant="body">
-                {spell.school_of_magic.toUpperCase()}
+                {spell.spells.school_of_magic.toUpperCase()}
             </ThemedText>
             <ThemedView style={styles.chipsRow}>
-                {spell.tags.map((tag) => (
+                {spell.spells.tag.split(" ").map((tag) => (
                     <ThemedView key={tag} style={styles.chip}>
                         <ThemedText color="text.muted" style={styles.chipText} variant="body">
                             {tag.toUpperCase()}

@@ -52,11 +52,15 @@ export function useUpsertSpellSlot(characterId: string) {
     );
 }
 
-export function useSpendSpellSlot(characterId: string) {
-    return useCharacterMutation<SpellSlotRow[], number, SpellSlotRow>(
+export function useSpendSpellSlots(characterId: string) {
+    return useCharacterMutation<
+        SpellSlotRow[],
+        { level: number; amount: number },
+        SpellSlotRow
+    >(
         characterId,
         ["spellSlots"],
-        async (id, level) => {
+        async (id, { level, amount }) => {
             // Fetch current, decrement, update
             const { data: current, error: fetchErr } = await supabase
                 .from("character_spell_slots")
@@ -64,12 +68,15 @@ export function useSpendSpellSlot(characterId: string) {
                 .eq("character_id", id)
                 .eq("level", level)
                 .single();
+
             if (fetchErr) throw fetchErr;
-            if (current.current <= 0)
+            if (current.current < amount)
                 throw new Error("No spell slots remaining");
+            if (current.current - amount > current.max)
+                throw new Error("Cannot exceed maximum spell slots");
             const { data, error } = await supabase
                 .from("character_spell_slots")
-                .update({ current: current.current - 1 })
+                .update({ current: current.current - amount })
                 .eq("character_id", id)
                 .eq("level", level)
                 .select()
@@ -77,10 +84,16 @@ export function useSpendSpellSlot(characterId: string) {
             if (error) throw error;
             return data;
         },
-        (prev, level) =>
+        (prev, { level, amount }) =>
             prev.map((s) =>
                 s.level === level
-                    ? { ...s, current: Math.max(0, s.current - 1) }
+                    ? {
+                          ...s,
+                          current: Math.min(
+                              s.max,
+                              Math.max(0, s.current - amount),
+                          ),
+                      }
                     : s,
             ),
     );
