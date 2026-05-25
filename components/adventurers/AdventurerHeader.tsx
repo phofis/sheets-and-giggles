@@ -1,5 +1,6 @@
 import { Adventurer } from "@/hooks/useAdventurers";
 import { useStyles } from "@/hooks/useStyles";
+import { useSetCharacterId } from "@/context/CharacterIdContext";
 import { TouchableOpacity, View } from "react-native";
 import { useRouter } from "expo-router";
 import ImageWithLevel from "./ImageWithLevel";
@@ -12,6 +13,7 @@ type Props = {
 
 export default function AdventurerHeader({ adventurer }: Props) {
     const router = useRouter();
+    const setCharacterId = useSetCharacterId();
     const { styles } = useStyles((t, c) => ({
         upperView: {
             backgroundColor: c("card.background"),
@@ -47,7 +49,10 @@ export default function AdventurerHeader({ adventurer }: Props) {
                 </ThemedText>
             </View>
             <View style={{ alignSelf: "center" }}>
-                <TouchableOpacity onPress={() => router.push({ pathname: "/(tabs)/character-sheet", params: { characterId: adventurer.id } })}>
+                <TouchableOpacity onPress={() => {
+                    setCharacterId(adventurer.id);
+                    router.push("/(tabs)/character-sheet");
+                }}>
                     <RightArrowIcon color="text.body" size={16}/>
                 </TouchableOpacity>
             </View>

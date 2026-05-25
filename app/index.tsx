@@ -1,5 +1,5 @@
-import LandingView from "./(tabs)/landing_view"
+import { Redirect } from "expo-router";
 
-export default function LandingScreen() {
-    return <LandingView/>
+export default function Index() {
+    return <Redirect href="/landing" />;
 }
