@@ -1,6 +1,5 @@
 import { ThemedHeadline, ThemedText } from "@/components/themed";
 import { View} from "react-native";
-import { useAppTheme } from "@/hooks/useAppTheme";
 import { useStyles } from "@/hooks/useStyles";
 import { BookIcon } from '@/components/icons'
 

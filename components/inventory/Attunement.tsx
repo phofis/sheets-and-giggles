@@ -76,13 +76,13 @@ export function Attunement({ attunement_list = [] }: attunementProps) {
             <View style={styles.list}>
                 {slots.map((item, index) =>
                     item ? (
-                        <View key={item} style={styles.entry}>
+                        <View key={index} style={styles.entry}>
                             <ThemedText color="text.body" variant="body">
                                 {item}
                             </ThemedText>
                         </View>
                     ) : (
-                        <View style={styles.emptySlot}>
+                        <View key={index} style={styles.emptySlot}>
                             <ThemedText color="text.muted" style={styles.plus}>
                                 +
                             </ThemedText>

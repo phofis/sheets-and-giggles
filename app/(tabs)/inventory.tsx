@@ -115,6 +115,13 @@ export default function InventoryScreen() {
                 {(items ?? []).map((item) => (
                     <CollapsibleCard
                         key={item.name}
+                        fullContent={
+                            <View style={styles.itemStatRow}>
+                                <ThemedText color="text.body" variant="body">
+                                    {item.description}
+                                </ThemedText>
+                            </View>
+                        }
                         header={
                             <View>
                                 <View style={styles.itemHeader}>
@@ -151,13 +158,6 @@ export default function InventoryScreen() {
                                     ? item.description.slice(0, 50)
                                     : item.description}
                             </ThemedText>
-                        }
-                        fullContent={
-                            <View style={styles.itemStatRow}>
-                                <ThemedText color="text.body" variant="body">
-                                    {item.description}
-                                </ThemedText>
-                            </View>
                         }
                     />
                 ))}

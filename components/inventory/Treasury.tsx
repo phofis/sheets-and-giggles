@@ -1,7 +1,6 @@
 import { View } from "react-native";
 import { ThemedText, ThemedView } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
-import { dataTagErrorSymbol } from "@tanstack/react-query";
 import { useCharacter } from "@/hooks/data";
 const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde"; //get from context instead
 
@@ -53,8 +52,8 @@ export function Treasury() {
             {/* header moved inside elevated area */}
             <ThemedText
                 color="text.muted"
-                variant="label"
                 style={styles.header}
+                variant="label"
             >
                 TREASURY
             </ThemedText>
@@ -71,8 +70,8 @@ export function Treasury() {
 
                         <ThemedText
                             color="text.muted"
-                            variant="body"
                             style={styles.currencyUnit}
+                            variant="body"
                         >
                             {c.label}
                         </ThemedText>
