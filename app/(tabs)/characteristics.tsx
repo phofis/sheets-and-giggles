@@ -1,10 +1,11 @@
 import { ThemedView, ThemedBoxList } from "@/components/themed";
 import { ScrollView, ActivityIndicator } from "react-native";
-import { Header } from "@/components/characteristics/Header";
+import { Header } from "@/components/Header";
 import { BiometricsGrid } from "@/components/characteristics/BiometricsGrid";
 import { Note } from "@/components/Note";
 import { useStyles } from "@/hooks/useStyles";
 import { useCharacteristics,Characteristics } from "@/hooks/useCharacteristics";
+import { useCharacterId } from "@/context/CharacterIdContext";
 
 const defaultCharacteristics: Characteristics = {
     characterHeader: {
@@ -42,8 +43,8 @@ export default function CharacteristicsScreen() {
             elevation: 4,
         },
     }));
-    const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde";
-    const {data: characteristics = defaultCharacteristics, isLoading} = useCharacteristics(characterId);
+    const characterId = useCharacterId();
+    const {data: characteristics = defaultCharacteristics, isLoading} = useCharacteristics(characterId as string);
     
     return (
         <ThemedView backgroundColor="surface.background" style={styles.screen}>
@@ -51,6 +52,9 @@ export default function CharacteristicsScreen() {
                 contentContainerStyle={styles.scrollContentContainer}
                 style={styles.scrollView}
             >
+                {isLoading ? (
+                    <ActivityIndicator />
+                ) : (
                 <ThemedView style={styles.content}>
                     {/** HEADER  */}
                     <Header  characterHeader={characteristics.characterHeader}/>
@@ -96,6 +100,7 @@ export default function CharacteristicsScreen() {
                         title="Flaws"
                     />
                 </ThemedView>
+                )}
             </ScrollView>
         </ThemedView>
     );

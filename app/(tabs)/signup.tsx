@@ -113,16 +113,16 @@ export default function SignupScreen() {
                         />
                         {/** PASSWORD */}
                         <Input
+                            secureTextEntry
                             label="Password"
                             placeholder="•••••••••"
-                            secureTextEntry
                             value={password}
                             onChangeText={setPassword}
                         />
                         <Input
+                            secureTextEntry
                             label="Confirm Password"
                             placeholder="•••••••••"
-                            secureTextEntry
                             value={confirmPassword}
                             onChangeText={setConfirmPassword}
                         />
@@ -131,9 +131,9 @@ export default function SignupScreen() {
                     {/* Terms of Service Section */}
                     <View style={styles.termsRow}>
                         <Checkbox
+                            buttonColor="palette.tertiary"
                             value={termsAccepted}
                             onValueChange={setTermsAccepted}
-                            buttonColor="palette.tertiary"
                         />
                         <ThemedText color="text.muted" style={{ fontSize: 14 }}>
                             I agree to the
@@ -148,9 +148,9 @@ export default function SignupScreen() {
                     </View>
 
                     <TouchableOpacity
+                        activeOpacity={0.8}
                         style={styles.createButton}
                         onPress={handleSignup}
-                        activeOpacity={0.8}
                     >
                         <ThemedText style={styles.createButtonText}>Create Character</ThemedText>
                     </TouchableOpacity>

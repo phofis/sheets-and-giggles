@@ -78,10 +78,11 @@ export function ThemedFeatureContainer({
     if (!feature.feature_description) {
         feature.feature_description = "";
     }
+    // TODO: dont cut words
     const shortContent = (
         <ThemedText color="text.body" style={styles.shortDescription}>
-            {feature.feature_description.length > 150
-                ? feature.feature_description.slice(0, 150) + "..."
+            {feature.feature_description.length > 50
+                ? feature.feature_description.slice(0, 50) + "..."
                 : feature.feature_description}
         </ThemedText>
     );
@@ -94,10 +95,10 @@ export function ThemedFeatureContainer({
 
     return (
         <CollapsibleCard
-            header={header}
-            shortContent={shortContent}
             fullContent={fullContent}
             glowColor="card.softGlow"
+            header={header}
+            shortContent={shortContent}
         />
     );
 }

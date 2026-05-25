@@ -64,14 +64,14 @@ export default function LandingActionCard({ title, description, buttonText, colo
     return (
         <View style={styles.container}>
             <View style={styles.headerRow}>
-                <ThemedText style={styles.title} color="text.heading">
+                <ThemedText color="text.heading" style={styles.title}>
                     {title}
                 </ThemedText>
                 {icon}
 
             </View>
 
-            <ThemedText style={styles.description} color="text.body">
+            <ThemedText color="text.body" style={styles.description}>
                 {description}
             </ThemedText>
 

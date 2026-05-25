@@ -112,11 +112,11 @@ export default function DeathSaves() {
 
                     <ButtonRow
                         count={3}
-                        selectedCount={successes}
-                        onPress={toggleSuccess}
                         renderButton={(filled) => (
                             <CheckCircle success filled={filled} />
                         )}
+                        selectedCount={successes}
+                        onPress={toggleSuccess}
                     />
                 </View>
 
@@ -127,11 +127,11 @@ export default function DeathSaves() {
 
                     <ButtonRow
                         count={3}
+                        renderButton={(filled) => (
+                            <CheckCircle filled={filled} success={false} />
+                        )}
                         selectedCount={failures}
                         onPress={toggleFailure}
-                        renderButton={(filled) => (
-                            <CheckCircle success={false} filled={filled} />
-                        )}
                     />
                 </View>
             </View>

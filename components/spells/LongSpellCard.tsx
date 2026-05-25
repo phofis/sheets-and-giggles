@@ -64,7 +64,7 @@ export function LongSpellCard({ spell }: LongSpellCardProps) {
         spell.spells.damage_type ? { label: "Damage type", value: spell.spells.damage_type } : null,
         { label: "Components", value: componentLabel },
         materialLabel ? { label: "Material", value: materialLabel } : null,
-    ].filter(Boolean) as Array<{ label: string; value: string }>;
+    ].filter(Boolean) as { label: string; value: string }[];
 
     return (
         <>
@@ -76,9 +76,8 @@ export function LongSpellCard({ spell }: LongSpellCardProps) {
 
             <ThemedView style={styles.section}>
                 <ThemedGrid
-                    columns={1}
-                    rowGap={theme.spacing.xs}
                     columnGap={theme.spacing.xxs}
+                    columns={1}
                     data={stats}
                     renderItem={(item) => (
                         <ThemedView style={styles.statItem}>
@@ -90,6 +89,7 @@ export function LongSpellCard({ spell }: LongSpellCardProps) {
                             </ThemedText>
                         </ThemedView>
                     )}
+                    rowGap={theme.spacing.xs}
                 />
             </ThemedView>
 

@@ -29,15 +29,15 @@ export const Input = ({ label, placeholder, secureTextEntry, value, onChangeText
 
     return (
         <View style={styles.container}>
-            <ThemedText style={styles.label} color="text.muted">{label}</ThemedText>
+            <ThemedText color="text.muted" style={styles.label}>{label}</ThemedText>
             <View style={[styles.inputWrapper, { backgroundColor: color("card.background"), borderColor: color("border.subtle") }]}>
                 <TextInput
                     placeholder={placeholder}
                     placeholderTextColor={color("text.muted")}
                     secureTextEntry={secureTextEntry}
+                    style={[styles.input, { color: color("text.body") }]}
                     value={value}
                     onChangeText={onChangeText}
-                    style={[styles.input, { color: color("text.body") }]}
                 />
             </View>
         </View>

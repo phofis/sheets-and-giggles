@@ -17,17 +17,17 @@ export const PlusCircleIcon: React.FC<IconProps> = ({
 
     return (
         <Svg
-            width={size}
+            fill="none"
             height={size}
             viewBox="0 0 24 24"
-            fill="none"
+            width={size}
         >
             <Path
                 d="M12 9v6m3-3H9m12 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"
                 stroke={iconColor}
-                strokeWidth={1.5}
                 strokeLinecap="round"
                 strokeLinejoin="round"
+                strokeWidth={1.5}
             />
         </Svg>
     );

@@ -1,12 +1,11 @@
 import React from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View } from "react-native";
 import { ThemedGrid, ThemedText } from "@/components/themed";
 import { BoxWithGlow } from ".././BoxWithGlow";
-import { useAbilities } from "@/hooks/character/useAbilities";
-import { ABILITY_LABELS } from "@/services/CharacterService";
+import { ABILITY_LABELS , AbilityScores } from "@/types/character";
 import { useStyles } from "@/hooks/useStyles";
 
-export const AbilityGrid = ({ characterId }: { characterId: string }) => {
+export const AbilityGrid = ({ abilities }: { abilities: AbilityScores }) => {
     const { styles } = useStyles((theme) => ({
         abilityLabel: {
             fontSize: 10,
@@ -22,10 +21,6 @@ export const AbilityGrid = ({ characterId }: { characterId: string }) => {
             fontFamily: theme.typography.headlineFont,
         },
     }));
-
-    const { data: scores, loading } = useAbilities(characterId);
-
-    if (loading || !scores) return <ActivityIndicator />;
 
     return (
         <ThemedGrid
@@ -43,11 +38,11 @@ export const AbilityGrid = ({ characterId }: { characterId: string }) => {
                             style={styles.abilityScore}
                             variant="headline"
                         >
-                            {scores[key].score}
+                            {abilities[key].score}
                         </ThemedText>
                     </View>
                     <ThemedText color="card.note" style={styles.abilityMod} variant="headline">
-                        {scores[key].mod}
+                        {abilities[key].mod}
                     </ThemedText>
                 </BoxWithGlow>
             )}

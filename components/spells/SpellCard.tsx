@@ -46,11 +46,11 @@ export function SpellCard({ spell }: SpellCardProps) {
 
     return (
         <CollapsibleCard
+            fullContent={<LongSpellCard spell={spell} />}
+            glowColor="card.softGlow"
             header={header}
             shortContent={<ShortSpellCard spell={spell} />}
-            fullContent={<LongSpellCard spell={spell} />}
             style={styles.card}
-            glowColor="card.softGlow"
         />
     );
 }
