@@ -70,6 +70,7 @@ export const CombatStatsGrid: React.FC<CombatStatsGridProps> = ({ stats, onChang
             color: c("text.muted"),
             fontFamily: t.typography.bodyFont,
         },
+        text: {color: c("text.muted")},
     }));
 
     return (

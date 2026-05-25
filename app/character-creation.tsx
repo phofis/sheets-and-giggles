@@ -4,13 +4,14 @@ import { useRouter } from "expo-router";
 
 
 // Import step components
-import CreateHero from "@/components/character-creation/CreateHero";
-import PersonalityAndBackground from "@/components/character-creation/PersonalityAndBackground";
-import AbilitySheet from "@/components/character-creation/AbilitySheet";
-import SpellsSheet from "@/components/character-creation/Spells";
-import InventorySheet from "@/components/character-creation/Inventory";
+import CreateHero from "@/components/character-creation/steps/CreateHero";
+import PersonalityAndBackground from "@/components/character-creation/steps/PersonalityAndBackground";
+import AbilitySheet from "@/components/character-creation/steps/AbilitySheet";
+import SpellsSheet from "@/components/character-creation/steps/Spells";
+import InventorySheet from "@/components/character-creation/steps/Inventory";
 
 import { useCreateCharacter } from "@/hooks/data/useCreateCharacter";
+import { useAuth } from "@/hooks/auth";
 
 // ─── Formal Data Structures ──────────────────────────────────────────────────
 
@@ -49,7 +50,7 @@ export interface CharacterDraftState {
 
     // Step 2
     background: string;
-    alignment?: string;
+    alignment: string;
     age: string;
     height: string;
     size: string;
@@ -78,7 +79,7 @@ export interface CharacterDraftState {
 
 export default function CharacterCreationScreen() {
     // TODO: Replace with dynamic UUID extraction from your authentication context
-    const currentUserId = "YOUR_TEST_USER_UUID_HERE";
+    const currentUserId = useAuth()
     const router = useRouter();
 
 
@@ -86,12 +87,12 @@ export default function CharacterCreationScreen() {
     const [characterData, setCharacterData] = useState<CharacterDraftState>({
         // Step 1
         name: "",
-        raceId: null,
-        classId: null,
+        raceId: "",
+        classId: "",
 
         // Step 2
         background: "",
-        alignment: undefined,
+        alignment: "",
         age: "",
         height: "",
         size: "",
@@ -105,7 +106,7 @@ export default function CharacterCreationScreen() {
         bonds: [],
         flaws: [],
 
-        // Step 3 
+        // Step 3
         abilityScores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
         combatStats: { hp: 10, ac: 10, initiative: 0, speed: 30 },
         skills: [],
@@ -115,7 +116,7 @@ export default function CharacterCreationScreen() {
 
         // Step 5
         equipment: [],
-        gold: 0,
+        wealth: { cp: 0, sp: 0, gp: 0 },
     });
 
     // ─── Mutation Callbacks ──────────────────────────────────────────────────
