@@ -51,7 +51,7 @@ export const MainHeader = () => {
         <View style={styles.container}>
             {/* Background Layer: Decorative Icon */}
             <View style={styles.iconBackground}>
-                <BookIcon size={160} opacity={0.35} color={"palette.primary"} />
+                <BookIcon color={"palette.primary"} opacity={0.35} size={160} />
             </View>
 
             {/* TODO: consider changing the icon color}

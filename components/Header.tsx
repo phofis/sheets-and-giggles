@@ -1,6 +1,5 @@
 import { ThemedHeadline, ThemedStatContainer, ThemedText, ThemedView } from "@/components/themed";
-import { View, ActivityIndicator } from "react-native";
-import { useCharacter } from "@/hooks/character";
+import { View } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { CharacterHeader } from "@/types/character";
 

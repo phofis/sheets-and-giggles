@@ -1,7 +1,8 @@
-import { ActivityIndicator, ScrollView } from "react-native";
+import { ActivityIndicator, ScrollView, View } from "react-native";
 import { useState } from "react";
 
-import { ThemedView, ThemedList, ThemedBoxList } from "@/components/themed";
+import { ThemedView, ThemedList, ThemedHeadline } from "@/components/themed";
+import { ThemedFeatureContainer} from "@/components/themed/ThemedFeatureContainer";
 import { ThemedTwoColumnList } from "@/components/themed/ThemedTwoColumnList";
 import { AbilityGrid } from "@/components/characterSheet/AbilityGrid";
 import { Header } from "@/components/Header";
@@ -10,16 +11,28 @@ import { SavingThrowsIcon } from "@/components/icons";
 import { useStyles } from "@/hooks/useStyles";
 import { useCharacterSheet, CharacterSheet } from "@/hooks/useCharacterSheet";
 import { useCharacterId } from "@/context/CharacterIdContext";
-
+import { useCharacterFeatures } from "@/hooks/data/useCharacterFeatures";
 
 const defaultCharacterSheet: CharacterSheet = {
     characterHeader: {
         name: "",
         level: 1,
         class: "",
-        inspiration: 1
+        inspiration: 1,
     },
-}
+    abilities: {
+        STR: { score: 0, mod: "+0" },
+        DEX: { score: 0, mod: "+0" },
+        CON: { score: 0, mod: "+0" },
+        INT: { score: 0, mod: "+0" },
+        WIS: { score: 0, mod: "+0" },
+        CHA: { score: 0, mod: "+0" },
+    },
+    savingThrows: [],
+    allSkills: [],
+    proficientSkills: [],
+};
+
 export default function MainSheetScreen() {
     const { styles } = useStyles((theme, c) => ({
         screen: { flex: 1, marginBottom: 20, marginTop: 35 },
@@ -42,13 +55,23 @@ export default function MainSheetScreen() {
             shadowRadius: 15,
             elevation: 4,
         },
+        headline: {
+            marginBottom: theme.spacing.lg,
+            marginTop: theme.spacing.xxl,
+            textAlign: "center",
+        },
+        list: { width: "95%" },
     }));
 
     const characterId = useCharacterId();
 
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const { data: characterSheet = defaultCharacterSheet, isLoading: isLoading } = useCharacterSheet(characterId);
+    const { data: characterSheet = defaultCharacterSheet, isLoading: isLoadingCharacterSheet } = useCharacterSheet(characterId);
+    const { data: features, isLoading } = useCharacterFeatures(characterId);
+    const displayedSkills = isExpanded
+        ? characterSheet.allSkills
+        : characterSheet.proficientSkills;
 
     return (
         <ThemedView style={styles.screen}>
@@ -60,15 +83,12 @@ export default function MainSheetScreen() {
                     <ActivityIndicator />
                 ) : (
                 <ThemedView style={styles.content}>
-                    {/* AVATAR & HEADER SECTION */}
                     <Header characterHeader={characterSheet.characterHeader} />
 
-                    {/* ABILITY GRID */}
-                    <AbilityGrid characterId={characterId} />
+                    <AbilityGrid abilities={characterSheet.abilities} />
 
-                    {/* SAVING THROWS*/}
                     <ThemedTwoColumnList
-                        data={savingThrows}
+                        data={characterSheet.savingThrows}
                         icon={SavingThrowsIcon}
                         title="Saving Throws"
                     />
@@ -83,9 +103,15 @@ export default function MainSheetScreen() {
                     {/** //TODO: we probably want to animate the expansion movement */}
 
                     {/** //TODO: Add combat section here. Consider if it should not belong to another page*/}
-
-                    {/* <ThemedBoxList data={features} itemStyle={styles.features} title="Key Features" /> */}
-                </ThemedView>
+                    <ThemedHeadline color="text.heading" style={styles.headline}>
+                        Your Features
+                    </ThemedHeadline>
+                    <View style={styles.list}>
+                        {(features ?? []).map((feature) => (
+                            <ThemedFeatureContainer key={feature.feature_name} feature={feature} />
+                        ))}
+                    </View>
+                    </ThemedView>
                 )}
             </ScrollView>
         </ThemedView>

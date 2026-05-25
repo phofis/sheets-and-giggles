@@ -7,8 +7,7 @@ import { ButtonRow } from "../ButtonRow";
 import { BoxWithGlow } from "../BoxWithGlow";
 import { SpellSlotButton } from "./SpellSlotButton";
 
-import { useCharacterSpellSlots } from "@/hooks/data/useCharacterSpellSlots";
-import {
+import { useCharacterSpellSlots ,
     useSpendSpellSlots,
     useResetSpellSlots,
 } from "@/hooks/data/useCharacterSpellSlots";
@@ -138,14 +137,14 @@ export function SpellSlots() {
 
                                 <ButtonRow
                                     count={max}
-                                    selectedCount={max - available}
-                                    onPress={(index) =>
-                                        handleToggleSlot(level, index)
-                                    }
-                                    style={styles.slotsContainer}
                                     renderButton={(filled) => (
                                         <SpellSlotButton isUsed={filled} />
                                     )}
+                                    selectedCount={max - available}
+                                    style={styles.slotsContainer}
+                                    onPress={(index) =>
+                                        handleToggleSlot(level, index)
+                                    }
                                 />
                             </ThemedView>
                         );

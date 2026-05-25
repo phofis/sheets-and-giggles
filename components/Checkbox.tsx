@@ -44,11 +44,11 @@ export const Checkbox = ({ value, onValueChange, label, buttonColor = "palette.s
 
     return (
         <Pressable
+            hitSlop={8}
             style={styles.container}
             onPress={() => {
                 onValueChange(!value);
             }}
-            hitSlop={8}
         >
             <View style={[styles.box, dynamicBoxStyle]}>
                 {value && <View style={styles.inner} />}
