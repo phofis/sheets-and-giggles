@@ -1,17 +1,26 @@
 import { ThemedView, ThemedBoxList } from "@/components/themed";
-import { ScrollView } from "react-native";
-import {
-    useBonds,
-    useCharacter,
-    useCharacterBackground,
-    useFlaws,
-    useIdeals,
-    usePersonalityTraits,
-} from "@/hooks/character";
+import { ScrollView, ActivityIndicator } from "react-native";
 import { Header } from "@/components/characteristics/Header";
 import { BiometricsGrid } from "@/components/characteristics/BiometricsGrid";
 import { Note } from "@/components/Note";
 import { useStyles } from "@/hooks/useStyles";
+import { useCharacteristics,Characteristics } from "@/hooks/useCharacteristics";
+
+const defaultCharacteristics: Characteristics = {
+    characterHeader: {
+        name: "",
+        level: 1,
+        class: "",
+        inspiration: 1
+    },
+    biometrics: [],
+    background: "",
+    traits: [],
+    ideals: [],
+    bonds: [],
+    flaws: []
+
+}
 
 export default function CharacteristicsScreen() {
     const { styles } = useStyles((theme, c) => ({
@@ -33,22 +42,9 @@ export default function CharacteristicsScreen() {
             elevation: 4,
         },
     }));
-
-    const characterId = "val-001";
-    const { character, isLoading: charLoading } = useCharacter(characterId);
-    const { data: background, isLoading: valLoading } = useCharacterBackground(characterId);
-    const { data: traits, isLoading: traitsLoading } = usePersonalityTraits(characterId);
-    const { data: flaws, isLoading: flawsLoading } = useFlaws(characterId);
-    const { data: ideals, isLoading: idealsLoading } = useIdeals(characterId);
-    const { data: bonds, isLoading: bondsLoading } = useBonds(characterId);
-
-    const isLoading =
-        charLoading || valLoading || flawsLoading || idealsLoading || bondsLoading || traitsLoading;
-
-    if (isLoading || !character || !background || !flaws || !ideals || !bonds || !traits) {
-        // TODO: handle it
-    }
-
+    const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde";
+    const {data: characteristics = defaultCharacteristics, isLoading} = useCharacteristics(characterId);
+    
     return (
         <ThemedView backgroundColor="surface.background" style={styles.screen}>
             <ScrollView
@@ -57,44 +53,44 @@ export default function CharacteristicsScreen() {
             >
                 <ThemedView style={styles.content}>
                     {/** HEADER  */}
-                    <Header characterId={characterId} />
+                    <Header  characterHeader={characteristics.characterHeader}/>
 
                     {/** GRID */}
-                    <BiometricsGrid characterId={characterId} />
+                    <BiometricsGrid biometricEntries={characteristics.biometrics}/>
 
                     {/** BACKGROUND */}
                     <Note
                         backgroundColor="surface.note"
                         textColor="text.note"
-                        title="The Noble Background"
+                        title="Background"
                         titleColor="text.lively"
                     >
-                        {background}
+                        {characteristics.background}
                     </Note>
 
                     <ThemedBoxList
-                        data={traits}
+                        data={characteristics.traits}
                         glowColor="palette.secondary"
                         itemStyle={styles.features}
                         title="Personality Traits"
                     />
 
                     <ThemedBoxList
-                        data={bonds}
+                        data={characteristics.bonds}
                         glowColor="palette.tertiary"
                         itemStyle={styles.features}
                         title="Bonds"
                     />
 
                     <ThemedBoxList
-                        data={ideals}
+                        data={characteristics.ideals}
                         glowColor="palette.tertiary"
                         itemStyle={styles.features}
                         title="Ideals"
                     />
 
                     <ThemedBoxList
-                        data={flaws}
+                        data={characteristics.flaws}
                         glowColor="semantic.error"
                         itemStyle={styles.features}
                         title="Flaws"
