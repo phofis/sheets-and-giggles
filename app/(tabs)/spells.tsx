@@ -23,7 +23,8 @@ export default function SpellsScreen() {
     const { data: spells, isLoading } = useCharacterSpells(characterId); 
     if (isLoading) {
     }
-
+    //TODO: add toolbar and button definition 
+    
     return (
         <ThemedView
             backgroundColor="surface.background"

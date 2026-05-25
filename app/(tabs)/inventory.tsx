@@ -4,8 +4,10 @@ import { useStyles } from "@/hooks/useStyles";
 import { CollapsibleCard } from "@/components/CollapsibleCard";
 import { Treasury } from "@/components/inventory/Treasury";
 import { Attunement } from "@/components/inventory/Attunement";
+import { InventoryToolbar } from "@/components/inventory/NavigationBar";
 import { useCharacterItems } from "@/hooks/data";
 import { useMemo } from "react";
+import { useState } from "react";
 const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde";
 
 export default function InventoryScreen() {
@@ -77,6 +79,12 @@ export default function InventoryScreen() {
         () => (items ?? []).filter((i) => i.attuned),
         [items],
     );
+    const [search, setSearch] = useState("");
+    //TODO: add onPress to buttons. -filtering, removing searching...
+    //TODO: add Attuned button on every item card
+    //TODO: add writable field for misc items
+    //TODO: move itemCard to separate component
+
     return (
         <ThemedView style={styles.screen}>
             <ScrollView
@@ -86,32 +94,25 @@ export default function InventoryScreen() {
                 <View style={styles.sectionSpacing}>
                     <Treasury />
                 </View>
-
+                
                 <View style={styles.sectionSpacing}>
                     <Attunement
                         attunement_list={attunedItems.map((s) => s.name)}
                     />
                 </View>
-
                 <View style={[styles.inventoryHeader, styles.sectionSpacing]}>
                     <ThemedHeadline color="text.heading">
                         Inventory
                     </ThemedHeadline>
                 </View>
-
-                <View style={[styles.searchRow, styles.sectionSpacing]}>
-                    <View style={styles.filterPill}>
-                        <ThemedText color="text.muted" variant="body">
-                            All items
-                        </ThemedText>
-                    </View>
-                    <View style={styles.filterPill}>
-                        <ThemedText color="text.muted" variant="body">
-                            Sort
-                        </ThemedText>
-                    </View>
-                </View>
-
+                
+                <InventoryToolbar
+                    search={search}
+                    onSearchChange={setSearch}
+                    onAddPress={() => {}}
+                    onDeletePress={() => {}}
+                    onFilterPress={() => {}}
+                />
                 {(items ?? []).map((item) => (
                     <CollapsibleCard
                         key={item.name}
