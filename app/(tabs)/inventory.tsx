@@ -4,36 +4,9 @@ import { useStyles } from "@/hooks/useStyles";
 import { CollapsibleCard } from "@/components/CollapsibleCard";
 import { Treasury } from "@/components/inventory/Treasury";
 import { Attunement } from "@/components/inventory/Attunement";
-
-const inventoryItems = [
-    {
-        name: "Sunblade",
-        rarity: "Rare",
-        attuned: true,
-        weight: "3.0 lbs",
-        value: "5,000 GP",
-        description:
-            "This magic longsword's blade is made of pure radiance. It deals 1d8 radiant damage instead of slashing damage and sheds bright light in a 15ft radius.",
-    },
-    {
-        name: "Shield of Expression",
-        rarity: "Uncommon",
-        attuned: false,
-        weight: "6.0 lbs",
-        value: "150 GP",
-        description:
-            "While holding this shield, you can use a bonus action to alter the face's expression, making it appear stern, happy, or terrifying.",
-    },
-    {
-        name: "Explorer's Pack",
-        rarity: "Common",
-        attuned: false,
-        weight: "20.0 lbs",
-        value: "10 GP",
-        description:
-            "Includes a backpack, bedroll, mess kit, tinderbox, 10 torches, 10 days of rations, and a waterskin.",
-    },
-];
+import { useCharacterItems } from "@/hooks/data";
+import { useMemo } from "react";
+const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde";
 
 export default function InventoryScreen() {
     const { styles } = useStyles((t, c) => ({
@@ -99,7 +72,11 @@ export default function InventoryScreen() {
             color: c("text.muted"),
         },
     }));
-
+    const { data: items, isLoading } = useCharacterItems(characterId);
+    const attunedItems = useMemo(
+        () => (items ?? []).filter((i) => i.attuned),
+        [items],
+    );
     return (
         <ThemedView style={styles.screen}>
             <ScrollView
@@ -111,20 +88,15 @@ export default function InventoryScreen() {
                 </View>
 
                 <View style={styles.sectionSpacing}>
-                    <Attunement />
+                    <Attunement
+                        attunement_list={attunedItems.map((s) => s.name)}
+                    />
                 </View>
 
                 <View style={[styles.inventoryHeader, styles.sectionSpacing]}>
                     <ThemedHeadline color="text.heading">
                         Inventory
                     </ThemedHeadline>
-                    <ThemedText
-                        color="text.muted"
-                        variant="body"
-                        style={styles.inventorySubtext}
-                    >
-                        64.5 / 150 lbs carried
-                    </ThemedText>
                 </View>
 
                 <View style={[styles.searchRow, styles.sectionSpacing]}>
@@ -140,7 +112,7 @@ export default function InventoryScreen() {
                     </View>
                 </View>
 
-                {inventoryItems.map((item) => (
+                {(items ?? []).map((item) => (
                     <CollapsibleCard
                         key={item.name}
                         header={
@@ -152,14 +124,14 @@ export default function InventoryScreen() {
                                     >
                                         {item.name}
                                     </ThemedText>
-                                    <View style={styles.rarityTag}>
+                                    {/* <View style={styles.rarityTag}>
                                         <ThemedText
                                             color="text.muted"
                                             variant="body"
                                         >
                                             {item.rarity}
                                         </ThemedText>
-                                    </View>
+                                    </View> */}
                                 </View>
                                 <View style={styles.itemMeta}>
                                     {item.attuned && (
@@ -174,20 +146,11 @@ export default function InventoryScreen() {
                             </View>
                         }
                         shortContent={
-                            <View style={styles.itemStatRow}>
-                                <ThemedText
-                                    color="text.muted"
-                                    style={styles.itemStat}
-                                >
-                                    {item.weight}
-                                </ThemedText>
-                                <ThemedText
-                                    color="text.muted"
-                                    style={styles.itemStat}
-                                >
-                                    {item.value}
-                                </ThemedText>
-                            </View>
+                            <ThemedText color="text.body" variant="body">
+                                {item.description.length > 50
+                                    ? item.description.slice(0, 50)
+                                    : item.description}
+                            </ThemedText>
                         }
                         fullContent={
                             <View style={styles.itemStatRow}>

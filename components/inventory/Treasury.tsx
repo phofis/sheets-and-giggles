@@ -1,6 +1,9 @@
 import { View } from "react-native";
 import { ThemedText, ThemedView } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
+import { dataTagErrorSymbol } from "@tanstack/react-query";
+import { useCharacter } from "@/hooks/data";
+const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde"; //get from context instead
 
 export function Treasury() {
     const { styles } = useStyles((t, c) => ({
@@ -36,6 +39,14 @@ export function Treasury() {
             letterSpacing: 1,
         },
     }));
+    const { data: character, isLoading } = useCharacter(characterId);
+    if (isLoading) {
+    }
+    const money = [
+        { key: "gold", label: "GP" },
+        { key: "silver", label: "SP" },
+        { key: "copper", label: "CP" },
+    ] as const;
 
     return (
         <ThemedView style={styles.card}>
@@ -49,53 +60,24 @@ export function Treasury() {
             </ThemedText>
 
             <View style={styles.currencyRow}>
-                <View style={styles.currencyItem}>
-                    <ThemedText
-                        color="text.heading"
-                        style={styles.currencyValue}
-                    >
-                        1,240
-                    </ThemedText>
-                    <ThemedText
-                        color="text.muted"
-                        variant="body"
-                        style={styles.currencyUnit}
-                    >
-                        GP
-                    </ThemedText>
-                </View>
+                {money.map((c) => (
+                    <View key={c.key} style={styles.currencyItem}>
+                        <ThemedText
+                            color="text.heading"
+                            style={styles.currencyValue}
+                        >
+                            {character?.[c.key] ?? 0}
+                        </ThemedText>
 
-                <View style={styles.currencyItem}>
-                    <ThemedText
-                        color="text.heading"
-                        style={styles.currencyValue}
-                    >
-                        85
-                    </ThemedText>
-                    <ThemedText
-                        color="text.muted"
-                        variant="body"
-                        style={styles.currencyUnit}
-                    >
-                        SP
-                    </ThemedText>
-                </View>
-
-                <View style={styles.currencyItem}>
-                    <ThemedText
-                        color="text.heading"
-                        style={styles.currencyValue}
-                    >
-                        12
-                    </ThemedText>
-                    <ThemedText
-                        color="text.muted"
-                        variant="body"
-                        style={styles.currencyUnit}
-                    >
-                        CP
-                    </ThemedText>
-                </View>
+                        <ThemedText
+                            color="text.muted"
+                            variant="body"
+                            style={styles.currencyUnit}
+                        >
+                            {c.label}
+                        </ThemedText>
+                    </View>
+                ))}
             </View>
         </ThemedView>
     );

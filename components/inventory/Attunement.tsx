@@ -1,19 +1,19 @@
-import { View } from "react-native";
+import { View, TouchableOpacity } from "react-native";
 import { ThemedText, ThemedView } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
 
-const attunementItems = [
-    { name: "Sunblade"},
-    { name: "Amulet of Health"},
-];
+const MAX_SLOTS = 3;
 
-export function Attunement() {
+interface attunementProps {
+    attunement_list?: string[];
+}
+
+export function Attunement({ attunement_list = [] }: attunementProps) {
     const { styles } = useStyles((t, c) => ({
         card: {
             padding: t.spacing.md,
             minHeight: 180,
             justifyContent: "flex-start",
-            height: "auto",
             backgroundColor: c("card.background"),
             borderRadius: t.borderRadius.md,
         },
@@ -28,50 +28,67 @@ export function Attunement() {
         },
         entry: {
             flexDirection: "row",
-            justifyContent: "space-between",
+            justifyContent: "center",
             alignItems: "center",
             paddingVertical: t.spacing.sm,
             paddingHorizontal: t.spacing.md,
             borderRadius: t.borderRadius.md,
             backgroundColor: c("surface.surfaceElevated"),
             width: "80%",
-            alignSelf: "flex-start",
-
+            alignSelf: "center",
         },
+
         emptySlot: {
+            flexDirection: "row",
+            justifyContent: "center",
+            alignItems: "center",
             paddingVertical: t.spacing.sm,
             paddingHorizontal: t.spacing.md,
             borderRadius: t.borderRadius.md,
             backgroundColor: c("surface.surfaceElevated"),
+            width: "10%",
+            alignSelf: "center",
+            opacity: 0.6,
+        },
+        plus: {
+            fontSize: 20,
+            fontWeight: "700",
+            alignSelf: "center",
         },
     }));
 
+    const slots = Array.from(
+        { length: MAX_SLOTS },
+        (_, i) => attunement_list[i],
+    );
+
     return (
         <ThemedView style={styles.card}>
-            {/* HEADER moved inside elevated area */}
             <View style={styles.header}>
                 <ThemedText color="text.muted" variant="label">
                     ATTUNEMENT
                 </ThemedText>
                 <ThemedText color="text.body" variant="body">
-                    2 / 3 Slots
+                    {attunement_list.length} / {MAX_SLOTS} Slots
                 </ThemedText>
             </View>
 
             <View style={styles.list}>
-                {attunementItems.map((item) => (
-                    <View key={item.name} style={styles.entry}>
-                        <ThemedText color="text.body" variant="body">
-                            {item.name}
-                        </ThemedText>
-                    </View>
-                ))}
-
-                <View style={styles.entry}>
-                    <ThemedText color="text.muted" variant="body">
-                        Empty Slot
-                    </ThemedText>
-                </View>
+                {slots.map((item, index) =>
+                    item ? (
+                        <View key={item} style={styles.entry}>
+                            <ThemedText color="text.body" variant="body">
+                                {item}
+                            </ThemedText>
+                        </View>
+                    ) : (
+                        <View style={styles.emptySlot}>
+                            <ThemedText color="text.muted" style={styles.plus}>
+                                +
+                            </ThemedText>
+                        </View>
+                    ),
+                )}
             </View>
         </ThemedView>
     );
