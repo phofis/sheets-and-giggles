@@ -1,4 +1,5 @@
 import { ThemeProvider } from "@/context/ThemeContext";
+import { CharacterIdProvider } from "@/context/CharacterIdContext";
 import { PERSIST_BUSTER, PERSIST_MAX_AGE, queryClient, queryPersister } from "@/lib/queryClient";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -69,7 +70,9 @@ export default function RootLayout() {
 
     return (
         <ThemeProvider>
-            <RootLayoutInner />
+            <CharacterIdProvider>
+                <RootLayoutInner />
+            </CharacterIdProvider>
         </ThemeProvider>
     );
 }
