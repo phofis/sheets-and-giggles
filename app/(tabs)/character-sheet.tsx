@@ -1,22 +1,36 @@
-import { ScrollView } from "react-native";
+import { ActivityIndicator, ScrollView } from "react-native";
 import { useState } from "react";
 
 import { ThemedView, ThemedList, ThemedBoxList } from "@/components/themed";
 import { ThemedTwoColumnList } from "@/components/themed/ThemedTwoColumnList";
 import { AbilityGrid } from "@/components/characterSheet/AbilityGrid";
-import { Header } from "@/components/characterSheet/Header";
+import { Header } from "@/components/Header";
 import { SavingThrowsIcon } from "@/components/icons";
 
-import { useCharacter, useSavingThrows } from "@/hooks/character";
-import { useSkills } from "@/hooks/useAbilities";
-import { useClassFeatures } from "@/hooks/useClassFeatures";
 import { useStyles } from "@/hooks/useStyles";
+import { useCharacterSheet, CharacterSheet } from "@/hooks/useCharacterSheet";
+import { useCharacterId } from "@/context/CharacterIdContext";
 
+
+const defaultCharacterSheet: CharacterSheet = {
+    characterHeader: {
+        name: "",
+        level: 1,
+        class: "",
+        inspiration: 1
+    },
+}
 export default function MainSheetScreen() {
     const { styles } = useStyles((theme, c) => ({
         screen: { flex: 1, marginBottom: 20, marginTop: 35 },
         scrollView: { flex: 1 },
         scrollContentContainer: { padding: theme.spacing.lg, gap: theme.spacing.xl },
+        content: {
+            alignSelf: "stretch",
+            paddingHorizontal: theme.spacing.lg,
+            paddingTop: theme.spacing.xl,
+            gap: theme.spacing.lg,
+        },
         features: {
             backgroundColor: c("card.background"),
             borderRadius: theme.borderRadius.md,
@@ -30,25 +44,11 @@ export default function MainSheetScreen() {
         },
     }));
 
-    const characterId = "val-001";
+    const characterId = useCharacterId();
 
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const { character, isLoading: charLoading } = useCharacter(characterId);
-    const { savingThrows, isLoading: savesLoading } = useSavingThrows(characterId);
-    const { skills, isLoading: skillsLoading } = useSkills(character);
-    const { features, isLoading: featsLoading } = useClassFeatures(
-        character?.class || "",
-        character?.level,
-    );
-
-    const isLoading = charLoading || savesLoading || skillsLoading || featsLoading;
-
-    if (isLoading || !character || !savingThrows || !skills) {
-        //  TODO: consider displaying a loading spinner here
-    }
-
-    const displayedSkills = isExpanded ? skills : skills.slice(0, 5);
+    const { data: characterSheet = defaultCharacterSheet, isLoading: isLoading } = useCharacterSheet(characterId);
 
     return (
         <ThemedView style={styles.screen}>
@@ -56,31 +56,37 @@ export default function MainSheetScreen() {
                 contentContainerStyle={styles.scrollContentContainer}
                 style={styles.scrollView}
             >
-                {/* AVATAR & HEADER SECTION */}
-                <Header characterId={characterId} />
+                {isLoading ? (
+                    <ActivityIndicator />
+                ) : (
+                <ThemedView style={styles.content}>
+                    {/* AVATAR & HEADER SECTION */}
+                    <Header characterHeader={characterSheet.characterHeader} />
 
-                {/* ABILITY GRID */}
-                <AbilityGrid characterId={characterId} />
+                    {/* ABILITY GRID */}
+                    <AbilityGrid characterId={characterId} />
 
-                {/* SAVING THROWS*/}
-                <ThemedTwoColumnList
-                    data={savingThrows}
-                    icon={SavingThrowsIcon}
-                    title="Saving Throws"
-                />
+                    {/* SAVING THROWS*/}
+                    <ThemedTwoColumnList
+                        data={savingThrows}
+                        icon={SavingThrowsIcon}
+                        title="Saving Throws"
+                    />
 
-                <ThemedList
-                    data={displayedSkills}
-                    footerLabel={isExpanded ? "Show Less" : "View All Skills"}
-                    icon="list"
-                    title="Skills"
-                    onFooterPress={() => setIsExpanded(!isExpanded)}
-                />
-                {/** //TODO: we probably want to animate the expansion movement */}
+                    <ThemedList
+                        data={displayedSkills}
+                        footerLabel={isExpanded ? "Show Less" : "View All Skills"}
+                        icon="list"
+                        title="Skills"
+                        onFooterPress={() => setIsExpanded(!isExpanded)}
+                    />
+                    {/** //TODO: we probably want to animate the expansion movement */}
 
-                {/** //TODO: Add combat section here. Consider if it should not belong to another page*/}
+                    {/** //TODO: Add combat section here. Consider if it should not belong to another page*/}
 
-                <ThemedBoxList data={features} itemStyle={styles.features} title="Key Features" />
+                    {/* <ThemedBoxList data={features} itemStyle={styles.features} title="Key Features" /> */}
+                </ThemedView>
+                )}
             </ScrollView>
         </ThemedView>
     );
