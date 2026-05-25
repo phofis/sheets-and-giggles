@@ -6,7 +6,7 @@ type SpellRow = Database["public"]["Tables"]["character_spells"]["Row"];
 type SpellUpdate = Database["public"]["Tables"]["character_spells"]["Update"];
 
 // Joined type: character_spells + spell catalog metadata
-type CharacterSpellWithDetails = SpellRow & {
+export type CharacterSpellWithDetails = SpellRow & {
     spells: Database["public"]["Tables"]["spells"]["Row"];
 };
 

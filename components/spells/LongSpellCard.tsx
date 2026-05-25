@@ -3,9 +3,9 @@ import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "../themed/ThemedText";
 import { ThemedView } from "../themed/ThemedView";
 import { ThemedGrid } from "../themed/ThemedGrid";
-
+import { CharacterSpellWithDetails } from "@/hooks/data/useCharacterSpells";
 export interface LongSpellCardProps {
-    spell: Spell;
+    spell: CharacterSpellWithDetails;
 }
 
 export function LongSpellCard({ spell }: LongSpellCardProps) {
@@ -52,16 +52,16 @@ export function LongSpellCard({ spell }: LongSpellCardProps) {
         },
     }));
 
-    const componentLabel = spell.components.join(", ");
-    const materialLabel = spell.material ? `${spell.material.description}${spell.material.consumed ? " (consumed)" : ""}` : undefined;
+    const componentLabel = spell.spells.components.join(", ");
+    const materialLabel = null; // Add display of material components
 
     const stats = [
-        { label: "Casting time", value: spell.casting_time },
-        { label: "Range", value: spell.range },
-        { label: "Duration", value: spell.duration },
-        { label: "Rolls", value: spell.rolls },
-        spell.saving_throw ? { label: "Saving throw", value: spell.saving_throw } : null,
-        spell.damage_type ? { label: "Damage type", value: spell.damage_type } : null,
+        { label: "Casting time", value: spell.spells.casting_time },
+        { label: "Range", value: spell.spells.range },
+        { label: "Duration", value: spell.spells.duration },
+        { label: "Rolls", value: spell.spells.rolls },
+        spell.spells.saving_throw ? { label: "Saving throw", value: spell.spells.saving_throw } : null,
+        spell.spells.damage_type ? { label: "Damage type", value: spell.spells.damage_type } : null,
         { label: "Components", value: componentLabel },
         materialLabel ? { label: "Material", value: materialLabel } : null,
     ].filter(Boolean) as Array<{ label: string; value: string }>;
@@ -70,7 +70,7 @@ export function LongSpellCard({ spell }: LongSpellCardProps) {
         <>
             <ThemedView style={styles.section}>
                 <ThemedText color="text.body" style={styles.description} variant="body">
-                    {spell.description}
+                    {spell.spells.description}
                 </ThemedText>
             </ThemedView>
 
@@ -93,10 +93,10 @@ export function LongSpellCard({ spell }: LongSpellCardProps) {
                 />
             </ThemedView>
 
-            {spell.tags.length ? (
+            {spell.spells.tag.split(",").length ? (
                 <ThemedView style={styles.section}>
                     <ThemedView style={styles.chipsRow}>
-                        {spell.tags.map((tag) => (
+                        {spell.spells.tag.split(",").map((tag) => (
                             <ThemedView key={tag} style={styles.chip}>
                                 <ThemedText color="text.muted" variant="body">
                                     {tag.toUpperCase()}
