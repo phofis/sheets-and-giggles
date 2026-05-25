@@ -116,7 +116,7 @@ export const SocialPanel = () => {
             );
             if (upsertError) throw upsertError;
 
-            router.replace("/(tabs)/home");
+            router.replace("/landing");
         } catch (caught) {
             setError(caught instanceof Error ? caught.message : "Sign-in failed");
         } finally {

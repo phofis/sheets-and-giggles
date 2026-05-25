@@ -133,7 +133,7 @@ export default function LoginScreen() {
                         </ThemedText>
                         <TouchableOpacity
                             activeOpacity={0.7}
-                            onPress={() => router.replace("/(tabs)/signup")}
+                            onPress={() => router.replace("/signup")}
                         >
                             <ThemedText
                                 color="text.lively"

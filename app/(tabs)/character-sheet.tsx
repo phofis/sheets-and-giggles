@@ -68,6 +68,7 @@ export default function MainSheetScreen() {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const { data: characterSheet = defaultCharacterSheet, isLoading: isLoadingCharacterSheet } = useCharacterSheet(characterId);
+
     const { data: features, isLoading } = useCharacterFeatures(characterId);
     const displayedSkills = isExpanded
         ? characterSheet.allSkills
