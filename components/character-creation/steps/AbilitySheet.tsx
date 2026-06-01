@@ -102,40 +102,40 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
             <ScrollView contentContainerStyle={styles.scrollContentContainer} style={styles.scrollView}>
                 <ThemedView style={styles.content}>
 
-                    <TouchableOpacity onPress={onBack} style={styles.backButton}>
+                    <TouchableOpacity style={styles.backButton} onPress={onBack}>
                         <ThemedText color="text.muted" style={{ fontWeight: "bold" }}>← Back to Personality</ThemedText>
                     </TouchableOpacity>
 
                     <Header
-                        title={"Abilities & Combat"}
-                        subtitle={`Determine the numerical statistics for ${initialData.name}.`}
                         currentStep={3}
+                        subtitle={`Determine the numerical statistics for ${initialData.name}.`}
+                        title={"Abilities & Combat"}
                         totalSteps={5}
                     />
 
-                    <SectionCard title="Combat Stats *" iconLigature="shield" iconColor={styles.abilities.color}>
+                    <SectionCard iconColor={styles.abilities.color} iconLigature="shield" title="Combat Stats *">
                         <CombatStatsGrid
                             stats={combatStats}
                             onChange={handleCombatStatChange}
                         />
                     </SectionCard>
 
-                    <SectionCard title="Ability Scores *" iconLigature="fitness_center" iconColor={styles.combat.color}>
+                    <SectionCard iconColor={styles.combat.color} iconLigature="fitness_center" title="Ability Scores *">
                         <AbilityInputGrid
-                            scores={abilityScores}
                             proficiencies={savingThrowProficiencies}
+                            scores={abilityScores}
                             onScoreChange={handleScoreChange}
                             onToggleProficiency={handleToggleProficiency}
                         />
                     </SectionCard>
 
                     {/* Skills are intentionally left without an asterisk to allow 0 selections if necessary */}
-                    <SectionCard title="Skills" iconLigature="list" iconColor={styles.skills.color}>
+                    <SectionCard iconColor={styles.skills.color} iconLigature="list" title="Skills">
                         <SkillSelectionList
                             availableSkills={ALL_AVAILABLE_SKILLS}
+                            initialDisplayCount={6}
                             selectedSkills={skills}
                             onToggleSkill={handleToggleSkill}
-                            initialDisplayCount={6}
                         />
                     </SectionCard>
 
@@ -147,8 +147,8 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
                     )}
 
                     <NextStepButton
-                        onPress={handleNext}
                         disabled={!isFormValid}
+                        onPress={handleNext}
                     />
 
                 </ThemedView>

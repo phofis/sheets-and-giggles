@@ -8,7 +8,7 @@ import { NextStepButton } from ".././NextStep";
 import { CharacterDraftState } from "@/app/character-creation";
 import { SelectionSectionCard } from ".././SelectionSectionCard";
 import { DynamicStringListCard } from ".././DynamicStringListCard";
-import { useSpellsCatalog } from "@/hooks/useSpells";
+import { useSpellsCatalog } from "@/hooks/data";
 
 interface SpellsSheetProps {
     initialData: CharacterDraftState;
@@ -69,21 +69,21 @@ export default function SpellsSheet({ initialData, onNext, onBack }: SpellsSheet
             <ScrollView contentContainerStyle={styles.scrollContentContainer} style={styles.scrollView}>
                 <ThemedView style={styles.content}>
 
-                    <TouchableOpacity onPress={onBack} style={styles.backButton}>
+                    <TouchableOpacity style={styles.backButton} onPress={onBack}>
                         <ThemedText color="text.muted" style={{ fontWeight: "bold" }}>← Back to Abilities</ThemedText>
                     </TouchableOpacity>
 
                     <Header
-                        title={"Spells & Magic"}
-                        subtitle={`Determine the magical repertoire for ${initialData.name}.`}
                         currentStep={4}
+                        subtitle={`Determine the magical repertoire for ${initialData.name}.`}
+                        title={"Spells & Magic"}
                         totalSteps={5}
                     />
 
                     {/* Network State Handling */}
                     {isLoading ? (
                         <View style={{ padding: 20, alignItems: "center" }}>
-                            <ActivityIndicator size="large" color={styles.spellsAccent.color} />
+                            <ActivityIndicator color={styles.spellsAccent.color} size="large" />
                             <ThemedText style={{ marginTop: 10 }}>Accessing arcane archives...</ThemedText>
                         </View>
                     ) : error ? (
@@ -94,37 +94,37 @@ export default function SpellsSheet({ initialData, onNext, onBack }: SpellsSheet
                         <>
                             {/* Catalog Selection Interface */}
                             <SelectionSectionCard
-                                title="Discover Spells"
+                                iconColor={styles.cardIcon.color}
                                 iconLigature="menu_book"
                                 options={availableSpellOptions}
                                 selectedValue={null} // Null enforces it acts as a trigger rather than a persistent static state
+                                title="Discover Spells"
                                 onSelect={handleAddSpellFromCatalog}
-                                iconColor={styles.cardIcon.color}
                             />
 
                             {/* Known Spells Display & Deletion Interface */}
                             <DynamicStringListCard
-                                title="Known Spells"
-                                iconLigature="auto_awesome"
                                 accentColor={styles.spellsAccent.color}
+                                addButton={false}
                                 emptyIconLigature="hourglass_empty"
-                                emptyTitle="No spells learned yet."
                                 emptySubtitle="Select a spell from the catalog above to add it to your spellbook."
+                                emptyTitle="No spells learned yet."
+                                iconLigature="auto_awesome"
                                 items={spells.map(spellId => {
                                     const foundSpell = spellsCatalog?.find(s => s.id === spellId);
                                     return foundSpell ? foundSpell.name : spellId;
                                 })}
 
+                                title="Known Spells"
                                 onAddItem={(item) => setSpells(prev => [...prev, item])}
                                 onRemove={handleRemoveSpell}
-                                addButton={false}
                             />
                         </>
                     )}
 
                     <NextStepButton
-                        onPress={handleNext}
                         disabled={false}
+                        onPress={handleNext}
                     />
 
                 </ThemedView>

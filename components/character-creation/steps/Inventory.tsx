@@ -53,12 +53,12 @@ const CurrencyInput: React.FC<CurrencyInputProps> = ({ label, symbol, color, val
             <View style={styles.inputWrapper}>
                 <View style={styles.badge}><Text style={styles.badgeText}>{symbol}</Text></View>
                 <TextInput
-                    style={styles.input}
-                    value={value}
-                    onChangeText={onChangeText}
                     keyboardType="numeric"
                     placeholder="0"
                     placeholderTextColor="rgba(255,255,255,0.2)"
+                    style={styles.input}
+                    value={value}
+                    onChangeText={onChangeText}
                 />
             </View>
         </View>
@@ -124,23 +124,23 @@ const EquipmentManagerCard: React.FC<EquipmentManagerCardProps> = ({ items, onAd
     };
 
     return (
-        <SectionCard title="Equipment & Items" iconLigature="cases" iconColor={accentColor}>
+        <SectionCard iconColor={accentColor} iconLigature="cases" title="Equipment & Items">
             <View style={{ paddingTop: 8 }}>
                 <TextInput
-                    style={styles.input}
                     placeholder="Item Name"
                     placeholderTextColor="rgba(255,255,255,0.4)"
+                    style={styles.input}
                     value={name}
                     onChangeText={setName}
                 />
                 <TextInput
-                    style={styles.input}
                     placeholder="Description or Quantity"
                     placeholderTextColor="rgba(255,255,255,0.4)"
+                    style={styles.input}
                     value={description}
                     onChangeText={setDescription}
                 />
-                <TouchableOpacity style={styles.addButton} onPress={handleAdd} activeOpacity={0.8}>
+                <TouchableOpacity activeOpacity={0.8} style={styles.addButton} onPress={handleAdd}>
                     <Text style={styles.addButtonText}>+ Add Item</Text>
                 </TouchableOpacity>
 
@@ -152,7 +152,7 @@ const EquipmentManagerCard: React.FC<EquipmentManagerCardProps> = ({ items, onAd
                                     <Text style={styles.itemName}>{item.name}</Text>
                                     {item.description ? <Text style={styles.itemDesc}>{item.description}</Text> : null}
                                 </View>
-                                <TouchableOpacity onPress={() => onRemoveItem(index)} activeOpacity={0.7}>
+                                <TouchableOpacity activeOpacity={0.7} onPress={() => onRemoveItem(index)}>
                                     <Text style={styles.removeIcon}>close</Text>
                                 </TouchableOpacity>
                             </View>
@@ -199,33 +199,33 @@ export default function InventorySheet({ initialData, onNext, onBack }: Inventor
             <ScrollView contentContainerStyle={styles.scrollContentContainer} style={styles.scrollView}>
                 <ThemedView style={styles.content}>
 
-                    <TouchableOpacity onPress={onBack} style={styles.backButton}>
+                    <TouchableOpacity style={styles.backButton} onPress={onBack}>
                         <ThemedText color="text.muted" style={{ fontWeight: "bold" }}>← Back to Spells</ThemedText>
                     </TouchableOpacity>
 
                     <Header
-                        title={"Inventory & Wealth"}
-                        subtitle={`Manage the material possessions for ${initialData.name}.`}
                         currentStep={5}
+                        subtitle={`Manage the material possessions for ${initialData.name}.`}
+                        title={"Inventory & Wealth"}
                         totalSteps={6}
                     />
 
-                    <SectionCard title="Wealth" iconLigature="monetization_on" iconColor={styles.inventoryIcon.color}>
+                    <SectionCard iconColor={styles.inventoryIcon.color} iconLigature="monetization_on" title="Wealth">
                         <View style={{ paddingTop: 8 }}>
-                            <CurrencyInput label="Copper Pieces (CP)" symbol="CP" color="#CD7F32" value={cp} onChangeText={setCp} />
-                            <CurrencyInput label="Silver Pieces (SP)" symbol="SP" color="#C0C0C0" value={sp} onChangeText={setSp} />
-                            <CurrencyInput label="Gold Pieces (GP)" symbol="GP" color="#FFD700" value={gp} onChangeText={setGp} />
+                            <CurrencyInput color="#CD7F32" label="Copper Pieces (CP)" symbol="CP" value={cp} onChangeText={setCp} />
+                            <CurrencyInput color="#C0C0C0" label="Silver Pieces (SP)" symbol="SP" value={sp} onChangeText={setSp} />
+                            <CurrencyInput color="#FFD700" label="Gold Pieces (GP)" symbol="GP" value={gp} onChangeText={setGp} />
                         </View>
                     </SectionCard>
 
                     <EquipmentManagerCard
-                        items={equipment}
                         accentColor={styles.equipmentIcon.color}
+                        items={equipment}
                         onAddItem={(item) => setEquipment(prev => [...prev, item])}
                         onRemoveItem={(index) => setEquipment(prev => prev.filter((_, i) => i !== index))}
                     />
 
-                    <NextStepButton onPress={handleNext} disabled={false} text={"Finish"}/>
+                    <NextStepButton disabled={false} text={"Finish"} onPress={handleNext}/>
 
                 </ThemedView>
             </ScrollView>

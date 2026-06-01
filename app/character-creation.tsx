@@ -131,13 +131,13 @@ export default function CharacterCreationScreen() {
         if (currentStep === 5) {
             try {
                 // Execute the asynchronous database insertion pipeline
-                // await useCreateCharacter({
-                //     draft: updatedData,
-                //     userId: currentUserId
-                // });
+                await useCreateCharacter({
+                    draft: updatedData,
+                    userId: currentUserId
+                });
 
                 // Route to the dashboard upon successful transaction resolution
-                router.replace("/(tabs)/my-adventurers");
+                router.replace("/my-adventurers");
             } catch (error: any) {
                 Error("Transaction Failed", error.message);
             }
