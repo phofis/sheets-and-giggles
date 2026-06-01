@@ -142,100 +142,58 @@ export interface CharacterBiometrics {
 
 import { CharacterDraftState } from "@/app/character-creation";
 
-// ─── Formal Domain Restrictions ──────────────────────────────────────────────
+type CharacterInsert = Database["public"]["Tables"]["characters"]["Insert"];
 
-export type Alignment =
-    | "lawful_good" | "neutral_good" | "chaotic_good"
-    | "lawful_neutral" | "true_neutral" | "chaotic_neutral"
-    | "lawful_evil" | "neutral_evil" | "chaotic_evil";
+/** Row payload for `characters.insert` — exact keys `mapDraftToDTO` sets. */
+export type CharacterInsertPayload = Pick<
+    CharacterInsert,
+    | "user_id"
+    | "race_id"
+    | "class_id"
+    | "name"
+    | "str_score"
+    | "dex_score"
+    | "con_score"
+    | "int_score"
+    | "wis_score"
+    | "cha_score"
+    | "hp_current"
+    | "hp_max"
+    | "hp_temp"
+    | "proficiency_bonus"
+    | "armor_class"
+    | "inspiration"
+    | "initiative"
+    | "speed"
+    | "level"
+    | "experience"
+    | "alignment"
+    | "gender"
+    | "eyes"
+    | "size"
+    | "height"
+    | "age"
+    | "faith"
+    | "skin"
+    | "background"
+    | "proficient_saves"
+    | "proficient_skills"
+    | "personality_traits"
+    | "bonds"
+    | "ideals"
+    | "flaws"
+    | "gold"
+    | "silver"
+    | "copper"
+>;
 
-export type AbilityScoreEnum = "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
+type AssertInsertCompatible<T extends CharacterInsert> = T;
+type _InsertPayloadCheck = AssertInsertCompatible<CharacterInsertPayload>;
 
-// Note: Ensure these perfectly match your Postgres _skill_name enum
-export type SkillEnum =
-    | "Acrobatics"
-    | "Animal Handling"
-    | "Arcana"
-    | "Athletics"
-    | "Deception"
-    | "History"
-    | "Insight"
-    | "Intimidation"
-    | "Investigation"
-    | "Medicine"
-    | "Nature"
-    | "Perception"
-    | "Performance"
-    | "Persuasion"
-    | "Religion"
-    | "Sleight of Hand"
-    | "Stealth"
-    | "Survival";
-// ─── Data Transfer Object ────────────────────────────────────────────────────
-
-export interface CharacterDTO {
-    user_id: string;
-    race_id: string;
-    class_id: string;
-    subclass_id?: string;
-
-    name: string;
-    photo_url?: string | null;
-
-    // Core Attributes
-    str_score: number;
-    dex_score: number;
-    con_score: number;
-    int_score: number;
-    wis_score: number;
-    cha_score: number;
-
-    // ─── Vector Subsets (The Error Origin) ───
-    proficient_saves: AbilityScoreEnum[]; // Formally restricted from string[]
-    proficient_skills: SkillEnum[];       // Formally restricted from string[]
-    // ─────────────────────────────────────────
-
-    // Combat Matrix
-    hp_current: number;
-    hp_max: number;
-    hp_temp: number;
-    proficiency_bonus: number;
-    armor_class: number;
-    inspiration: number;
-    initiative: number;
-    speed: number;
-
-    // Progression 
-    level: number;
-    experience: number;
-
-    // Biographical Geometry
-    alignment: Alignment
-    gender: string;
-    eyes: string;
-    size: string;
-    height: string;
-    age: number;
-    faith: string;
-    skin: string;
-    background: string;
-
-    // Personality Vectors
-    personality_traits: string[];
-    bonds: string[];
-    ideals: string[];
-    flaws: string[];
-
-    // Economic State
-    gold: number;
-    silver: number;
-    copper: number;
-}
-
-// ─── Transformation Matrix ───────────────────────────────────────────────────
-
-export function mapDraftToDTO(draft: CharacterDraftState, userId: string): CharacterDTO {
-    // Structural invariant checks
+export function mapDraftToDTO(
+    draft: CharacterDraftState,
+    userId: string,
+): CharacterInsertPayload {
     if (!draft.classId) throw new Error("Validation Fault: classId is required.");
     if (!draft.raceId) throw new Error("Validation Fault: raceId is required.");
 
@@ -264,8 +222,8 @@ export function mapDraftToDTO(draft: CharacterDraftState, userId: string): Chara
         proficiency_bonus: 2,
         inspiration: 0,
 
-        age: parseInt(draft.age, 10) || 0,
-        alignment: (draft.alignment as Alignment) || "true_neutral",
+        age: draft.age,
+        alignment: draft.alignment || "true_neutral",
         gender: draft.gender,
         eyes: draft.eyes,
         size: draft.size,
@@ -274,10 +232,8 @@ export function mapDraftToDTO(draft: CharacterDraftState, userId: string): Chara
         skin: draft.skin,
         background: draft.background,
 
-        // ─── Downcasting vectors to strict domain sets ───
-        proficient_skills: draft.skills as SkillEnum[],
-        proficient_saves: [] as AbilityScoreEnum[],
-        // ─────────────────────────────────────────────────
+        proficient_skills: draft.skills,
+        proficient_saves: [],
 
         personality_traits: draft.traits,
         bonds: draft.bonds,
@@ -287,5 +243,5 @@ export function mapDraftToDTO(draft: CharacterDraftState, userId: string): Chara
         gold: draft.wealth.gp,
         silver: draft.wealth.sp,
         copper: draft.wealth.cp,
-    };
+    } satisfies CharacterInsertPayload;
 }

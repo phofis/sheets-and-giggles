@@ -10,64 +10,69 @@ import AbilitySheet from "@/components/character-creation/steps/AbilitySheet";
 import SpellsSheet from "@/components/character-creation/steps/Spells";
 import InventorySheet from "@/components/character-creation/steps/Inventory";
 
+import { DEFAULT_ALIGNMENT } from "@/constants/character-creation-setup";
 import { useCreateCharacter } from "@/hooks/data/useCreateCharacter";
 import { useAuth } from "@/hooks/auth";
+import type { Database } from "@/types/supabase";
+
+type CharacterRow = Database["public"]["Tables"]["characters"]["Row"];
+type CharacterItemRow = Database["public"]["Tables"]["character_items"]["Row"];
 
 // ─── Formal Data Structures ──────────────────────────────────────────────────
 
 export interface AbilityScores {
-    str: number;
-    dex: number;
-    con: number;
-    int: number;
-    wis: number;
-    cha: number;
+    str: CharacterRow["str_score"];
+    dex: CharacterRow["dex_score"];
+    con: CharacterRow["con_score"];
+    int: CharacterRow["int_score"];
+    wis: CharacterRow["wis_score"];
+    cha: CharacterRow["cha_score"];
 }
 
 export interface CombatStats {
-    hp: number;
-    ac: number;
-    initiative: number;
-    speed: number;
+    hp: CharacterRow["hp_max"];
+    ac: CharacterRow["armor_class"];
+    initiative: CharacterRow["initiative"];
+    speed: CharacterRow["speed"];
 }
 
 export interface Wealth {
-    cp: number;
-    sp: number;
-    gp: number;
+    cp: CharacterRow["copper"];
+    sp: CharacterRow["silver"];
+    gp: CharacterRow["gold"];
 }
 
 export interface EquipmentItem {
-    name: string;
-    description: string;
+    name: CharacterItemRow["name"];
+    description: CharacterItemRow["description"];
 }
 
 export interface CharacterDraftState {
     // Step 1
-    name: string;
-    raceId: string;
-    classId: string;
+    name: CharacterRow["name"];
+    raceId: CharacterRow["race_id"];
+    classId: CharacterRow["class_id"];
 
     // Step 2
-    background: string;
-    alignment: string;
-    age: string;
-    height: string;
-    size: string;
-    gender: string;
-    eyes: string;
-    skin: string;
-    faith: string;
+    background: CharacterRow["background"];
+    alignment: CharacterRow["alignment"];
+    age: CharacterRow["age"];
+    height: CharacterRow["height"];
+    size: CharacterRow["size"];
+    gender: CharacterRow["gender"];
+    eyes: CharacterRow["eyes"];
+    skin: CharacterRow["skin"];
+    faith: CharacterRow["faith"];
     knownLanguages: string;
-    traits: string[];
-    ideals: string[];
-    bonds: string[];
-    flaws: string[];
+    traits: CharacterRow["personality_traits"];
+    ideals: CharacterRow["ideals"];
+    bonds: CharacterRow["bonds"];
+    flaws: CharacterRow["flaws"];
 
     // Step 3
     abilityScores: AbilityScores;
     combatStats: CombatStats;
-    skills: string[];
+    skills: CharacterRow["proficient_skills"];
 
     // Step 4
     spells: string[];
@@ -79,8 +84,9 @@ export interface CharacterDraftState {
 
 export default function CharacterCreationScreen() {
     // TODO: Replace with dynamic UUID extraction from your authentication context
-    const currentUserId = useAuth()
+    const { user } = useAuth();
     const router = useRouter();
+    const createCharacter = useCreateCharacter();
 
 
     const [currentStep, setCurrentStep] = useState<number>(1);
@@ -92,8 +98,8 @@ export default function CharacterCreationScreen() {
 
         // Step 2
         background: "",
-        alignment: "",
-        age: "",
+        alignment: DEFAULT_ALIGNMENT,
+        age: 0,
         height: "",
         size: "",
         gender: "",
@@ -131,9 +137,10 @@ export default function CharacterCreationScreen() {
         if (currentStep === 5) {
             try {
                 // Execute the asynchronous database insertion pipeline
-                await useCreateCharacter({
+                if (!user?.id) throw new Error("You must be signed in to create a character.");
+                await createCharacter.mutateAsync({
                     draft: updatedData,
-                    userId: currentUserId
+                    userId: user.id,
                 });
 
                 // Route to the dashboard upon successful transaction resolution

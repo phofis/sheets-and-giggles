@@ -1,6 +1,6 @@
 // hooks/data/useCreateCharacter.ts
 import type { CharacterDraftState } from "@/app/character-creation";
-import { mapDraftToDTO } from "@/types/character";
+import { mapDraftToDTO, type CharacterInsertPayload } from "@/types/character";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 
@@ -21,7 +21,7 @@ export function useCreateCharacter() {
         mutationFn: async ({ draft, userId }: CreateCharacterParams): Promise<string> => {
             // ─── Phase 1: State Transformation ───────────────────────────────
             // Apply the mapping matrix to resolve frontend variables to the PostgreSQL schema
-            const characterPayload = mapDraftToDTO(draft, userId);
+            const characterPayload: CharacterInsertPayload = mapDraftToDTO(draft, userId);
 
             // ─── Phase 2: Master Record Insertion ────────────────────────────
             const { data, error } = await supabase

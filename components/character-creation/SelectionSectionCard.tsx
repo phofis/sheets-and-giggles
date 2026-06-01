@@ -10,7 +10,7 @@ interface SelectionOption {
 interface SelectionSectionCardProps {
     title: string;
     iconLigature: string;
-    options: SelectionOption[];
+    options: readonly SelectionOption[];
     selectedValue: string | null;
     onSelect: (id: string) => void;
     iconColor: string;

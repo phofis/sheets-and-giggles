@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { ScrollView, View, TouchableOpacity } from "react-native";
 import { ThemedView, ThemedText } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
-import { getAlignmentOptions } from "@/constants/character-creation-setup";
+import { DEFAULT_ALIGNMENT, getAlignmentOptions } from "@/constants/character-creation-setup";
 
 import { Header } from ".././Header";
 import { NextStepButton } from ".././NextStep";
@@ -41,21 +41,27 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
     }));
 
     // State Initialization
-    const [age, setAge] = useState<string>(initialData.age || "");
-    const [height, setHeight] = useState<string>(initialData.height || "");
-    const [size, setSize] = useState<string>(initialData.size || "");
-    const [gender, setGender] = useState<string>(initialData.gender || "");
-    const [eyes, setEyes] = useState<string>(initialData.eyes || "");
-    const [skin, setSkin] = useState<string>(initialData.skin || "");
-    const [faith, setFaith] = useState<string>(initialData.faith || "");
-    const [knownLanguages, setKnownLanguages] = useState<string>(initialData.knownLanguages || "");
-    const [alignment, setAlignment] = useState<string | null>(initialData.alignment || null);
-    const [charBackground, setCharacterBackground] = useState<string>(initialData.background || "");
+    const [age, setAge] = useState<string>(initialData.age ? String(initialData.age) : "");
+    const [height, setHeight] = useState<CharacterDraftState["height"]>(initialData.height || "");
+    const [size, setSize] = useState<CharacterDraftState["size"]>(initialData.size || "");
+    const [gender, setGender] = useState<CharacterDraftState["gender"]>(initialData.gender || "");
+    const [eyes, setEyes] = useState<CharacterDraftState["eyes"]>(initialData.eyes || "");
+    const [skin, setSkin] = useState<CharacterDraftState["skin"]>(initialData.skin || "");
+    const [faith, setFaith] = useState<CharacterDraftState["faith"]>(initialData.faith || "");
+    const [knownLanguages, setKnownLanguages] = useState<CharacterDraftState["knownLanguages"]>(
+        initialData.knownLanguages || "",
+    );
+    const [alignment, setAlignment] = useState<CharacterDraftState["alignment"]>(
+        initialData.alignment || DEFAULT_ALIGNMENT,
+    );
+    const [charBackground, setCharacterBackground] = useState<CharacterDraftState["background"]>(
+        initialData.background || "",
+    );
 
-    const [traits, setTraits] = useState<string[]>(initialData.traits || []);
-    const [ideals, setIdeals] = useState<string[]>(initialData.ideals || []);
-    const [bonds, setBonds] = useState<string[]>(initialData.bonds || []);
-    const [flaws, setFlaws] = useState<string[]>(initialData.flaws || []);
+    const [traits, setTraits] = useState<CharacterDraftState["traits"]>(initialData.traits || []);
+    const [ideals, setIdeals] = useState<CharacterDraftState["ideals"]>(initialData.ideals || []);
+    const [bonds, setBonds] = useState<CharacterDraftState["bonds"]>(initialData.bonds || []);
+    const [flaws, setFlaws] = useState<CharacterDraftState["flaws"]>(initialData.flaws || []);
 
     // ─── Validation Logic Matrix ─────────────────────────────────────────────
     // Evaluates to true strictly if all required nodes contain non-whitespace data.
@@ -68,8 +74,7 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
         gender.trim() !== "" &&
         eyes.trim() !== "" &&
         skin.trim() !== "" &&
-        knownLanguages.trim() !== "" &&
-        alignment !== null;
+        knownLanguages.trim() !== "";
     // ─────────────────────────────────────────────────────────────────────────
 
     const handleNext = () => {
@@ -77,7 +82,7 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
         if (!isFormValid) return;
 
         onNext({
-            age,
+            age: parseInt(age, 10) || 0,
             height,
             size,
             gender,
@@ -85,7 +90,7 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
             skin,
             faith,
             knownLanguages,
-            alignment: alignment ?? undefined,
+            alignment: alignment,
             background: charBackground,
             traits,
             ideals,
@@ -141,7 +146,7 @@ export default function PersonalityAndBackground({ initialData, onNext, onBack }
                         options={getAlignmentOptions()}
                         selectedValue={alignment}
                         title="Alignment *"
-                        onSelect={setAlignment}
+                        onSelect={(id) => setAlignment(id as CharacterDraftState["alignment"])}
                     />
 
                     {/* Faith is deliberately left un-asterisked as an optional parameter */}

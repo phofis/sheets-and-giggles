@@ -6,10 +6,13 @@ import { useStyles } from "@/hooks/useStyles";
 import { Header } from "../Header";
 import { NextStepButton } from "../NextStep";
 import { CharacterDraftState, AbilityScores, CombatStats } from "@/app/character-creation";
+import type { Database } from "@/types/supabase";
 import { SectionCard } from "../SectionCard";
 import { AbilityInputGrid } from "../AbilityInputGrid";
 import { CombatStatsGrid } from "../CombatStatsGrid";
 import { SkillSelectionList } from "../SkillSelectionList";
+
+type DbSkillName = Database["public"]["Enums"]["skill_name"];
 
 interface AbilitySheetProps {
     initialData: CharacterDraftState;
@@ -17,12 +20,12 @@ interface AbilitySheetProps {
     onBack: () => void;
 }
 
-const ALL_AVAILABLE_SKILLS = [
+const ALL_AVAILABLE_SKILLS: readonly DbSkillName[] = [
     "Acrobatics", "Animal Handling", "Arcana", "Athletics",
     "Deception", "History", "Insight", "Intimidation",
     "Investigation", "Medicine", "Nature", "Perception",
     "Performance", "Persuasion", "Religion", "Sleight of Hand",
-    "Stealth", "Survival"
+    "Stealth", "Survival",
 ];
 
 export default function AbilitySheet({ initialData, onNext, onBack }: AbilitySheetProps) {
@@ -46,7 +49,7 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
 
     const [abilityScores, setAbilityScores] = useState<AbilityScores>(initialData.abilityScores);
     const [combatStats, setCombatStats] = useState<CombatStats>(initialData.combatStats);
-    const [skills, setSkills] = useState<string[]>(initialData.skills);
+    const [skills, setSkills] = useState<CharacterDraftState["skills"]>(initialData.skills);
     const [savingThrowProficiencies, setSavingThrowProficiencies] = useState<(keyof AbilityScores)[]>([]);
 
     const areAbilitiesValid = Object.values(abilityScores).every(
@@ -63,11 +66,11 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
     const isFormValid = areAbilitiesValid && areCombatStatsValid;
     // ─────────────────────────────────────────────────────────────────────────
 
-    const handleToggleSkill = (skillName: string) => {
-        setSkills(prev =>
+    const handleToggleSkill = (skillName: DbSkillName) => {
+        setSkills((prev) =>
             prev.includes(skillName)
-                ? prev.filter(s => s !== skillName)
-                : [...prev, skillName]
+                ? prev.filter((s) => s !== skillName)
+                : [...prev, skillName],
         );
     };
 
@@ -132,10 +135,10 @@ export default function AbilitySheet({ initialData, onNext, onBack }: AbilityShe
                     {/* Skills are intentionally left without an asterisk to allow 0 selections if necessary */}
                     <SectionCard iconColor={styles.skills.color} iconLigature="list" title="Skills">
                         <SkillSelectionList
-                            availableSkills={ALL_AVAILABLE_SKILLS}
+                            availableSkills={[...ALL_AVAILABLE_SKILLS]}
                             initialDisplayCount={6}
                             selectedSkills={skills}
-                            onToggleSkill={handleToggleSkill}
+                            onToggleSkill={(skill) => handleToggleSkill(skill as DbSkillName)}
                         />
                     </SectionCard>
 

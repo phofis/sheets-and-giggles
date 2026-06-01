@@ -13,7 +13,7 @@ import { getRaceOptions, getClassOptions, getCustomOption } from "@/constants/ch
 import { Checkbox } from "../../Checkbox";
 import { PathDetails } from ".././PathDetails";
 import { NextStepButton } from ".././NextStep";
-import { CharacterDraftState } from "@/app/character-creation";``
+import { CharacterDraftState } from "@/app/character-creation";
 
 interface CreateHeroProps {
     initialData: CharacterDraftState;
@@ -59,9 +59,9 @@ export default function CreateHero({ initialData, onNext }: CreateHeroProps) {
     }, [officialClassesData]);
 
     // ─── Local State (Initialized with Props) ────────────────────────────────
-    const [charName, setCharName] = useState<string>(initialData.name);
-    const [selectedRace, setSelectedRace] = useState<string | null>(initialData.raceId);
-    const [selectedClass, setSelectedClass] = useState<string | null>(initialData.classId);
+    const [charName, setCharName] = useState<CharacterDraftState["name"]>(initialData.name);
+    const [selectedRace, setSelectedRace] = useState<CharacterDraftState["raceId"] | null>(initialData.raceId);
+    const [selectedClass, setSelectedClass] = useState<CharacterDraftState["classId"] | null>(initialData.classId);
 
     const [isCustomRaceChecked, setIsCustomRaceChecked] = useState<boolean>(false);
     const [isCustomClassChecked, setIsCustomClassChecked] = useState<boolean>(false);

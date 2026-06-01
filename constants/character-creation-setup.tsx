@@ -157,4 +157,6 @@ export const getAlignmentOptions = () => [
     { id: "lawful_evil", label: "Lawful Evil" },
     { id: "neutral_evil", label: "Neutral Evil" },
     { id: "chaotic_evil", label: "Chaotic Evil" },
-];
+] as const;
+
+export const DEFAULT_ALIGNMENT = getAlignmentOptions()[0].id;
