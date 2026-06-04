@@ -1,4 +1,4 @@
-import { ScrollView, View } from "react-native";
+import { Pressable, ScrollView, View } from "react-native";
 import { ThemedView, ThemedText } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
 import HealthBar from "@/components/combat/HealthBar";
@@ -9,7 +9,14 @@ import CombatActionCard, {
 } from "@/components/combat/CombatActionCard";
 import { useCharacterId } from "@/context/CharacterIdContext";
 import { useCharacter } from "@/hooks/data/useCharacter";
-import { useCharacterItems, useCharacterSpells, useClasses } from "@/hooks/data";
+import {
+    useCharacterItems,
+    useCharacterSpells,
+    useClasses,
+    useUpdateCharacter,
+} from "@/hooks/data";
+import TextChangeModal from "@/components/TextChangeModal";
+import { useState } from "react";
 
 const MOCK_ACTIONS: CombatAction[] = [
     {
@@ -91,13 +98,25 @@ export default function CombatScreen() {
     const characterId = useCharacterId();
     const { data: character } = useCharacter(characterId);
     const { data: availableClasses } = useClasses();
-    const characterClass = availableClasses?.find((cls) => character?.class_id === cls.id);
+    const characterClass = availableClasses?.find(
+        (cls) => character?.class_id === cls.id,
+    );
 
     const { data: characterItems } = useCharacterItems(characterId);
     const { data: characterSpells } = useCharacterSpells(characterId);
 
+    const updateCharacter = useUpdateCharacter(characterId);
+
+    const [isTextModalOpen, setIsTextModalOpen] = useState(false);
+
     return (
         <ThemedView backgroundColor="surface.background" style={styles.screen}>
+            <TextChangeModal
+                initialValue={character?.name ?? ""}
+                isOpen={isTextModalOpen}
+                setIsOpen={setIsTextModalOpen}
+                onSubmit={(name) => updateCharacter.mutate({ name })}
+            />
             <ScrollView contentContainerStyle={styles.scroll}>
                 {/* Header */}
                 <View style={styles.header}>
@@ -108,13 +127,15 @@ export default function CombatScreen() {
                         >
                             CURRENT ENCOUNTER
                         </ThemedText>
-                        <ThemedText
-                            color="text.heading"
-                            style={styles.characterName}
-                            variant="headline"
-                        >
-                            {character?.name}
-                        </ThemedText>
+                        <Pressable onPress={() => setIsTextModalOpen(true)}>
+                            <ThemedText
+                                color="text.heading"
+                                style={styles.characterName}
+                                variant="headline"
+                            >
+                                {character?.name}
+                            </ThemedText>
+                        </Pressable>
                     </View>
                     <View style={styles.headerRight}>
                         <ThemedText color="text.muted" style={styles.levelText}>
@@ -131,10 +152,18 @@ export default function CombatScreen() {
                 </View>
 
                 {/* Health */}
-                <HealthBar currentHp={character?.hp_current ?? 0} maxHp={character?.hp_max ?? 0} tempHp={character?.hp_temp ?? 0} />
+                <HealthBar
+                    currentHp={character?.hp_current ?? 0}
+                    maxHp={character?.hp_max ?? 0}
+                    tempHp={character?.hp_temp ?? 0}
+                />
 
                 {/* Stats */}
-                <StatRow armorClass={character?.armor_class ?? 0} initiative={character?.initiative ?? 0} speed={character?.speed?.toString() ?? "0ft"} />
+                <StatRow
+                    armorClass={character?.armor_class ?? 0}
+                    initiative={character?.initiative ?? 0}
+                    speed={character?.speed?.toString() ?? "0ft"}
+                />
 
                 {/* Death Saves */}
                 <DeathSaves />
