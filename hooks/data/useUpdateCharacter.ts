@@ -1,5 +1,6 @@
 import { supabase } from "@/lib/supabase";
 import type { CharacterRow } from "@/types/db";
+import type { Database } from "@/types/supabase";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 // Canonical mutation template: optimistic update + rollback + persister flush.
@@ -13,7 +14,7 @@ export function characterQueryKey(characterId: string) {
     return ["character", characterId] as const;
 }
 
-export type CharacterPatch = Partial<Omit<CharacterRow, "id" | "user_id" | "created_at" | "updated_at">>;
+export type CharacterPatch = Database["public"]["Tables"]["characters"]["Update"];
 
 interface MutationContext {
     previous: CharacterRow | undefined;

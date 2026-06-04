@@ -41,7 +41,15 @@
           }
         }
       ],
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-font",
+        {
+          "fonts": [
+            "./assets/fonts/MaterialIcons.ttf"
+          ]
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

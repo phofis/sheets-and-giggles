@@ -78,6 +78,7 @@ export default function RootLayout() {
         notoSerif: NotoSerif_400Regular,
         "notoSerif-semibold": NotoSerif_600SemiBold,
         "notoSerif-bold": NotoSerif_700Bold,
+        "Material Icons": require("@/assets/fonts/MaterialIcons-Regular.ttf")
     });
 
     useEffect(() => {
