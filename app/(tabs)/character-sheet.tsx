@@ -56,7 +56,6 @@ export default function MainSheetScreen() {
         scrollView: { flex: 1 },
         scrollContentContainer: {
             padding: theme.spacing.lg,
-            paddingTop: theme.spacing.xxxl,
             gap: theme.spacing.xl,
         },
         content: {

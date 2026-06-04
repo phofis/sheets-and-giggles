@@ -41,10 +41,7 @@ export default function CharacteristicsScreen() {
         shell: { flex: 1, marginBottom: theme.spacing.xl },
         screen: { flex: 1 },
         scrollView: { flex: 1, alignSelf: "stretch" },
-        scrollContentContainer: {
-            flexGrow: 1,
-            paddingTop: theme.spacing.xxxl,
-        },
+        scrollContentContainer: { flexGrow: 1 },
         content: {
             alignSelf: "stretch",
             paddingHorizontal: theme.spacing.lg,
