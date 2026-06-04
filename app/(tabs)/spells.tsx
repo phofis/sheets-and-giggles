@@ -2,9 +2,10 @@ import { ThemedHeadline, ThemedView, SpellCard } from "@/components/themed";
 import { SpellSlots } from "@/components/spells/SpellSlots";
 import { useStyles } from "@/hooks/useStyles";
 import { useCharacterSpells } from "@/hooks/data/useCharacterSpells";
+import { useCharacterId } from "@/context/CharacterIdContext";
 import { ScrollView } from "react-native";
-//TODO: get from context instead
-const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde";
+
+// Spells tab intentionally has no page-level edit mode (v1).
 export default function SpellsScreen() {
     const { styles } = useStyles((t, c) => ({
         container: { flex: 1, padding: t.spacing.lg },
@@ -20,6 +21,7 @@ export default function SpellsScreen() {
         },
     }));
 
+    const characterId = useCharacterId();
     const { data: spells, isLoading } = useCharacterSpells(characterId); 
     if (isLoading) {
     }

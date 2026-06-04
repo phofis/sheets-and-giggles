@@ -1,3 +1,4 @@
+import { EditableField } from "@/components/editing/EditableField";
 import { View, type ViewProps, Pressable } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "./ThemedText";
@@ -11,6 +12,8 @@ export interface ThemedListProps extends ViewProps {
     data: ListEntry[];
     footerLabel?: string;
     onFooterPress?: () => void;
+    isEditMode?: boolean;
+    onItemPress?: (item: ListEntry, index: number) => void;
 }
 
 export function ThemedList({
@@ -19,6 +22,8 @@ export function ThemedList({
     data,
     footerLabel,
     onFooterPress,
+    isEditMode = false,
+    onItemPress,
     style,
     ...rest
 }: ThemedListProps) {
@@ -62,7 +67,14 @@ export function ThemedList({
             {/* List Content */}
             <View style={styles.listBody}>
                 {data.map((item, index) => (
-                    <View key={index} style={styles.row}>
+                    <EditableField
+                        key={index}
+                        isEditMode={isEditMode}
+                        onPress={
+                            onItemPress ? () => onItemPress(item, index) : undefined
+                        }
+                    >
+                        <View style={styles.row}>
                         <View style={styles.labelContainer}>
                             <View
                                 style={[
@@ -84,7 +96,8 @@ export function ThemedList({
                         <ThemedText color="text.lively" style={styles.skillValue} variant="label">
                             {item.value}
                         </ThemedText>
-                    </View>
+                        </View>
+                    </EditableField>
                 ))}
             </View>
 

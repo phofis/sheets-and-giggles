@@ -1,6 +1,7 @@
 import React from "react";
 import { View, ViewStyle, TextStyle } from "react-native";
 import { ThemedText } from "./themed";
+import { EditableField } from "@/components/editing/EditableField";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemeColorKey } from "@/constants/themes";
 
@@ -8,7 +9,6 @@ interface NoteProps {
     title?: string;
     titleColor?: ThemeColorKey;
     children: React.ReactNode;
-    // Theme keys instead of hex strings
     accentColor?: ThemeColorKey;
     accent?: boolean;
     backgroundColor?: ThemeColorKey;
@@ -17,6 +17,8 @@ interface NoteProps {
     blurIntensity?: number;
     containerStyle?: ViewStyle;
     contentStyle?: TextStyle;
+    isEditMode?: boolean;
+    onEditContent?: () => void;
 }
 
 export const Note: React.FC<NoteProps> = ({
@@ -25,11 +27,13 @@ export const Note: React.FC<NoteProps> = ({
     children,
     accentColor = "palette.primary",
     accent = false,
-    backgroundColor = "card.background", // This key handles the 0.60 opacity in your theme config
+    backgroundColor = "card.background",
     textColor = "text.muted",
     headerVariant = "headline",
     containerStyle,
     contentStyle,
+    isEditMode = false,
+    onEditContent,
 }) => {
     const { styles, color } = useStyles((_, c) => ({
         container: {
@@ -53,11 +57,23 @@ export const Note: React.FC<NoteProps> = ({
         defaultText: { fontFamily: "Manrope", fontSize: 16, fontWeight: "300", lineHeight: 26 },
     }));
 
+    const content =
+        typeof children === "string" ? (
+            <ThemedText
+                color={textColor}
+                style={[styles.defaultText, contentStyle]}
+                variant="body"
+            >
+                {children}
+            </ThemedText>
+        ) : (
+            children
+        );
+
     return (
         <View
             style={[styles.container, { backgroundColor: color(backgroundColor) }, containerStyle]}
         >
-            {/* The Accent Bar - using resolved theme color */}
             <View style={accent && [styles.accentBar, { backgroundColor: color(accentColor) }]} />
 
             <View style={styles.innerWrapper}>
@@ -68,17 +84,12 @@ export const Note: React.FC<NoteProps> = ({
                 )}
 
                 <View style={styles.contentContainer}>
-                    {typeof children === "string" ? (
-                        <ThemedText
-                            color={textColor}
-                            style={[styles.defaultText, contentStyle]}
-                            variant="body"
-                        >
-                            {children}
-                        </ThemedText>
-                    ) : (
-                        children
-                    )}
+                    <EditableField
+                        isEditMode={isEditMode}
+                        onPress={onEditContent}
+                    >
+                        {content}
+                    </EditableField>
                 </View>
             </View>
         </View>

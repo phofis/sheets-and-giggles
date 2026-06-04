@@ -12,6 +12,10 @@ export type Characteristics = {
     ideals: BoxListItem[];
     bonds: BoxListItem[];
     flaws: BoxListItem[];
+    personalityTraits: string[];
+    idealsRaw: string[];
+    bondsRaw: string[];
+    flawsRaw: string[];
 };
 
 export function useCharacteristics(character_id: string) {
@@ -71,6 +75,10 @@ export function useCharacteristics(character_id: string) {
                     description: item,
                     accentColor: true,
                 })),
+                personalityTraits: data.personality_traits,
+                idealsRaw: data.ideals,
+                bondsRaw: data.bonds,
+                flawsRaw: data.flaws,
             }
         }
     });

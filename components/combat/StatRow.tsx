@@ -1,15 +1,28 @@
 import { View } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "../themed";
+import { EditableField } from "@/components/editing/EditableField";
 import { ACIcon, InitiativeIcon, SpeedIcon } from "../icons";
 
 type Props = {
     armorClass: number;
     initiative: number;
-    speed: string;
+    speed: number;
+    isEditMode?: boolean;
+    onEditArmorClass?: () => void;
+    onEditInitiative?: () => void;
+    onEditSpeed?: () => void;
 };
 
-export default function StatRow({ armorClass, initiative, speed }: Props) {
+export default function StatRow({
+    armorClass,
+    initiative,
+    speed,
+    isEditMode = false,
+    onEditArmorClass,
+    onEditInitiative,
+    onEditSpeed,
+}: Props) {
     const { styles } = useStyles((t, c) => ({
         row: {
             flexDirection: "row",
@@ -37,47 +50,55 @@ export default function StatRow({ armorClass, initiative, speed }: Props) {
         },
     }));
 
+    const speedLabel = `${speed}ft`;
+
     return (
         <View style={styles.row}>
-            <View style={styles.statBox}>
-                <ACIcon color="palette.tertiary" size={16} />
-                <ThemedText
-                    color="text.heading"
-                    style={styles.statValue}
-                    variant="headline"
-                >
-                    {armorClass}
-                </ThemedText>
-                <ThemedText color="text.muted" style={styles.statLabel}>
-                    ARMOR CLASS
-                </ThemedText>
-            </View>
-            <View style={[styles.statBox, styles.statBoxHighlighted]}>
-                <InitiativeIcon />
-                <ThemedText
-                    color="text.heading"
-                    style={styles.statValue}
-                    variant="headline"
-                >
-                    {initiative >= 0 ? `+${initiative}` : initiative}
-                </ThemedText>
-                <ThemedText color="text.muted" style={styles.statLabel}>
-                    INITIATIVE
-                </ThemedText>
-            </View>
-            <View style={styles.statBox}>
-                <SpeedIcon />
-                <ThemedText
-                    color="text.heading"
-                    style={styles.statValue}
-                    variant="headline"
-                >
-                    {speed}
-                </ThemedText>
-                <ThemedText color="text.muted" style={styles.statLabel}>
-                    SPEED
-                </ThemedText>
-            </View>
+            <EditableField isEditMode={isEditMode} onPress={onEditArmorClass}>
+                <View style={styles.statBox}>
+                    <ACIcon color="palette.tertiary" size={16} />
+                    <ThemedText
+                        color="text.heading"
+                        style={styles.statValue}
+                        variant="headline"
+                    >
+                        {armorClass}
+                    </ThemedText>
+                    <ThemedText color="text.muted" style={styles.statLabel}>
+                        ARMOR CLASS
+                    </ThemedText>
+                </View>
+            </EditableField>
+            <EditableField isEditMode={isEditMode} onPress={onEditInitiative}>
+                <View style={[styles.statBox, styles.statBoxHighlighted]}>
+                    <InitiativeIcon />
+                    <ThemedText
+                        color="text.heading"
+                        style={styles.statValue}
+                        variant="headline"
+                    >
+                        {initiative >= 0 ? `+${initiative}` : initiative}
+                    </ThemedText>
+                    <ThemedText color="text.muted" style={styles.statLabel}>
+                        INITIATIVE
+                    </ThemedText>
+                </View>
+            </EditableField>
+            <EditableField isEditMode={isEditMode} onPress={onEditSpeed}>
+                <View style={styles.statBox}>
+                    <SpeedIcon />
+                    <ThemedText
+                        color="text.heading"
+                        style={styles.statValue}
+                        variant="headline"
+                    >
+                        {speedLabel}
+                    </ThemedText>
+                    <ThemedText color="text.muted" style={styles.statLabel}>
+                        SPEED
+                    </ThemedText>
+                </View>
+            </EditableField>
         </View>
     );
 }

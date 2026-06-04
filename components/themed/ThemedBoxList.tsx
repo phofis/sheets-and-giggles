@@ -1,5 +1,6 @@
 import React from "react";
 import { View, type ViewProps, type ViewStyle } from "react-native";
+import { EditableField } from "@/components/editing/EditableField";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "./ThemedText";
 import { BoxWithGlow } from "../BoxWithGlow";
@@ -17,6 +18,8 @@ export interface ThemedBoxListProps extends ViewProps {
     data: BoxListItem[];
     itemStyle?: ViewStyle;
     glowColor?: ThemeColorKey;
+    isEditMode?: boolean;
+    onItemPress?: (item: BoxListItem, index: number) => void;
 }
 
 export function ThemedBoxList({
@@ -25,6 +28,8 @@ export function ThemedBoxList({
     style,
     itemStyle,
     glowColor = "card.glow",
+    isEditMode = false,
+    onItemPress,
     ...rest
 }: ThemedBoxListProps) {
     const { styles } = useStyles((theme) => ({
@@ -51,25 +56,32 @@ export function ThemedBoxList({
                         glowColor={glowColor}
                         style={[styles.itemBox, itemStyle, item.style]}
                     >
-                        <View style={styles.textContainer}>
-                            {item.title.trim().length > 0 && (
+                        <EditableField
+                            isEditMode={isEditMode}
+                            onPress={
+                                onItemPress ? () => onItemPress(item, index) : undefined
+                            }
+                        >
+                            <View style={styles.textContainer}>
+                                {item.title.trim().length > 0 && (
+                                    <ThemedText
+                                        color="text.heading"
+                                        style={styles.itemTitle}
+                                        variant="label"
+                                    >
+                                        {item.title}
+                                    </ThemedText>
+                                )}
+
                                 <ThemedText
                                     color="text.heading"
-                                    style={styles.itemTitle}
-                                    variant="label"
+                                    style={styles.itemDescription}
+                                    variant="body"
                                 >
-                                    {item.title}
+                                    {item.description}
                                 </ThemedText>
-                            )}
-
-                            <ThemedText
-                                color="text.heading"
-                                style={styles.itemDescription}
-                                variant="body"
-                            >
-                                {item.description}
-                            </ThemedText>
-                        </View>
+                            </View>
+                        </EditableField>
                     </BoxWithGlow>
                 ))}
             </View>

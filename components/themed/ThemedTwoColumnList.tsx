@@ -1,23 +1,25 @@
+import { EditableField } from "@/components/editing/EditableField";
 import { useStyles } from "@/hooks/useStyles";
+import type { ListItem } from "@/types/lists";
 import { View, type ViewProps } from "react-native";
 import { ThemedText } from "./ThemedText";
 
-export interface ListItem {
-    label: string;
-    value: string;
-    highlight?: boolean;
-}
+export type { ListItem };
 
 export interface ThemedTwoColumnListProps extends ViewProps {
     title?: string;
     icon?: React.ElementType;
     data: ListItem[];
+    isEditMode?: boolean;
+    onItemPress?: (item: ListItem, index: number) => void;
 }
 
 export function ThemedTwoColumnList({
     title,
     icon: Icon,
     data,
+    isEditMode = false,
+    onItemPress,
     style,
     ...rest
 }: ThemedTwoColumnListProps) {
@@ -44,18 +46,27 @@ export function ThemedTwoColumnList({
     const rightColumn = data.filter((_, i) => i % 2 !== 0);
 
     const renderItem = (item: ListItem, index: number) => (
-        <View key={index} style={styles.itemRow}>
-            <ThemedText color="text.heading" style={styles.label} variant="body">
-                {item.label}
-            </ThemedText>
-            <ThemedText
-                color={item.highlight ? "palette.secondary" : "text.lively"}
-                style={styles.value}
-                variant="label"
-            >
-                {item.value}
-            </ThemedText>
-        </View>
+        <EditableField
+            key={index}
+            isEditMode={isEditMode}
+            style={styles.itemRow}
+            onPress={
+                onItemPress ? () => onItemPress(item, index) : undefined
+            }
+        >
+            <View style={styles.itemRow}>
+                <ThemedText color="text.heading" style={styles.label} variant="body">
+                    {item.label}
+                </ThemedText>
+                <ThemedText
+                    color={item.highlight ? "palette.secondary" : "text.lively"}
+                    style={styles.value}
+                    variant="label"
+                >
+                    {item.value}
+                </ThemedText>
+            </View>
+        </EditableField>
     );
 
     return (
