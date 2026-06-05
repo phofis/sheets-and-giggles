@@ -12,7 +12,9 @@ import { useCharacterEditor } from "@/hooks/editing/useCharacterEditor";
 import { useFieldEditorModals } from "@/hooks/editing/useFieldEditorModals";
 import {
     biometricPatch,
+    traitArrayAddPatch,
     traitArrayPatch,
+    traitArrayRemovePatch,
     type TraitArrayField,
 } from "@/hooks/editing/characterFieldPatches";
 import type { BoxListItem } from "@/components/themed/ThemedBoxList";
@@ -78,6 +80,28 @@ export default function CharacteristicsScreen() {
             onSubmit: (value) =>
                 updateCharacter.mutate(traitArrayPatch(field, items, index, value)),
         });
+    };
+
+    const openTraitAdd = (
+        field: TraitArrayField,
+        items: string[],
+        sectionLabel: string,
+    ) => {
+        openText({
+            label: `Add ${sectionLabel}`,
+            initialValue: "",
+            placeholder: "Enter text",
+            onSubmit: (value) =>
+                updateCharacter.mutate(traitArrayAddPatch(field, items, value)),
+        });
+    };
+
+    const removeTrait = (
+        field: TraitArrayField,
+        items: string[],
+        index: number,
+    ) => {
+        updateCharacter.mutate(traitArrayRemovePatch(field, items, index));
     };
 
     return (
@@ -168,11 +192,27 @@ export default function CharacteristicsScreen() {
                             </Note>
 
                             <ThemedBoxList
+                                addAccessibilityLabel="Add personality trait"
                                 data={characteristics.traits}
+                                deleteAccessibilityLabel="Delete personality trait"
                                 glowColor="palette.secondary"
                                 isEditMode={isEditMode}
                                 itemStyle={styles.features}
                                 title="Personality Traits"
+                                onAddPress={() =>
+                                    openTraitAdd(
+                                        "personality_traits",
+                                        characteristics.personalityTraits,
+                                        "personality trait",
+                                    )
+                                }
+                                onItemDelete={(index) =>
+                                    removeTrait(
+                                        "personality_traits",
+                                        characteristics.personalityTraits,
+                                        index,
+                                    )
+                                }
                                 onItemPress={(item, index) =>
                                     openTraitEditor(
                                         "personality_traits",
@@ -184,11 +224,23 @@ export default function CharacteristicsScreen() {
                             />
 
                             <ThemedBoxList
+                                addAccessibilityLabel="Add bond"
                                 data={characteristics.bonds}
+                                deleteAccessibilityLabel="Delete bond"
                                 glowColor="palette.tertiary"
                                 isEditMode={isEditMode}
                                 itemStyle={styles.features}
                                 title="Bonds"
+                                onAddPress={() =>
+                                    openTraitAdd(
+                                        "bonds",
+                                        characteristics.bondsRaw,
+                                        "bond",
+                                    )
+                                }
+                                onItemDelete={(index) =>
+                                    removeTrait("bonds", characteristics.bondsRaw, index)
+                                }
                                 onItemPress={(item, index) =>
                                     openTraitEditor(
                                         "bonds",
@@ -200,11 +252,23 @@ export default function CharacteristicsScreen() {
                             />
 
                             <ThemedBoxList
+                                addAccessibilityLabel="Add ideal"
                                 data={characteristics.ideals}
+                                deleteAccessibilityLabel="Delete ideal"
                                 glowColor="palette.tertiary"
                                 isEditMode={isEditMode}
                                 itemStyle={styles.features}
                                 title="Ideals"
+                                onAddPress={() =>
+                                    openTraitAdd(
+                                        "ideals",
+                                        characteristics.idealsRaw,
+                                        "ideal",
+                                    )
+                                }
+                                onItemDelete={(index) =>
+                                    removeTrait("ideals", characteristics.idealsRaw, index)
+                                }
                                 onItemPress={(item, index) =>
                                     openTraitEditor(
                                         "ideals",
@@ -216,11 +280,23 @@ export default function CharacteristicsScreen() {
                             />
 
                             <ThemedBoxList
+                                addAccessibilityLabel="Add flaw"
                                 data={characteristics.flaws}
+                                deleteAccessibilityLabel="Delete flaw"
                                 glowColor="semantic.error"
                                 isEditMode={isEditMode}
                                 itemStyle={styles.features}
                                 title="Flaws"
+                                onAddPress={() =>
+                                    openTraitAdd(
+                                        "flaws",
+                                        characteristics.flawsRaw,
+                                        "flaw",
+                                    )
+                                }
+                                onItemDelete={(index) =>
+                                    removeTrait("flaws", characteristics.flawsRaw, index)
+                                }
                                 onItemPress={(item, index) =>
                                     openTraitEditor(
                                         "flaws",

@@ -60,6 +60,22 @@ export function traitArrayPatch(
     return { [field]: next };
 }
 
+export function traitArrayAddPatch(
+    field: TraitArrayField,
+    items: string[],
+    text: string,
+): CharacterPatch {
+    return { [field]: [...items, text] };
+}
+
+export function traitArrayRemovePatch(
+    field: TraitArrayField,
+    items: string[],
+    index: number,
+): CharacterPatch {
+    return { [field]: items.filter((_, i) => i !== index) };
+}
+
 export function toggleProficientSave(
     current: AbilityKey[],
     key: AbilityKey,
