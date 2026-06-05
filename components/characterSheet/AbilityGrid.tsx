@@ -2,10 +2,17 @@ import React from "react";
 import { View } from "react-native";
 import { ThemedGrid, ThemedText } from "@/components/themed";
 import { BoxWithGlow } from ".././BoxWithGlow";
-import { ABILITY_LABELS , AbilityScores } from "@/types/character";
+import { EditableField } from "@/components/editing/EditableField";
+import { ABILITY_LABELS, AbilityKey, AbilityScores } from "@/types/character";
 import { useStyles } from "@/hooks/useStyles";
 
-export const AbilityGrid = ({ abilities }: { abilities: AbilityScores }) => {
+type Props = {
+    abilities: AbilityScores;
+    isEditMode?: boolean;
+    onEditScore?: (key: AbilityKey) => void;
+};
+
+export const AbilityGrid = ({ abilities, isEditMode = false, onEditScore }: Props) => {
     const { styles } = useStyles((theme) => ({
         abilityLabel: {
             fontSize: 10,
@@ -20,6 +27,11 @@ export const AbilityGrid = ({ abilities }: { abilities: AbilityScores }) => {
             fontWeight: "600",
             fontFamily: theme.typography.headlineFont,
         },
+        scoreRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "flex-end",
+        },
     }));
 
     return (
@@ -33,23 +45,31 @@ export const AbilityGrid = ({ abilities }: { abilities: AbilityScores }) => {
                         <ThemedText color="card.header" style={styles.abilityLabel} variant="body">
                             {label.toUpperCase()}
                         </ThemedText>
-                        <ThemedText
-                            color="card.label"
-                            style={styles.abilityScore}
-                            variant="headline"
+                        <EditableField
+                            isEditMode={isEditMode}
+                            onPress={onEditScore ? () => onEditScore(key) : undefined}
                         >
-                            {abilities[key].score}
-                        </ThemedText>
+                            <View style={styles.scoreRow}>
+                                <ThemedText
+                                    color="card.label"
+                                    style={styles.abilityScore}
+                                    variant="headline"
+                                >
+                                    {abilities[key].score}
+                                </ThemedText>
+                                <ThemedText
+                                    color="card.note"
+                                    style={styles.abilityMod}
+                                    variant="headline"
+                                >
+                                    {abilities[key].mod}
+                                </ThemedText>
+                            </View>
+                        </EditableField>
                     </View>
-                    <ThemedText color="card.note" style={styles.abilityMod} variant="headline">
-                        {abilities[key].mod}
-                    </ThemedText>
                 </BoxWithGlow>
             )}
             rowGap={12}
         />
     );
 };
-
-// TODO: Change the glow and font color when the ability must be underlined
-// TODO: Change the font for the score to "Noto Serif"

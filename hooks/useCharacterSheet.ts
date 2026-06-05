@@ -51,6 +51,8 @@ export type CharacterSheet = {
     savingThrows: ListItem[];
     allSkills: ListEntry[];
     proficientSkills: ListEntry[];
+    proficientSaves: AbilityKey[];
+    proficientSkillsKeys: SkillName[];
 };
 
 export function useCharacterSheet(character_id: string) {
@@ -92,6 +94,7 @@ export function useCharacterSheet(character_id: string) {
                     label,
                     value: formatMod(baseMod + (isProficient ? pb : 0)),
                     highlight: isProficient,
+                    editId: key,
                 };
             });
 
@@ -102,6 +105,7 @@ export function useCharacterSheet(character_id: string) {
                     label: skill,
                     value: formatMod(baseMod + (isProficient ? pb : 0)),
                     state: isProficient ? "active" : "inactive",
+                    editId: skill,
                 };
             });
 
@@ -118,6 +122,8 @@ export function useCharacterSheet(character_id: string) {
                 savingThrows,
                 allSkills,
                 proficientSkills,
+                proficientSaves: data.proficient_saves,
+                proficientSkillsKeys: data.proficient_skills,
             };
         },
     });

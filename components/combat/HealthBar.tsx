@@ -2,15 +2,28 @@ import { View } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { HighlightedView } from "../HighlightedView";
 import { ThemedText } from "../themed";
+import { EditableField } from "@/components/editing/EditableField";
 
 type Props = {
     currentHp: number;
     maxHp: number;
     tempHp: number;
+    isEditMode?: boolean;
+    onEditCurrentHp?: () => void;
+    onEditMaxHp?: () => void;
+    onEditTempHp?: () => void;
 };
 
-export default function HealthBar({ currentHp, maxHp, tempHp }: Props) {
-    const ratio = Math.min(currentHp / maxHp, 1);
+export default function HealthBar({
+    currentHp,
+    maxHp,
+    tempHp,
+    isEditMode = false,
+    onEditCurrentHp,
+    onEditMaxHp,
+    onEditTempHp,
+}: Props) {
+    const ratio = maxHp > 0 ? Math.min(currentHp / maxHp, 1) : 0;
 
     const { styles } = useStyles((t, c) => ({
         container: {
@@ -64,26 +77,32 @@ export default function HealthBar({ currentHp, maxHp, tempHp }: Props) {
                 <ThemedText color="text.body" variant="label">
                     Health Points
                 </ThemedText>
-                <View style={styles.tempBadge}>
-                    <ThemedText color="palette.secondary" variant="label">
-                        TEMP HP{" "}
+                <EditableField isEditMode={isEditMode} onPress={onEditTempHp}>
+                    <View style={styles.tempBadge}>
                         <ThemedText color="palette.secondary" variant="label">
-                            +{tempHp}
+                            TEMP HP{" "}
+                            <ThemedText color="palette.secondary" variant="label">
+                                +{tempHp}
+                            </ThemedText>
                         </ThemedText>
-                    </ThemedText>
-                </View>
+                    </View>
+                </EditableField>
             </View>
             <View style={styles.hpRow}>
-                <ThemedText
-                    color="text.heading"
-                    style={styles.hpValue}
-                    variant="headline"
-                >
-                    {currentHp}
-                </ThemedText>
-                <ThemedText color="text.muted" style={styles.hpMax}>
-                    / {maxHp}
-                </ThemedText>
+                <EditableField isEditMode={isEditMode} onPress={onEditCurrentHp}>
+                    <ThemedText
+                        color="text.heading"
+                        style={styles.hpValue}
+                        variant="headline"
+                    >
+                        {currentHp}
+                    </ThemedText>
+                </EditableField>
+                <EditableField isEditMode={isEditMode} onPress={onEditMaxHp}>
+                    <ThemedText color="text.muted" style={styles.hpMax}>
+                        / {maxHp}
+                    </ThemedText>
+                </EditableField>
             </View>
             <View style={styles.track}>
                 <View style={styles.fill} />

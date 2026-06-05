@@ -1,11 +1,24 @@
 import { ThemedHeadline, ThemedStatContainer, ThemedText, ThemedView } from "@/components/themed";
+import { EditableField } from "@/components/editing/EditableField";
 import { View } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { CharacterHeader } from "@/types/character";
 
+type Props = {
+    characterHeader: CharacterHeader;
+    isEditMode?: boolean;
+    onEditName?: () => void;
+    onEditLevel?: () => void;
+    onEditInspiration?: () => void;
+};
 
-
-export const Header = ({characterHeader}:{characterHeader:CharacterHeader} ) => {
+export const Header = ({
+    characterHeader,
+    isEditMode = false,
+    onEditName,
+    onEditLevel,
+    onEditInspiration,
+}: Props) => {
     const { styles } = useStyles((theme, c) => ({
         screen: { flex: 1, marginBottom: 20, marginTop: 35 },
         scrollView: { flex: 1, alignSelf: "stretch" },
@@ -48,38 +61,40 @@ export const Header = ({characterHeader}:{characterHeader:CharacterHeader} ) => 
 
     return (
         <ThemedView>
-            {/** IDENTITY PROFILE TAG */}
             <ThemedView style={styles.labelContainer}>
                 <ThemedText color="text.muted" style={styles.labelText}>
                     IDENTITY PROFILE
                 </ThemedText>
             </ThemedView>
 
-            {/** CHARACTER NAME */}
             <ThemedView style={styles.heading}>
-                <ThemedHeadline color="text.heading" style={styles.headingTitle}>
-                    {characterHeader.name}
-                </ThemedHeadline>
+                <EditableField isEditMode={isEditMode} onPress={onEditName}>
+                    <ThemedHeadline color="text.heading" style={styles.headingTitle}>
+                        {characterHeader.name}
+                    </ThemedHeadline>
+                </EditableField>
             </ThemedView>
 
-            {/** TODO:  fix these colors */}
             <View style={styles.headerPills}>
-                <ThemedStatContainer
-                    backgroundColor="buttonPrimary.background"
-                    label="Level"
-                    labelColor="buttonPrimary.text"
-                    mode="pill"
-                    value={`${characterHeader.level} ${characterHeader.class}`}
-                />
-                <ThemedStatContainer
-                    backgroundColor="buttonSecondary.background"
-                    label="Inspiration:"
-                    labelColor="buttonSecondary.text"
-                    mode="pill"
-                    value={characterHeader.inspiration}
-                />
+                <EditableField isEditMode={isEditMode} onPress={onEditLevel}>
+                    <ThemedStatContainer
+                        backgroundColor="buttonPrimary.background"
+                        label="Level"
+                        labelColor="buttonPrimary.text"
+                        mode="pill"
+                        value={`${characterHeader.level} ${characterHeader.class}`}
+                    />
+                </EditableField>
+                <EditableField isEditMode={isEditMode} onPress={onEditInspiration}>
+                    <ThemedStatContainer
+                        backgroundColor="buttonSecondary.background"
+                        label="Inspiration:"
+                        labelColor="buttonSecondary.text"
+                        mode="pill"
+                        value={characterHeader.inspiration}
+                    />
+                </EditableField>
             </View>
-            {/** TODO: consider adding a level here */}
         </ThemedView>
     );
 };

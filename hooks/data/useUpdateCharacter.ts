@@ -57,6 +57,8 @@ export function useUpdateCharacter(characterId: string) {
 
         onSettled: () => {
             queryClient.invalidateQueries({ queryKey: characterQueryKey(characterId) });
+            queryClient.invalidateQueries({ queryKey: ["characterSheet", characterId] });
+            queryClient.invalidateQueries({ queryKey: ["characteristics", characterId] });
         },
     });
 }
