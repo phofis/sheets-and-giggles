@@ -79,7 +79,10 @@ export type Database = {
           description: string
           id: string
           name: string
+          quantity: number
+          rarity: Database["public"]["Enums"]["item_rarity"]
           requires_attunement: boolean
+          tag: Database["public"]["Enums"]["item_tag"]
           updated_at: string
         }
         Insert: {
@@ -89,7 +92,10 @@ export type Database = {
           description: string
           id?: string
           name: string
+          quantity?: number
+          rarity?: Database["public"]["Enums"]["item_rarity"]
           requires_attunement?: boolean
+          tag?: Database["public"]["Enums"]["item_tag"]
           updated_at?: string
         }
         Update: {
@@ -99,7 +105,10 @@ export type Database = {
           description?: string
           id?: string
           name?: string
+          quantity?: number
+          rarity?: Database["public"]["Enums"]["item_rarity"]
           requires_attunement?: boolean
+          tag?: Database["public"]["Enums"]["item_tag"]
           updated_at?: string
         }
         Relationships: [
@@ -371,6 +380,42 @@ export type Database = {
           },
         ]
       }
+      class_spells: {
+        Row: {
+          class_id: string
+          created_at: string
+          spell_id: string
+          updated_at: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          spell_id: string
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          spell_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_spells_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_spells_spell_id_fkey"
+            columns: ["spell_id"]
+            isOneToOne: false
+            referencedRelation: "spells"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       classes: {
         Row: {
           created_at: string
@@ -540,7 +585,7 @@ export type Database = {
           ritual: boolean
           rolls: string
           saving_throw: boolean
-          school_of_magic: string
+          school_of_magic: Database["public"]["Enums"]["school_of_magic"]
           tag: string
           updated_at: string
         }
@@ -559,7 +604,7 @@ export type Database = {
           ritual?: boolean
           rolls?: string
           saving_throw?: boolean
-          school_of_magic: string
+          school_of_magic: Database["public"]["Enums"]["school_of_magic"]
           tag?: string
           updated_at?: string
         }
@@ -578,7 +623,7 @@ export type Database = {
           ritual?: boolean
           rolls?: string
           saving_throw?: boolean
-          school_of_magic?: string
+          school_of_magic?: Database["public"]["Enums"]["school_of_magic"]
           tag?: string
           updated_at?: string
         }
@@ -820,6 +865,27 @@ export type Database = {
         | "race"
         | "character"
         | "background"
+        | "other"
+        | "feat"
+      item_rarity:
+        | "Common"
+        | "Uncommon"
+        | "Rare"
+        | "Very Rare"
+        | "Legendary"
+        | "Artifact"
+        | "None"
+      item_tag: "Weapon" | "Armor" | "Accessory" | "Scroll" | "Potion" | "Other"
+      school_of_magic:
+        | "Evocation"
+        | "Conjuration"
+        | "Abjuration"
+        | "Divination"
+        | "Enchantment"
+        | "Illusion"
+        | "Necromancy"
+        | "Transmutation"
+        | "Other"
       skill_name:
         | "Acrobatics"
         | "Animal Handling"
@@ -986,6 +1052,29 @@ export const Constants = {
         "race",
         "character",
         "background",
+        "other",
+        "feat",
+      ],
+      item_rarity: [
+        "Common",
+        "Uncommon",
+        "Rare",
+        "Very Rare",
+        "Legendary",
+        "Artifact",
+        "None",
+      ],
+      item_tag: ["Weapon", "Armor", "Accessory", "Scroll", "Potion", "Other"],
+      school_of_magic: [
+        "Evocation",
+        "Conjuration",
+        "Abjuration",
+        "Divination",
+        "Enchantment",
+        "Illusion",
+        "Necromancy",
+        "Transmutation",
+        "Other",
       ],
       skill_name: [
         "Acrobatics",
