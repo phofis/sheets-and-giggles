@@ -53,7 +53,7 @@ export default function LandingView() {
                     <LandingActionCard
                         buttonText="Open Vault"
                         colorMotif="palette.tertiary"
-                        description="Access your roster of 12 active heroes."
+                        description="Access your roster of active heroes."
                         icon={
                             <CharacterIcon
                                 color={"palette.tertiary"}
