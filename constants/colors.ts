@@ -42,6 +42,15 @@ const COLORS = {
     yellow: "#FACC15",
     red: "#EF4444",
     blue: "#3B82F6",
+    // ── Rarity ─────────────────────────────────────────────────
+    none: "#9CA3AF",
+    common: "#9CA3AF",
+    uncommon: "#10B981",
+    rare: "#3B82F6",
+    veryRare: "#8B5CF6",
+    legendary: "#F59E0B",
+    artifact: "#E6CC80",
+
 } as const;
 
 export default COLORS;

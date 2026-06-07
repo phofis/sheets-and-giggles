@@ -1,23 +1,38 @@
 import { ScrollView, View } from "react-native";
-import { useState } from "react";
+import React, { useState } from "react";
 import { ThemedHeadline, ThemedText, ThemedView } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
-import { CollapsibleCard } from "@/components/CollapsibleCard";
 import { Treasury } from "@/components/inventory/Treasury";
 import { Attunement } from "@/components/inventory/Attunement";
-import { EditableField } from "@/components/editing/EditableField";
+import { InventoryToolbar } from "@/components/inventory/InventoryToolbar";
+import { InventoryItemCard } from "@/components/inventory/InventoryItemCard";
 import { EditScreenShell } from "@/components/editing/EditScreenShell";
-import { useCharacterItems } from "@/hooks/data";
+import { useCharacterItems, useCreateCharacterItem } from "@/hooks/data";
 import { useCharacterId } from "@/context/CharacterIdContext";
-import { useCharacterEditor } from "@/hooks/editing/useCharacterEditor";
-import { useFieldEditorModals } from "@/hooks/editing/useFieldEditorModals";
 import { useMemo } from "react";
 
 export default function InventoryScreen() {
     const characterId = useCharacterId();
     const [isEditMode, setIsEditMode] = useState(false);
-    const { updateCharacterItem } = useCharacterEditor(characterId);
-    const { openText, modals } = useFieldEditorModals();
+    const createCharacterItem = useCreateCharacterItem(characterId);
+
+    const handleCreateItem = (item: {
+        name: string;
+        description?: string;
+        rarity?: string;
+        tag?: string;
+        quantity?: number;
+        requires_attunement?: boolean;
+    }) => {
+        createCharacterItem.mutate({
+            name: item.name,
+            description: item.description ?? "",
+            rarity: (item.rarity?.trim() ? item.rarity : "None") as any,
+            tag: (item.tag?.trim() ? item.tag : "") as any,
+            quantity: item.quantity ?? 1,
+            requires_attunement: item.requires_attunement ?? false,
+        } as any);
+    };
 
     const { styles } = useStyles((t, c) => ({
         screen: {
@@ -70,16 +85,41 @@ export default function InventoryScreen() {
             alignItems: "center",
             marginTop: t.spacing.md,
         },
+        commonSection: {
+            marginTop: t.spacing.lg,
+            padding: t.spacing.md,
+            borderRadius: t.borderRadius.md,
+            backgroundColor: c("surface.surfaceElevated"),
+        },
+        commonItemRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingVertical: t.spacing.xs,
+        },
+        commonItemName: {
+            flex: 1,
+            fontSize: 14,
+        },
+        commonItemQuantity: {
+            fontSize: 12,
+            color: c("text.muted"),
+            marginLeft: t.spacing.sm,
+        },
     }));
 
     const { data: items, isLoading } = useCharacterItems(characterId);
+    const commonItems = useMemo(
+        () => (items ?? []).filter((i) => i.rarity === "None"),
+        [items],
+    );
     const magicItems = useMemo(
         () => (items ?? []).filter((i) => i.rarity !== "None"),
         [items],
     );
     const attunedItems = useMemo(
-        () => (items ?? []).filter((i) => i.attuned),
-        [items],
+        () => (magicItems ?? []).filter((i) => i.attuned),
+        [magicItems],
     );
 
     return (
@@ -89,13 +129,12 @@ export default function InventoryScreen() {
             onToggleEditMode={() => setIsEditMode((v) => !v)}
         >
             <ThemedView style={styles.screen}>
-                {modals}
                 <ScrollView
                     contentContainerStyle={styles.scrollContent}
                     showsVerticalScrollIndicator={false}
                 >
                     <View style={styles.sectionSpacing}>
-                        <Treasury />
+                        <Treasury isEditMode={isEditMode} />
                     </View>
 
                     <View style={styles.sectionSpacing}>
@@ -104,95 +143,27 @@ export default function InventoryScreen() {
                         />
                     </View>
 
-                    <View style={[styles.inventoryHeader, styles.sectionSpacing]}>
+                    <View
+                        style={[styles.inventoryHeader, styles.sectionSpacing]}
+                    >
                         <ThemedHeadline color="text.heading">
                             Inventory
                         </ThemedHeadline>
                     </View>
 
-                    <View style={[styles.searchRow, styles.sectionSpacing]}>
-                        <View style={styles.filterPill}>
-                            <ThemedText color="text.muted" variant="body">
-                                All items
-                            </ThemedText>
-                        </View>
-                        <View style={styles.filterPill}>
-                            <ThemedText color="text.muted" variant="body">
-                                Sort
-                            </ThemedText>
-                        </View>
-                    </View>
+                    <InventoryToolbar
+                        search=""
+                        onSearchChange={() => {}}
+                        onFilterPress={() => {}}
+                        onCreateItem={handleCreateItem}
+                    />
 
                     {!isLoading &&
                         (items ?? []).map((item) => (
-                            <CollapsibleCard
+                            <InventoryItemCard
                                 key={item.id}
-                                fullContent={
-                                    <View style={styles.itemStatRow}>
-                                        <EditableField
-                                            isEditMode={isEditMode}
-                                            onPress={() =>
-                                                openText({
-                                                    label: "Item description",
-                                                    initialValue: item.description,
-                                                    onSubmit: (value) =>
-                                                        updateCharacterItem.mutate({
-                                                            itemId: item.id,
-                                                            patch: { description: value },
-                                                        }),
-                                                })
-                                            }
-                                        >
-                                            <ThemedText color="text.body" variant="body">
-                                                {item.description}
-                                            </ThemedText>
-                                        </EditableField>
-                                    </View>
-                                }
-                                header={
-                                    <View>
-                                        <View style={styles.itemHeader}>
-                                            <EditableField
-                                                isEditMode={isEditMode}
-                                                onPress={() =>
-                                                    openText({
-                                                        label: "Item name",
-                                                        initialValue: item.name,
-                                                        onSubmit: (value) =>
-                                                            updateCharacterItem.mutate({
-                                                                itemId: item.id,
-                                                                patch: { name: value },
-                                                            }),
-                                                    })
-                                                }
-                                            >
-                                                <ThemedText
-                                                    color="text.heading"
-                                                    variant="label"
-                                                >
-                                                    {item.name}
-                                                </ThemedText>
-                                            </EditableField>
-                                        </View>
-                                        <View style={styles.itemMeta}>
-                                            {item.attuned && (
-                                                <ThemedText
-                                                    color="semantic.success"
-                                                    variant="body"
-                                                >
-                                                    Attuned
-                                                </ThemedText>
-                                            )}
-                                        </View>
-                                    </View>
-                                }
-                                shortContent={
-                                    <ThemedText color="text.body" variant="body">
-                                        {item.description.length > 50
-                                            ? item.description.slice(0, 50)
-                                            : item.description}
-                                    </ThemedText>
-                                }
+                                item={item}
+                                isEditMode={isEditMode}
                             />
                         ))}
                 </ScrollView>

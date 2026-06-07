@@ -4,22 +4,19 @@ import { Search, Filter, Plus, Trash2 } from "lucide-react-native";
 import { ThemedText } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
 
-type InventoryToolbarProps = {
+type ToolbarProps = {
     search: string;
     onSearchChange: (value: string) => void;
-
     onAddPress?: () => void;
-    onDeletePress?: () => void;
     onFilterPress?: () => void;
 };
 
-export function InventoryToolbar({
+export function Toolbar({
     search,
     onSearchChange,
     onAddPress,
-    onDeletePress,
     onFilterPress,
-}: InventoryToolbarProps) {
+}: ToolbarProps) {
     const { styles, color} = useStyles((t, c) => ({
         container: {
             flexDirection: "row",
@@ -81,13 +78,6 @@ export function InventoryToolbar({
                 onPress={onAddPress}
             >
                 <Plus size={18} color={color("text.body")} />
-            </Pressable>
-
-            <Pressable
-                style={styles.actionButton}
-                onPress={onDeletePress}
-            >
-                <Trash2 size={18} color={color("semantic.error")} />
             </Pressable>
         </View>
     );
