@@ -1,10 +1,16 @@
 import React, { useState } from "react";
-import { ActivityIndicator, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Platform, TouchableOpacity, View } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "@/components/themed";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { supabase } from "@/lib/supabase";
-import * as Linking from "expo-linking";
+import {
+    completeOAuthSignIn,
+    getOAuthRedirectUrl,
+    parseTokensFromOAuthUrl,
+    storePendingOAuthProvider,
+    type OAuthProvider,
+} from "@/lib/auth/oauth";
 import { useRouter } from "expo-router";
 import * as WebBrowser from "expo-web-browser";
 import { GoogleIcon } from "../icons/GoogleIcon";
@@ -12,12 +18,10 @@ import { AppleIcon } from "../icons/AppleIcon";
 
 WebBrowser.maybeCompleteAuthSession();
 
-type Provider = "google" | "apple";
-
 export const SocialPanel = () => {
     const { color: c } = useAppTheme();
     const router = useRouter();
-    const [busy, setBusy] = useState<Provider | null>(null);
+    const [busy, setBusy] = useState<OAuthProvider | null>(null);
     const [error, setError] = useState<string | null>(null);
 
     const { styles } = useStyles((t) => ({
@@ -56,13 +60,27 @@ export const SocialPanel = () => {
         },
     }));
 
-    const signIn = async (provider: Provider) => {
+    const signIn = async (provider: OAuthProvider) => {
         if (busy) return;
         setBusy(provider);
         setError(null);
 
         try {
-            const redirectTo = Linking.createURL("/auth-callback");
+            const redirectTo = getOAuthRedirectUrl();
+
+            if (Platform.OS === "web") {
+                storePendingOAuthProvider(provider);
+
+                const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
+                    provider,
+                    options: { redirectTo },
+                });
+                if (oauthError) throw oauthError;
+                if (!data?.url) throw new Error("Supabase did not return an OAuth URL");
+
+                window.location.assign(data.url);
+                return;
+            }
 
             const { data, error: oauthError } = await supabase.auth.signInWithOAuth({
                 provider,
@@ -77,45 +95,8 @@ export const SocialPanel = () => {
                 throw new Error(`OAuth flow ended unexpectedly (${result.type})`);
             }
 
-            const callbackUrl = new URL(result.url);
-            const rawParams = callbackUrl.hash.startsWith("#")
-                ? callbackUrl.hash.slice(1)
-                : callbackUrl.search.replace(/^\?/, "");
-            const params = new URLSearchParams(rawParams);
-            const accessToken = params.get("access_token");
-            const refreshToken = params.get("refresh_token");
-            if (!accessToken || !refreshToken) {
-                throw new Error("Missing tokens in OAuth callback");
-            }
-
-            const { data: sessionData, error: sessionError } = await supabase.auth.setSession({
-                access_token: accessToken,
-                refresh_token: refreshToken,
-            });
-            if (sessionError) throw sessionError;
-            const authUser = sessionData.user;
-            if (!authUser) throw new Error("No user after setSession");
-
-            const meta = (authUser.user_metadata ?? {}) as Record<string, unknown>;
-            const displayName =
-                (typeof meta.full_name === "string" && meta.full_name) ||
-                (typeof meta.name === "string" && meta.name) ||
-                authUser.email ||
-                "Adventurer";
-
-            const { error: upsertError } = await supabase.from("users").upsert(
-                {
-                    id: authUser.id,
-                    auth_provider: provider,
-                    auth_provider_id: typeof meta.sub === "string" ? meta.sub : authUser.id,
-                    email: authUser.email ?? null,
-                    display_name: displayName,
-                    avatar_url: typeof meta.avatar_url === "string" ? meta.avatar_url : null,
-                },
-                { onConflict: "id" },
-            );
-            if (upsertError) throw upsertError;
-
+            const { accessToken, refreshToken } = parseTokensFromOAuthUrl(result.url);
+            await completeOAuthSignIn(provider, accessToken, refreshToken);
             router.replace("/landing");
         } catch (caught) {
             setError(caught instanceof Error ? caught.message : "Sign-in failed");
