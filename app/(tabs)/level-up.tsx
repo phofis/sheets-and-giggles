@@ -70,7 +70,6 @@ export default function LevelUpScreen() {
     const router = useRouter();
     const characterId = useCharacterId();
 
-    // ─── Asynchronous Data Pipelines ─────────────────────────────────────────
     const { data: characterSheet, isLoading } = useCharacterSheet(characterId);
     const { updateCharacter } = useCharacterEditor(characterId);
 
@@ -87,8 +86,6 @@ export default function LevelUpScreen() {
             gap: theme.spacing.md,
             justifyContent: "center",
             alignItems: "center",
-
-
         },
         fabEdit: {
             backgroundColor: c("surface.background") || "#1e1e2e",
@@ -100,7 +97,7 @@ export default function LevelUpScreen() {
             borderColor: c("surface.note") || "#313244",
         },
         fabNext: {
-            backgroundColor: c("semantic.success") || "#a6e3a1",
+            backgroundColor: c("card.glow") || "#a6e3a1",
             padding: theme.spacing.md,
             borderRadius: 12,
             justifyContent: "center",
@@ -111,7 +108,6 @@ export default function LevelUpScreen() {
         spellsAccent: { color: c("palette.tertiary") || "#cba6f7" },
     }));
 
-    // ─── State Vectors ───────────────────────────────────────────────────────
     const [baseScores, setBaseScores] = useState<StrictAbilityScores | null>(null);
     const [abilityScores, setAbilityScores] = useState<StrictAbilityScores | null>(null);
     const [hpIncrease, setHpIncrease] = useState<number>(9);
@@ -119,8 +115,6 @@ export default function LevelUpScreen() {
 
     const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
     const [selectedSubclassId, setSelectedSubclassId] = useState<string | null>(null);
-
-    // S: The state vector of selected spells
     const [spells, setSpells] = useState<string[]>([]);
 
     useEffect(() => {
@@ -139,7 +133,6 @@ export default function LevelUpScreen() {
         }
     }, [characterSheet, baseScores]);
 
-    // ─── Derived Mathematical Constraints ────────────────────────────────────
     const spentPoints = abilityScores && baseScores
         ? (Object.keys(abilityScores) as Array<keyof AbilityScores>).reduce(
             (sum, k) => sum + (abilityScores[k] - baseScores[k]),
@@ -153,7 +146,6 @@ export default function LevelUpScreen() {
         ? (Object.keys(abilityScores) as Array<keyof AbilityScores>).some(k => abilityScores[k] < baseScores[k])
         : false;
 
-    // Extend terminal gate to require feature and subclass selections
     const isFormValid = availablePoints === 0 && !hasInvalidReductions && selectedFeatureId !== null && selectedSubclassId !== null;
 
     let badgeText = `${availablePoints} Points Available`;
@@ -170,18 +162,16 @@ export default function LevelUpScreen() {
         badgeType = "default";
     }
 
-    // Compute the relative complement (C \ S) for the dropdown selection options
+
     const availableSpellOptions = useMemo(() => {
         return MOCK_SPELLS_CATALOG
             .filter(spell => !spells.includes(spell.id))
             .map(spell => ({
                 id: spell.id,
                 label: spell.name,
-                value: spell.id, // Strictly binding to the ID scalar
+                value: spell.id,
             }));
     }, [spells]);
-
-    // ─── Mutation Handlers ───────────────────────────────────────────────────
 
     const handleScoreChange = <K extends keyof AbilityScores>(key: K, proposedValue: number) => {
         setAbilityScores((prev) => {
@@ -202,12 +192,12 @@ export default function LevelUpScreen() {
     };
 
     const handleFeatureSelect = (id: string) => {
-        console.log(`[LevelUp Routing] Feature Selected: ${id}`);
+        // console.log(`[LevelUp Routing] Feature Selected: ${id}`);
         setSelectedFeatureId(id);
     };
 
     const handleSubclassSelect = (id: string) => {
-        console.log(`[LevelUp Routing] Subclass Selected: ${id}`);
+        // console.log(`[LevelUp Routing] Subclass Selected: ${id}`);
         setSelectedSubclassId(id);
     };
 
@@ -234,8 +224,6 @@ export default function LevelUpScreen() {
                 int_score: abilityScores.int,
                 wis_score: abilityScores.wis,
                 cha_score: abilityScores.cha,
-                // You must integrate hpIncrease, selectedFeatureId, selectedSubclassId, and spells here 
-                // mapped to your database schema requirements.
             } as any,
             {
                 onSuccess: () => {
@@ -244,8 +232,6 @@ export default function LevelUpScreen() {
             }
         );
     };
-
-    // ─── Render Pipeline ─────────────────────────────────────────────────────
 
     if (isLoading || !abilityScores) {
         return (
@@ -299,8 +285,7 @@ export default function LevelUpScreen() {
                     title="Pick Subclass"
                     onSelect={handleSubclassSelect}
                 />
-
-                {/* ─── Injected Spell Mapping Matrix ─── */}
+    
                 <SectionHeader title="Pick Spells" />
 
                 <SelectionSectionCard
@@ -341,8 +326,8 @@ export default function LevelUpScreen() {
                         ]}
                     >
 
-                        <ThemedText style={{ color: "#11111b", fontWeight: "900", fontSize: 16 }}>
-                            ✓ Save Changes
+                        <ThemedText style={{ fontWeight: "900", fontSize: 16 }}>
+                            ✓ Level Up
                         </ThemedText>
 
                     </TouchableOpacity>

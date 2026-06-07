@@ -1,5 +1,5 @@
 import { ThemedHeadline, ThemedText } from "@/components/themed";
-import { View} from "react-native";
+import { View } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { BookIcon } from '@/components/icons'
 
@@ -65,7 +65,7 @@ export const MainHeader = () => {
 
             {/* Tagline */}
             <ThemedText color="text.muted" style={styles.subtext}>
-                The high-fidelity digital artifact for your next legendary tabletop campaign. (change this subheader i beg you)
+                A clean, modern tool for managing your Dungeons & Dragons campaigns.
             </ThemedText>
         </View>
     );

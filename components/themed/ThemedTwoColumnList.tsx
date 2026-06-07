@@ -36,6 +36,7 @@ export function ThemedTwoColumnList({
             borderBottomWidth: 0.5,
             borderBottomColor: c("border.subtle"),
             paddingBottom: 4,
+            width: "100%"
         },
         label: { fontSize: 16, opacity: 0.85 },
         value: { fontSize: 16 },

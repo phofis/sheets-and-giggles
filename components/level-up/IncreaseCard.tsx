@@ -12,17 +12,17 @@ interface IncreaseCardProps {
 export function IncreaseCard({ value, onIncrease, onDecrease }: IncreaseCardProps) {
     const { styles } = useStyles((t, c) => ({
         card: {
-            backgroundColor: c("surface.card") || "#1e1e2e",
+            backgroundColor: c("card.background") || "#1e1e2e",
             borderRadius: t.spacing.md,
             padding: t.spacing.lg,
             borderWidth: 1,
-            borderColor: c("surface.border") || "#313244",
+            borderColor: c("card.note") || "#313244",
         },
         title: {
             fontSize: 16,
             fontWeight: "bold",
             marginBottom: t.spacing.xs,
-            color: c("text.primary") || "#cdd6f4",
+            color: c("card.header") || "#cdd6f4",
         },
         description: {
             fontSize: 14,
@@ -34,7 +34,7 @@ export function IncreaseCard({ value, onIncrease, onDecrease }: IncreaseCardProp
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
-            backgroundColor: c("surface.input") || "#181825",
+            backgroundColor: c("surface.surfaceElevated") || "#181825",
             borderRadius: 8,
             alignSelf: "flex-start",
             padding: 4,
@@ -42,21 +42,21 @@ export function IncreaseCard({ value, onIncrease, onDecrease }: IncreaseCardProp
         },
         button: {
             padding: t.spacing.sm,
-            backgroundColor: c("surface.button") || "#11111b",
+            backgroundColor: c("surface.overlay") || "#11111b",
             borderRadius: 6,
             width: 36,
             alignItems: "center",
             justifyContent: "center",
         },
         buttonText: {
-            color: c("text.primary") || "#cdd6f4",
+            color: c("text.onPrimary") || "#cdd6f4",
             fontSize: 16,
             fontWeight: "bold",
         },
         valueText: {
             fontSize: 20,
             fontWeight: "bold",
-            color: c("text.primary") || "#cdd6f4",
+            color: c("text.muted") || "#cdd6f4",
         }
     }));
 
