@@ -93,7 +93,7 @@ export function useCharacterMutation<TData, TInput, TResponse = TData>(
 
 // ─── Catalog query helper ────────────────────────────────────────────────────
 
-const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+const TWENTY_FOUR_HOURS = 0 // TODO: change back to 24h  once testing is over
 
 export function useCatalogQuery<TData>(
     catalogName: string,
