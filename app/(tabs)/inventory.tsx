@@ -156,7 +156,6 @@ export default function InventoryScreen() {
                         onSearchChange={() => {}}
                         onFilterPress={() => {}}
                         onCreateItem={handleCreateItem}
-                        onDeletePress={() => {}}
                     />
 
                     {!isLoading &&
