@@ -23,7 +23,7 @@ import {
 
 SplashScreen.preventAutoHideAsync();
 
-const PUBLIC_ROUTES = new Set(["login", "signup"]);
+const PUBLIC_ROUTES = new Set(["login", "signup", "auth-callback"]);
 
 function useProtectedRoute() {
     const { session, loading } = useAuth();
