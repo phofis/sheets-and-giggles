@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      actions: {
+        Row: {
+          action_type: Database["public"]["Enums"]["action_type"]
+          amount: number
+          class_id: string
+          created_at: string
+          id: string
+          level: number
+          spellslot_level: number | null
+          updated_at: string
+        }
+        Insert: {
+          action_type: Database["public"]["Enums"]["action_type"]
+          amount: number
+          class_id: string
+          created_at?: string
+          id?: string
+          level: number
+          spellslot_level?: number | null
+          updated_at?: string
+        }
+        Update: {
+          action_type?: Database["public"]["Enums"]["action_type"]
+          amount?: number
+          class_id?: string
+          created_at?: string
+          id?: string
+          level?: number
+          spellslot_level?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "actions_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       character_features: {
         Row: {
           assigned_at: string
@@ -847,6 +888,7 @@ export type Database = {
     }
     Enums: {
       ability_score: "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA"
+      action_type: "add_spell" | "add_cantrip" | "add_spellslot"
       alignment:
         | "lawful_good"
         | "neutral_good"
@@ -1033,6 +1075,7 @@ export const Constants = {
   public: {
     Enums: {
       ability_score: ["STR", "DEX", "CON", "INT", "WIS", "CHA"],
+      action_type: ["add_spell", "add_cantrip", "add_spellslot"],
       alignment: [
         "lawful_good",
         "neutral_good",

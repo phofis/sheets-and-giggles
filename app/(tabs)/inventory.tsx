@@ -73,6 +73,10 @@ export default function InventoryScreen() {
     }));
 
     const { data: items, isLoading } = useCharacterItems(characterId);
+    const magicItems = useMemo(
+        () => (items ?? []).filter((i) => i.rarity !== "None"),
+        [items],
+    );
     const attunedItems = useMemo(
         () => (items ?? []).filter((i) => i.attuned),
         [items],
