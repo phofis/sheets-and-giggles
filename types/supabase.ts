@@ -266,6 +266,8 @@ export type Database = {
           con_score: number
           copper: number
           created_at: string
+          death_save_fail: number
+          death_save_success: number
           dex_score: number
           experience: number
           eyes: string
@@ -311,6 +313,8 @@ export type Database = {
           con_score: number
           copper?: number
           created_at?: string
+          death_save_fail?: number
+          death_save_success?: number
           dex_score: number
           experience?: number
           eyes: string
@@ -356,6 +360,8 @@ export type Database = {
           con_score?: number
           copper?: number
           created_at?: string
+          death_save_fail?: number
+          death_save_success?: number
           dex_score?: number
           experience?: number
           eyes?: string
