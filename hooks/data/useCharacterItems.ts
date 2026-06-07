@@ -2,7 +2,7 @@ import { supabase } from "@/lib/supabase";
 import type { Database } from "@/types/supabase";
 import { useCharacterQuery, useCharacterMutation } from "./factory";
 
-type ItemRow = Database["public"]["Tables"]["character_items"]["Row"];
+export type ItemRow = Database["public"]["Tables"]["character_items"]["Row"];
 type ItemInsert = Database["public"]["Tables"]["character_items"]["Insert"];
 type ItemUpdate = Database["public"]["Tables"]["character_items"]["Update"];
 
@@ -11,7 +11,8 @@ export function useCharacterItems(characterId: string | undefined) {
         const { data, error } = await supabase
             .from("character_items")
             .select("*")
-            .eq("character_id", id);
+            .eq("character_id", id)
+            .order("created_at", { ascending: true });
         if (error) throw error;
         return data;
     });

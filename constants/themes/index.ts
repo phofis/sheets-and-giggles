@@ -72,13 +72,28 @@ export interface ThemeSemanticColors {
     error: string;
     info: string;
 }
-
+export interface ThemeMoneyColors {
+    gold: string;
+    silver: string;
+    copper: string;
+}
+export interface ThemeRarityColors {
+    none: string;
+    common: string;
+    uncommon: string;
+    rare: string;
+    veryRare: string;
+    legendary: string;
+    artifact: string;
+}
 export interface ThemeColors {
     palette: ThemePaletteColors;
     surface: ThemeSurfaceColors;
     text: ThemeTextColors;
     border: ThemeBorderColors;
     semantic: ThemeSemanticColors;
+    money: ThemeMoneyColors;
+    rarity: ThemeRarityColors;
     card: ThemeCardColors;
     glow: ThemeGlowColors;
     buttonPrimary: ThemeButtonColors;
@@ -97,6 +112,8 @@ export type ThemeColorKey =
     | `semantic.${keyof ThemeSemanticColors}`
     | `card.${keyof ThemeCardColors}`
     | `glow.${keyof ThemeGlowColors}`
+    | `money.${keyof ThemeMoneyColors}`
+    | `rarity.${keyof ThemeRarityColors}`
     | `buttonPrimary.${keyof ThemeButtonColors}`
     | `buttonSecondary.${keyof ThemeButtonColors}`
     | `buttonMystic.${keyof ThemeButtonColors}`;

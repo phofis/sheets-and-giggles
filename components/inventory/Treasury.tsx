@@ -2,10 +2,21 @@ import { View } from "react-native";
 import { ThemedText, ThemedView } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
 import { useCharacter } from "@/hooks/data";
-const characterId = "a1b2c3d4-e5f6-4789-a012-3456789abcde"; //get from context instead
+import { Coins } from "lucide-react-native";
+import { useCharacterId } from "@/context/CharacterIdContext";
+import { EditableField } from "@/components/editing/EditableField";
+import { useFieldEditorModals } from "@/hooks/editing/useFieldEditorModals";
+import { useCharacterEditor } from "@/hooks/editing/useCharacterEditor";
 
-export function Treasury() {
-    const { styles } = useStyles((t, c) => ({
+type TreasuryProps = {
+    isEditMode: boolean;
+};
+
+export function Treasury({ isEditMode }: TreasuryProps) {
+    const characterId = useCharacterId();
+    const { openNumeric, modals } = useFieldEditorModals();
+    const { updateCharacter } = useCharacterEditor(characterId);
+    const { styles, color } = useStyles((t, c) => ({
         card: {
             marginTop: t.spacing.xxl,
             padding: t.spacing.md,
@@ -23,6 +34,10 @@ export function Treasury() {
             flexDirection: "row",
             justifyContent: "space-between",
             gap: t.spacing.md,
+        },
+        currencyIcon: {
+            marginBottom: t.spacing.xs,
+            size: 24,
         },
         currencyItem: {
             flex: 1,
@@ -42,42 +57,68 @@ export function Treasury() {
     if (isLoading) {
     }
     const money = [
-        { key: "gold", label: "GP" },
-        { key: "silver", label: "SP" },
-        { key: "copper", label: "CP" },
+        { key: "gold", label: "GP", color: color("money.gold") },
+        { key: "silver", label: "SP", color: color("money.silver") },
+        { key: "copper", label: "CP", color: color("money.copper") },
     ] as const;
 
     return (
-        <ThemedView style={styles.card}>
-            {/* header moved inside elevated area */}
-            <ThemedText
-                color="text.muted"
-                style={styles.header}
-                variant="label"
-            >
-                TREASURY
-            </ThemedText>
+        <>
+            {modals}
+            <ThemedView style={styles.card}>
+                {/* header moved inside elevated area */}
+                <ThemedText
+                    color="text.muted"
+                    style={styles.header}
+                    variant="label"
+                >
+                    TREASURY
+                </ThemedText>
 
-            <View style={styles.currencyRow}>
-                {money.map((c) => (
-                    <View key={c.key} style={styles.currencyItem}>
-                        <ThemedText
-                            color="text.heading"
-                            style={styles.currencyValue}
-                        >
-                            {character?.[c.key] ?? 0}
-                        </ThemedText>
+                <View style={styles.currencyRow}>
+                    {money.map((m) => (
+                        <View key={m.key} style={styles.currencyItem}>
+                            <View style={styles.currencyIcon}>
+                                <Coins size={24} color={m.color} />
+                            </View>
+                            <EditableField
+                                isEditMode={isEditMode}
+                                onPress={() =>
+                                    openNumeric({
+                                        label: `${m.label} amount`,
+                                        placeholder: `Set ${m.label}`,
+                                        initialValue: character?.[m.key] ?? 0,
+                                        min: 0,
+                                        onSubmit: (value) =>
+                                            updateCharacter.mutate({
+                                                [m.key]: value,
+                                            } as {
+                                                gold?: number;
+                                                silver?: number;
+                                                copper?: number;
+                                            }),
+                                    })
+                                }
+                            >
+                                <ThemedText
+                                    color="text.heading"
+                                    style={styles.currencyValue}
+                                >
+                                    {character?.[m.key] ?? 0}
+                                </ThemedText>
+                            </EditableField>
 
-                        <ThemedText
-                            color="text.muted"
-                            style={styles.currencyUnit}
-                            variant="body"
-                        >
-                            {c.label}
-                        </ThemedText>
-                    </View>
-                ))}
-            </View>
-        </ThemedView>
+                            <ThemedText
+                                color="text.muted"
+                                style={styles.currencyUnit}
+                                variant="body"
+                            >
+                                {m.label}
+                            </ThemedText>
+                        </View>
+                    ))}
+                </View>
+            </ThemedView>
+        </>
     );
 }
