@@ -27,10 +27,15 @@ export const AbilityGrid = ({ abilities, isEditMode = false, onEditScore }: Prop
             fontWeight: "600",
             fontFamily: theme.typography.headlineFont,
         },
+        boxContent: {
+            alignSelf: "stretch",
+            width: "100%",
+        },
         scoreRow: {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "flex-end",
+            width: "100%",
         },
     }));
 
@@ -41,22 +46,24 @@ export const AbilityGrid = ({ abilities, isEditMode = false, onEditScore }: Prop
             data={ABILITY_LABELS}
             renderItem={({ key, label }) => (
                 <BoxWithGlow glow={true} glowColor="card.glow">
-                    <View>
+                    <View style={styles.boxContent}>
                         <ThemedText color="card.header" style={styles.abilityLabel} variant="body">
                             {label.toUpperCase()}
                         </ThemedText>
-                        <EditableField
-                            isEditMode={isEditMode}
-                            onPress={onEditScore ? () => onEditScore(key) : undefined}
-                        >
-                            <View style={styles.scoreRow}>
-                                <ThemedText
-                                    color="card.label"
-                                    style={styles.abilityScore}
-                                    variant="headline"
-                                >
-                                    {abilities[key].score}
-                                </ThemedText>
+                        <View style={styles.scoreRow}>
+                            <ThemedText
+                                color="card.label"
+                                style={styles.abilityScore}
+                                variant="headline"
+                            >
+                                {abilities[key].score}
+                            </ThemedText>
+                            <EditableField
+                                isEditMode={isEditMode}
+                                pencilPosition="leading"
+                                reservePencilSpace={!!onEditScore}
+                                onPress={onEditScore ? () => onEditScore(key) : undefined}
+                            >
                                 <ThemedText
                                     color="card.note"
                                     style={styles.abilityMod}
@@ -64,8 +71,8 @@ export const AbilityGrid = ({ abilities, isEditMode = false, onEditScore }: Prop
                                 >
                                     {abilities[key].mod}
                                 </ThemedText>
-                            </View>
-                        </EditableField>
+                            </EditableField>
+                        </View>
                     </View>
                 </BoxWithGlow>
             )}

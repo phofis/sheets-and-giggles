@@ -56,9 +56,15 @@ export function ThemedBoxList({
         itemRow: { flexDirection: "row", alignItems: "flex-start", gap: theme.spacing.xs },
         itemBox: { flex: 1, minWidth: 0 },
         deleteButton: { padding: theme.spacing.sm, marginTop: theme.spacing.xs },
-        textContainer: { flex: 1, justifyContent: "center" },
+        itemContent: {
+            flex: 1,
+            flexDirection: "row",
+            alignItems: "flex-start",
+            minWidth: 0,
+        },
+        textContainer: { flex: 1, minWidth: 0 },
         itemTitle: { fontSize: 18, marginBottom: theme.spacing.xs },
-        itemDescription: { lineHeight: 20 },
+        itemDescription: { lineHeight: 20, flexShrink: 1 },
     }));
 
     const showAdd = isEditMode && onAddPress;
@@ -95,34 +101,41 @@ export function ThemedBoxList({
                         <BoxWithGlow
                             glow={glowColor ? true : false}
                             glowColor={glowColor}
+                            size="auto"
                             style={[styles.itemBox, itemStyle, item.style]}
                         >
-                            <EditableField
-                                isEditMode={isEditMode}
-                                onPress={
-                                    onItemPress ? () => onItemPress(item, index) : undefined
-                                }
-                            >
-                                <View style={styles.textContainer}>
-                                    {item.title.trim().length > 0 && (
+                            <View style={styles.itemContent}>
+                                <EditableField
+                                    isEditMode={isEditMode}
+                                    reservePencilSpace={!!onItemPress}
+                                    style={styles.textContainer}
+                                    onPress={
+                                        onItemPress
+                                            ? () => onItemPress(item, index)
+                                            : undefined
+                                    }
+                                >
+                                    <View style={styles.textContainer}>
+                                        {item.title.trim().length > 0 && (
+                                            <ThemedText
+                                                color="text.heading"
+                                                style={styles.itemTitle}
+                                                variant="label"
+                                            >
+                                                {item.title}
+                                            </ThemedText>
+                                        )}
+
                                         <ThemedText
                                             color="text.heading"
-                                            style={styles.itemTitle}
-                                            variant="label"
+                                            style={styles.itemDescription}
+                                            variant="body"
                                         >
-                                            {item.title}
+                                            {item.description}
                                         </ThemedText>
-                                    )}
-
-                                    <ThemedText
-                                        color="text.heading"
-                                        style={styles.itemDescription}
-                                        variant="body"
-                                    >
-                                        {item.description}
-                                    </ThemedText>
-                                </View>
-                            </EditableField>
+                                    </View>
+                                </EditableField>
+                            </View>
                         </BoxWithGlow>
                         {showDelete && (
                             <Pressable

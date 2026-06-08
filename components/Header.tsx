@@ -1,4 +1,4 @@
-import { ThemedHeadline, ThemedStatContainer, ThemedText, ThemedView } from "@/components/themed";
+import { ThemedHeadline, ThemedText, ThemedTextBox, ThemedView } from "@/components/themed";
 import { EditableField } from "@/components/editing/EditableField";
 import { View } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
@@ -36,6 +36,18 @@ export const Header = ({
             lineHeight: 60,
             fontFamily: theme.typography.headlineFont,
             fontWeight: "bold",
+        },
+        pill: {
+            justifyContent: "center",
+            alignItems: "center",
+            minHeight: 44,
+            paddingHorizontal: 22,
+            paddingVertical: 8,
+        },
+        pillText: {
+            fontSize: 14,
+            lineHeight: 18,
+            fontWeight: "600",
         },
         topStats: { alignSelf: "stretch", flexDirection: "row", gap: 8, marginTop: -4 },
         topStatPill: { flexShrink: 1, flexGrow: 1 },
@@ -76,24 +88,44 @@ export const Header = ({
             </ThemedView>
 
             <View style={styles.headerPills}>
-                <EditableField isEditMode={isEditMode} onPress={onEditLevel}>
-                    <ThemedStatContainer
-                        backgroundColor="buttonPrimary.background"
-                        label="Level"
-                        labelColor="buttonPrimary.text"
-                        mode="pill"
-                        value={`${characterHeader.level} ${characterHeader.class}`}
-                    />
-                </EditableField>
-                <EditableField isEditMode={isEditMode} onPress={onEditInspiration}>
-                    <ThemedStatContainer
-                        backgroundColor="buttonSecondary.background"
-                        label="Inspiration:"
-                        labelColor="buttonSecondary.text"
-                        mode="pill"
-                        value={characterHeader.inspiration}
-                    />
-                </EditableField>
+                <ThemedTextBox
+                    backgroundColor="buttonPrimary.background"
+                    borderRadius="full"
+                    style={styles.pill}
+                >
+                    <EditableField
+                        isEditMode={isEditMode}
+                        reservePencilSpace
+                        onPress={onEditLevel}
+                    >
+                        <ThemedText
+                            color="buttonPrimary.text"
+                            style={styles.pillText}
+                            variant="body"
+                        >
+                            Level {characterHeader.level} {characterHeader.class}
+                        </ThemedText>
+                    </EditableField>
+                </ThemedTextBox>
+                <ThemedTextBox
+                    backgroundColor="buttonSecondary.background"
+                    borderRadius="full"
+                    style={styles.pill}
+                >
+                    <EditableField
+                        isEditMode={isEditMode}
+                        reservePencilSpace
+                        onPress={onEditInspiration}
+                    >
+                        <ThemedText
+                            color="buttonSecondary.text"
+                            style={styles.pillText}
+                            variant="body"
+                        >
+                            Inspiration: {characterHeader.inspiration}
+                        </ThemedText>
+                    </EditableField>
+                </ThemedTextBox>
             </View>
         </ThemedView>
     );

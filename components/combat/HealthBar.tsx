@@ -77,7 +77,11 @@ export default function HealthBar({
                 <ThemedText color="text.body" variant="label">
                     Health Points
                 </ThemedText>
-                <EditableField isEditMode={isEditMode} onPress={onEditTempHp}>
+                <EditableField
+                    isEditMode={isEditMode}
+                    pencilPosition="leading"
+                    onPress={onEditTempHp}
+                >
                     <View style={styles.tempBadge}>
                         <ThemedText color="palette.secondary" variant="label">
                             TEMP HP{" "}

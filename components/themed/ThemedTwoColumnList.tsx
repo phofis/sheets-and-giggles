@@ -37,27 +37,24 @@ export function ThemedTwoColumnList({
             borderBottomColor: c("border.subtle"),
             paddingBottom: 4,
         },
-        label: { fontSize: 16, opacity: 0.85 },
+        label: { fontSize: 16, opacity: 0.85, flex: 1, minWidth: 0 },
         value: { fontSize: 16 },
     }));
 
-    // Split data into two columns
     const leftColumn = data.filter((_, i) => i % 2 === 0);
     const rightColumn = data.filter((_, i) => i % 2 !== 0);
 
     const renderItem = (item: ListItem, index: number) => (
-        <EditableField
-            key={index}
-            isEditMode={isEditMode}
-            style={styles.itemRow}
-            onPress={
-                onItemPress ? () => onItemPress(item, index) : undefined
-            }
-        >
-            <View style={styles.itemRow}>
-                <ThemedText color="text.heading" style={styles.label} variant="body">
-                    {item.label}
-                </ThemedText>
+        <View key={index} style={styles.itemRow}>
+            <ThemedText color="text.heading" style={styles.label} variant="body">
+                {item.label}
+            </ThemedText>
+            <EditableField
+                isEditMode={isEditMode}
+                pencilPosition="leading"
+                reservePencilSpace={!!onItemPress}
+                onPress={onItemPress ? () => onItemPress(item, index) : undefined}
+            >
                 <ThemedText
                     color={item.highlight ? "palette.secondary" : "text.lively"}
                     style={styles.value}
@@ -65,8 +62,8 @@ export function ThemedTwoColumnList({
                 >
                     {item.value}
                 </ThemedText>
-            </View>
-        </EditableField>
+            </EditableField>
+        </View>
     );
 
     return (
