@@ -1,6 +1,11 @@
 import { ThemeProvider } from "@/context/ThemeContext";
 import { CharacterIdProvider } from "@/context/CharacterIdContext";
-import { PERSIST_BUSTER, PERSIST_MAX_AGE, queryClient, queryPersister } from "@/lib/queryClient";
+import {
+    PERSIST_BUSTER,
+    PERSIST_MAX_AGE,
+    queryClient,
+    queryPersister,
+} from "@/lib/queryClient";
 import { useAppTheme } from "@/hooks/useAppTheme";
 import { useAuth } from "@/hooks/auth/useAuth";
 import { PersistQueryClientProvider } from "@tanstack/react-query-persist-client";
@@ -20,6 +25,10 @@ import {
     NotoSerif_600SemiBold,
     NotoSerif_700Bold,
 } from "@expo-google-fonts/noto-serif";
+import {
+    SafeAreaProvider,
+    useSafeAreaInsets,
+} from "react-native-safe-area-context";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -45,6 +54,7 @@ function useProtectedRoute() {
 
 function RootLayoutInner() {
     const { color } = useAppTheme();
+    const insets = useSafeAreaInsets();
     useProtectedRoute();
 
     return (
@@ -61,6 +71,7 @@ function RootLayoutInner() {
                     headerShown: false,
                     contentStyle: {
                         backgroundColor: color("surface.background"),
+                        paddingTop: insets.top,
                     },
                 }}
             />
@@ -92,10 +103,12 @@ export default function RootLayout() {
     }
 
     return (
-        <ThemeProvider>
-            <CharacterIdProvider>
-                <RootLayoutInner />
-            </CharacterIdProvider>
-        </ThemeProvider>
+        <SafeAreaProvider>
+            <ThemeProvider>
+                <CharacterIdProvider>
+                    <RootLayoutInner />
+                </CharacterIdProvider>
+            </ThemeProvider>
+        </SafeAreaProvider>
     );
 }

@@ -1,11 +1,12 @@
-import { ScrollView, View, ActivityIndicator } from "react-native";
-import React, { useMemo, useState } from "react";
+import { Pressable, ScrollView, View, ActivityIndicator } from "react-native";
+import React, { useState, useMemo } from "react";
 import { ThemedHeadline, ThemedText, ThemedView } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
 import { Treasury } from "@/components/inventory/Treasury";
 import { Attunement } from "@/components/inventory/Attunement";
 import { InventoryToolbar } from "@/components/inventory/InventoryToolbar";
 import { InventoryItemCard } from "@/components/inventory/InventoryItemCard";
+import { ItemScannerModal } from "@/components/inventory/ItemScannerModal";
 import {
     itemFilterFormFields,
     matchesItemFilters,
@@ -20,6 +21,7 @@ import { useFieldEditorModals } from "@/hooks/editing/useFieldEditorModals";
 export default function InventoryScreen() {
     const characterId = useCharacterId();
     const [isEditMode, setIsEditMode] = useState(false);
+    const [isScannerOpen, setIsScannerOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [filters, setFilters] = useState<ItemFilters>({});
     const { openForm, modals: filterModals } = useFieldEditorModals();
@@ -70,15 +72,91 @@ export default function InventoryScreen() {
             marginTop: t.spacing.xl,
             alignItems: "center",
             gap: t.spacing.sm,
+            flexWrap: "wrap",
+        },
+        itemStatRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginTop: t.spacing.md,
+        },
+        commonSection: {
+            marginTop: t.spacing.lg,
+            padding: t.spacing.md,
+            borderRadius: t.borderRadius.md,
+            backgroundColor: c("surface.surfaceElevated"),
+        },
+        commonItemRow: {
+            flexDirection: "row",
+            justifyContent: "space-between",
+            alignItems: "center",
+            paddingVertical: t.spacing.xs,
+        },
+        commonItemName: {
+            flex: 1,
+            fontSize: 14,
+        },
+        commonItemQuantity: {
+            fontSize: 12,
+            color: c("text.muted"),
+            marginLeft: t.spacing.sm,
+        },
+        scanButton: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: t.spacing.xs,
+            paddingHorizontal: t.spacing.md,
+            paddingVertical: t.spacing.xs,
+            borderRadius: t.borderRadius.md,
+            backgroundColor: c("surface.surfaceElevated"),
+        },
+        scanButtonText: {
+            fontSize: 13,
+            fontWeight: "600",
         },
     }));
 
     const { data: items, isLoading } = useCharacterItems(characterId);
 
     const filteredItems = useMemo(
-        () => (items ?? []).filter((item) => matchesItemFilters(item, search, filters)),
+        () =>
+            (items ?? []).filter((item) =>
+                matchesItemFilters(item, search, filters),
+            ),
         [items, search, filters],
     );
+
+    // Merge rows that represent the exact same item so the user sees one card
+    // with a combined quantity (e.g. arrows received via QR transfer).
+    const clusteredItems = useMemo(() => {
+        const groups = new Map<
+            string,
+            { representative: (typeof filteredItems)[number]; total: number }
+        >();
+        for (const item of filteredItems) {
+            const key = [
+                item.name.trim().toLowerCase(),
+                (item.description ?? "").trim().toLowerCase(),
+                item.rarity ?? "",
+                item.tag ?? "",
+                item.requires_attunement ? "1" : "0",
+                item.attuned ? "1" : "0",
+            ].join("|");
+            const existing = groups.get(key);
+            if (existing) {
+                existing.total += item.quantity ?? 1;
+            } else {
+                groups.set(key, {
+                    representative: item,
+                    total: item.quantity ?? 1,
+                });
+            }
+        }
+        return Array.from(groups.values()).map(({ representative, total }) => ({
+            ...representative,
+            quantity: total,
+        }));
+    }, [filteredItems]);
 
     const attunedItems = useMemo(
         () => (items ?? []).filter((i) => i.attuned),
@@ -93,9 +171,9 @@ export default function InventoryScreen() {
                 ...field,
                 initialValue:
                     field.name === "rarity"
-                        ? filters.rarity ?? ""
+                        ? (filters.rarity ?? "")
                         : field.name === "tag"
-                          ? filters.tag ?? ""
+                          ? (filters.tag ?? "")
                           : filters.requires_attunement === undefined
                             ? ""
                             : String(filters.requires_attunement),
@@ -110,6 +188,10 @@ export default function InventoryScreen() {
             style={styles.screen}
             onToggleEditMode={() => setIsEditMode((v) => !v)}
         >
+            <ItemScannerModal
+                isOpen={isScannerOpen}
+                onClose={() => setIsScannerOpen(false)}
+            />
             <ThemedView style={styles.screen}>
                 {filterModals}
                 <ScrollView
@@ -132,12 +214,24 @@ export default function InventoryScreen() {
                         <ThemedHeadline color="text.heading">
                             Inventory
                         </ThemedHeadline>
+                        <Pressable
+                            style={styles.scanButton}
+                            onPress={() => setIsScannerOpen(true)}
+                        >
+                            <ThemedText
+                                color="text.body"
+                                style={styles.scanButtonText}
+                                variant="body"
+                            >
+                                Claim Item
+                            </ThemedText>
+                        </Pressable>
                     </View>
 
                     <InventoryToolbar
                         search={search}
-                        onFilterPress={openFilterModal}
                         onCreateItem={handleCreateItem}
+                        onFilterPress={openFilterModal}
                         onSearchChange={setSearch}
                     />
 
@@ -157,7 +251,7 @@ export default function InventoryScreen() {
                             </ThemedText>
                         </ThemedView>
                     ) : (
-                        filteredItems.map((item) => (
+                        clusteredItems.map((item) => (
                             <InventoryItemCard
                                 key={item.id}
                                 isEditMode={isEditMode}
