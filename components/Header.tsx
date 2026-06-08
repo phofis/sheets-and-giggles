@@ -32,7 +32,7 @@ export const Header = ({
         },
         headerPills: { flexDirection: "row", gap: 8, alignSelf: "flex-start" },
         headingTitle: {
-            fontSize: 48,
+            fontSize: 40,
             lineHeight: 60,
             fontFamily: theme.typography.headlineFont,
             fontWeight: "bold",
