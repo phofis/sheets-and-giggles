@@ -43,6 +43,7 @@ export const CombatStatsGrid: React.FC<CombatStatsGridProps> = ({ stats, onChang
             alignItems: "center",
             justifyContent: "center",
             paddingVertical: t.spacing.md,
+            width: "100%",
         },
         label: {
             fontSize: 10,
@@ -56,6 +57,7 @@ export const CombatStatsGrid: React.FC<CombatStatsGridProps> = ({ stats, onChang
             alignItems: "baseline",
             justifyContent: "center",
             gap: 4,
+            width: "100%",
         },
         input: {
             fontSize: 32,

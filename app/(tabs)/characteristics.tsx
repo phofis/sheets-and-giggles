@@ -166,7 +166,6 @@ export default function CharacteristicsScreen() {
                                                     biometricPatch(entry.label, value),
                                                 );
                                             } catch {
-                                                // invalid biometric label
                                             }
                                         },
                                     })
@@ -174,7 +173,7 @@ export default function CharacteristicsScreen() {
                             />
 
                             <Note
-                                backgroundColor="surface.note"
+                                backgroundColor="card.background"
                                 isEditMode={isEditMode}
                                 textColor="text.note"
                                 title="Background"

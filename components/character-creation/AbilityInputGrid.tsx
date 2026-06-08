@@ -1,5 +1,5 @@
 import React from "react";
-import { View, TextInput, TouchableOpacity } from "react-native";
+import { View, TextInput, TouchableOpacity, Platform } from "react-native";
 import { ThemedGrid, ThemedText } from "@/components/themed";
 import { BoxWithGlow } from ".././BoxWithGlow"; // Adjust path as necessary
 import { useStyles } from "@/hooks/useStyles";
@@ -38,17 +38,17 @@ export const AbilityInputGrid: React.FC<AbilityInputGridProps> = ({
             flexDirection: "row",
             alignItems: "center",
             justifyContent: "space-between",
+            width: "100%",
         },
         abilityInput: {
             fontSize: 30,
-            // Applies the serif font from your TODO
             fontFamily: "Noto Serif",
-            color: c("text.onPrimary"),
+            color: c("text.muted"),
             borderBottomWidth: 1,
             borderBottomColor: "rgba(255, 255, 255, 0.2)",
-            minWidth: 50,
             textAlign: "center",
             paddingVertical: 0,
+            lineHeight: 34,
         },
         abilityMod: {
             fontSize: 24,
@@ -75,17 +75,18 @@ export const AbilityInputGrid: React.FC<AbilityInputGridProps> = ({
                 const modifier = calculateModifier(currentScore);
 
                 return (
-                    <TouchableOpacity
-                        activeOpacity={0.8}
-                        onPress={() => onToggleProficiency(key)}
+                    <BoxWithGlow
+                        glow={true}
+                        // Change glow color based on proficiency state
+                        glowColor={isProficient ? "palette.primary" : "card.glow"}
                     >
-                        <BoxWithGlow
-                            glow={true}
-                            // Change glow color based on proficiency state
-                            glowColor={isProficient ? "palette.primary" : "card.glow"}
-                        >
-                            <View style={styles.inputContainer}>
-                                <View>
+                        <View style={styles.inputContainer}>
+                            {/* Left side: Label (Clickable) and Input (Isolated) */}
+                            <View style={{ flex: 1 }}>
+                                <TouchableOpacity
+                                    activeOpacity={0.8}
+                                    onPress={() => onToggleProficiency(key)}
+                                >
                                     <ThemedText
                                         // Change label color when proficient
                                         color={isProficient ? "palette.primary" : "card.header"}
@@ -97,23 +98,27 @@ export const AbilityInputGrid: React.FC<AbilityInputGridProps> = ({
                                     >
                                         {label.toUpperCase()}
                                     </ThemedText>
+                                </TouchableOpacity>
 
-                                    <TextInput
-                                        keyboardType="number-pad"
-                                        maxLength={2}
-                                        style={styles.abilityInput}
-                                        value={currentScore ? currentScore.toString() : ""}
-                                        onChangeText={(text) => {
-                                            // Strip non-numeric characters and parse
-                                            const cleanText = text.replace(/[^0-9]/g, '');
-                                            const numericValue = parseInt(cleanText, 10);
-                                            onScoreChange(key, isNaN(numericValue) ? 0 : numericValue);
-                                        }}
-                                        // Prevent touch events on the input from triggering the parent proficiency toggle
-                                        onStartShouldSetResponder={() => true}
-                                    />
-                                </View>
+                                <TextInput
+                                    keyboardType="number-pad"
+                                    maxLength={2}
+                                    style={styles.abilityInput}
+                                    value={currentScore ? currentScore.toString() : ""}
+                                    onChangeText={(text) => {
+                                        // Strip non-numeric characters and parse
+                                        const cleanText = text.replace(/[^0-9]/g, '');
+                                        const numericValue = parseInt(cleanText, 10);
+                                        onScoreChange(key, isNaN(numericValue) ? 0 : numericValue);
+                                    }}
+                                />
+                            </View>
 
+                            {/* Right side: Modifier (Clickable) */}
+                            <TouchableOpacity
+                                activeOpacity={0.8}
+                                onPress={() => onToggleProficiency(key)}
+                            >
                                 <ThemedText
                                     color={isProficient ? "palette.primary" : "palette.tertiary"}
                                     style={styles.abilityMod}
@@ -121,9 +126,9 @@ export const AbilityInputGrid: React.FC<AbilityInputGridProps> = ({
                                 >
                                     {modifier}
                                 </ThemedText>
-                            </View>
-                        </BoxWithGlow>
-                    </TouchableOpacity>
+                            </TouchableOpacity>
+                        </View>
+                    </BoxWithGlow>
                 );
             }}
             rowGap={12}
