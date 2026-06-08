@@ -5,8 +5,6 @@ import { EditableField } from "@/components/editing/EditableField";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemeColorKey } from "@/constants/themes";
 
-const PENCIL_SLOT_WIDTH = 18;
-
 interface NoteProps {
     title?: string;
     titleColor?: ThemeColorKey;
@@ -37,7 +35,7 @@ export const Note: React.FC<NoteProps> = ({
     isEditMode = false,
     onEditContent,
 }) => {
-    const { styles, color } = useStyles((_) => ({
+    const { styles, color } = useStyles((_, c) => ({
         container: {
             padding: 32,
             borderRadius: 24,
@@ -55,10 +53,7 @@ export const Note: React.FC<NoteProps> = ({
         },
         innerWrapper: { flex: 1, gap: 16 },
         header: { textTransform: "none", fontWeight: "400" },
-        contentContainer: {
-            alignSelf: "stretch",
-            minHeight: 26,
-        },
+        contentContainer: { alignSelf: "stretch" },
         defaultText: { fontFamily: "Manrope", fontSize: 16, fontWeight: "300", lineHeight: 26 },
     }));
 
@@ -88,15 +83,9 @@ export const Note: React.FC<NoteProps> = ({
                     </ThemedText>
                 )}
 
-                <View
-                    style={[
-                        styles.contentContainer,
-                        onEditContent && { paddingRight: PENCIL_SLOT_WIDTH },
-                    ]}
-                >
+                <View style={styles.contentContainer}>
                     <EditableField
                         isEditMode={isEditMode}
-                        reservePencilSpace={!!onEditContent}
                         onPress={onEditContent}
                     >
                         {content}

@@ -10,7 +10,6 @@ interface BoxWithGlowProps {
     glow?: boolean;
     backgroundColor?: ThemeColorKey;
     glowColor?: ThemeColorKey;
-    size?: "fixed" | "auto";
 }
 
 export const BoxWithGlow = ({
@@ -19,22 +18,17 @@ export const BoxWithGlow = ({
     glow = true,
     backgroundColor = "card.background",
     glowColor = "card.softGlow",
-    size = "fixed",
 }: BoxWithGlowProps) => {
-    const isAuto = size === "auto";
-
     const { styles } = useStyles((t, c) => ({
         container: {
             display: "flex",
             flexDirection: "row",
             justifyContent: "space-between",
-            alignItems: isAuto ? "flex-start" : "center",
+            alignItems: "center",
             paddingHorizontal: t.spacing.md,
-            paddingVertical: isAuto ? t.spacing.md : 0,
             backgroundColor: c(backgroundColor),
             borderRadius: t.borderRadius.md,
-            height: isAuto ? undefined : 80,
-            minHeight: isAuto ? 80 : undefined,
+            height: 80,
         },
     }));
 
