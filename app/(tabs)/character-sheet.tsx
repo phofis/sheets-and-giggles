@@ -2,7 +2,7 @@ import { ActivityIndicator, ScrollView, View } from "react-native";
 import { useState } from "react";
 
 import { ThemedView, ThemedList, ThemedHeadline } from "@/components/themed";
-import { ThemedFeatureContainer} from "@/components/themed/ThemedFeatureContainer";
+import { ThemedFeatureContainer } from "@/components/themed/ThemedFeatureContainer";
 import { ThemedTwoColumnList } from "@/components/themed/ThemedTwoColumnList";
 import { AbilityGrid } from "@/components/characterSheet/AbilityGrid";
 import { Header } from "@/components/Header";
@@ -22,8 +22,7 @@ import {
 } from "@/hooks/editing/characterFieldPatches";
 import type { AbilityKey } from "@/types/character";
 import type { Database } from "@/types/supabase";
-import type { ListItem } from "@/types/lists";
-import type { ListEntry } from "@/types/lists";
+import type { ListItem, ListEntry } from "@/types/lists";
 
 type SkillName = Database["public"]["Enums"]["skill_name"];
 
@@ -87,8 +86,12 @@ export default function MainSheetScreen() {
     const [isEditMode, setIsEditMode] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
-    const { data: characterSheet = defaultCharacterSheet, isLoading: isLoadingCharacterSheet } = useCharacterSheet(characterId);
-    const { data: features, isLoading: isLoadingFeatures } = useCharacterFeatures(characterId);
+    const {
+        data: characterSheet = defaultCharacterSheet,
+        isLoading: isLoadingCharacterSheet,
+    } = useCharacterSheet(characterId);
+    const { data: features, isLoading: isLoadingFeatures } =
+        useCharacterFeatures(characterId);
     const { updateCharacter } = useCharacterEditor(characterId);
     const { openText, openNumeric, modals } = useFieldEditorModals();
 
@@ -120,7 +123,10 @@ export default function MainSheetScreen() {
             onToggleEditMode={() => setIsEditMode((v) => !v)}
         >
             {modals}
-            <ThemedView backgroundColor="surface.background" style={styles.screen}>
+            <ThemedView
+                backgroundColor="surface.background"
+                style={styles.screen}
+            >
                 <ScrollView
                     contentContainerStyle={styles.scrollContentContainer}
                     style={styles.scrollView}
@@ -135,30 +141,41 @@ export default function MainSheetScreen() {
                                 onEditInspiration={() =>
                                     openNumeric({
                                         label: "Inspiration",
-                                        initialValue: characterSheet.characterHeader.inspiration,
+                                        initialValue:
+                                            characterSheet.characterHeader
+                                                .inspiration,
                                         min: 0,
                                         max: 99,
                                         onSubmit: (value) =>
-                                            updateCharacter.mutate({ inspiration: value }),
+                                            updateCharacter.mutate({
+                                                inspiration: value,
+                                            }),
                                     })
                                 }
                                 onEditLevel={() =>
                                     openNumeric({
                                         label: "Level",
-                                        initialValue: characterSheet.characterHeader.level,
+                                        initialValue:
+                                            characterSheet.characterHeader
+                                                .level,
                                         min: 1,
                                         max: 20,
                                         onSubmit: (value) =>
-                                            updateCharacter.mutate({ level: value }),
+                                            updateCharacter.mutate({
+                                                level: value,
+                                            }),
                                     })
                                 }
                                 onEditName={() =>
                                     openText({
                                         label: "Character name",
-                                        initialValue: characterSheet.characterHeader.name,
+                                        initialValue:
+                                            characterSheet.characterHeader.name,
                                         placeholder: "Enter name",
                                         onSubmit: (value) =>
-                                            updateCharacter.mutate({ name: value }),
+                                            updateCharacter.mutate({
+                                                name: value,
+                                            }),
                                     })
                                 }
                             />
@@ -169,7 +186,8 @@ export default function MainSheetScreen() {
                                 onEditScore={(key) =>
                                     openNumeric({
                                         label: `${key} score`,
-                                        initialValue: characterSheet.abilities[key].score,
+                                        initialValue:
+                                            characterSheet.abilities[key].score,
                                         min: 1,
                                         max: 30,
                                         onSubmit: (value) =>
@@ -190,7 +208,9 @@ export default function MainSheetScreen() {
 
                             <ThemedList
                                 data={displayedSkills}
-                                footerLabel={isExpanded ? "Show Less" : "View All Skills"}
+                                footerLabel={
+                                    isExpanded ? "Show Less" : "View All Skills"
+                                }
                                 icon="list"
                                 isEditMode={isEditMode}
                                 title="Skills"
@@ -198,12 +218,18 @@ export default function MainSheetScreen() {
                                 onItemPress={handleSkillPress}
                             />
 
-                            <ThemedHeadline color="text.heading" style={styles.headline}>
+                            <ThemedHeadline
+                                color="text.heading"
+                                style={styles.headline}
+                            >
                                 Your Features
                             </ThemedHeadline>
                             <View style={styles.list}>
                                 {(features ?? []).map((feature) => (
-                                    <ThemedFeatureContainer key={feature.feature_name} feature={feature} />
+                                    <ThemedFeatureContainer
+                                        key={feature.feature_name}
+                                        feature={feature}
+                                    />
                                 ))}
                             </View>
                         </ThemedView>

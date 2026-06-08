@@ -45,7 +45,20 @@ export const modernMythicTheme: AppTheme = {
             error: COLORS.red,
             info: COLORS.blue,
         },
-
+        money: {
+            gold: COLORS.gold,
+            silver: COLORS.lightGray,
+            copper: COLORS.mutedGray,
+        },
+        rarity: {
+            none: COLORS.none,
+            common: COLORS.common,
+            uncommon: COLORS.uncommon,
+            rare: COLORS.rare,
+            veryRare: COLORS.veryRare,
+            legendary: COLORS.legendary,
+            artifact: COLORS.artifact,
+        },
         card: {
             background: COLORS.almostBlack,
             header: COLORS.subduedLila,

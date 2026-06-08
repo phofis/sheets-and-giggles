@@ -3,10 +3,13 @@ import { SpellSlots } from "@/components/spells/SpellSlots";
 import { useStyles } from "@/hooks/useStyles";
 import { useCharacterSpells } from "@/hooks/data/useCharacterSpells";
 import { useCharacterId } from "@/context/CharacterIdContext";
+import { EditScreenShell } from "@/components/editing/EditScreenShell";
 import { ScrollView } from "react-native";
+import { useState } from "react";
 
 // Spells tab intentionally has no page-level edit mode (v1).
 export default function SpellsScreen() {
+    const [isEditMode, setIsEditMode] = useState(false);
     const { styles } = useStyles((t, c) => ({
         container: { flex: 1, padding: t.spacing.lg },
         scrollContent: { paddingBottom: t.spacing.xxl },
@@ -22,43 +25,49 @@ export default function SpellsScreen() {
     }));
 
     const characterId = useCharacterId();
-    const { data: spells, isLoading } = useCharacterSpells(characterId); 
+    const { data: spells, isLoading } = useCharacterSpells(characterId);
     if (isLoading) {
     }
+    //TODO: add toolbar and button definition
 
     return (
-        <ThemedView
-            backgroundColor="surface.background"
-            style={styles.container}
+        <EditScreenShell
+            isEditMode={isEditMode}
+            onToggleEditMode={() => setIsEditMode((v) => !v)}
         >
-            {/* {isLoading ? (
-                <ThemedView style={styles.empty}>
-                    <ThemedText color="text.muted" variant="body">
-                        Loading spells...
-                    </ThemedText>
-                </ThemedView>
-            ) : spells.length === 0 ? (
-                <ThemedView style={styles.empty}>
-                    <ThemedText color="text.muted" variant="body">
-                        No spells available.
-                    </ThemedText>
-                </ThemedView>
-            ) : ( */}
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <ThemedView style={styles.list}>
-                    <SpellSlots />
-                    <ThemedHeadline
-                        color="text.heading"
-                        style={styles.headline}
-                    >
-                        Your Spells
-                    </ThemedHeadline>
-                    {(spells ?? []).map((spell) => (
-                        <SpellCard key={spell.spell_id} spell={spell} />
-                    ))}
-                </ThemedView>
-            </ScrollView>
-            {/* )} } */}
-        </ThemedView>
+            <ThemedView
+                backgroundColor="surface.background"
+                style={styles.container}
+            >
+                {/* {isLoading ? (
+                    <ThemedView style={styles.empty}>
+                        <ThemedText color="text.muted" variant="body">
+                            Loading spells...
+                        </ThemedText>
+                    </ThemedView>
+                ) : spells.length === 0 ? (
+                    <ThemedView style={styles.empty}>
+                        <ThemedText color="text.muted" variant="body">
+                            No spells available.
+                        </ThemedText>
+                    </ThemedView>
+                ) : ( */}
+                <ScrollView contentContainerStyle={styles.scrollContent}>
+                    <ThemedView style={styles.list}>
+                        <SpellSlots />
+                        <ThemedHeadline
+                            color="text.heading"
+                            style={styles.headline}
+                        >
+                            Your Spells
+                        </ThemedHeadline>
+                        {(spells ?? []).map((spell) => (
+                            <SpellCard key={spell.spell_id} spell={spell} />
+                        ))}
+                    </ThemedView>
+                </ScrollView>
+                {/* )} } */}
+            </ThemedView>
+        </EditScreenShell>
     );
 }

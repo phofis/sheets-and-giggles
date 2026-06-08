@@ -1,17 +1,65 @@
+import { useEffect } from "react";
+import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/types/supabase";
 import { useCharacterQuery, useCharacterMutation } from "./factory";
 
-type ItemRow = Database["public"]["Tables"]["character_items"]["Row"];
+export type ItemRow = Database["public"]["Tables"]["character_items"]["Row"];
 type ItemInsert = Database["public"]["Tables"]["character_items"]["Insert"];
 type ItemUpdate = Database["public"]["Tables"]["character_items"]["Update"];
 
 export function useCharacterItems(characterId: string | undefined) {
+    const queryClient = useQueryClient();
+
+    // Keep the local cache in sync when another device deletes or inserts an
+    // item (e.g. after a QR transfer).  One channel per character; Supabase
+    // deduplicates channels with the same name automatically.
+    useEffect(() => {
+        if (!characterId) return;
+
+        const channel = supabase
+            .channel(`character-items:${characterId}`)
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "character_items",
+                    filter: `character_id=eq.${characterId}`,
+                },
+                async (payload) => {
+                    console.log("[realtime character_items]", payload.eventType, payload);
+                    // Bypass staleTime + persister by writing fresh data
+                    // directly into the cache so the UI updates immediately.
+                    const { data } = await supabase
+                        .from("character_items")
+                        .select("*")
+                        .eq("character_id", characterId)
+                        .order("created_at", { ascending: true });
+
+                    if (data) {
+                        queryClient.setQueryData(
+                            ["character", characterId, "items"],
+                            data,
+                        );
+                    }
+                },
+            )
+            .subscribe((status, err) => {
+                console.log(`[realtime character-items:${characterId}] status:`, status, err ?? "");
+            });
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
+    }, [characterId, queryClient]);
+
     return useCharacterQuery<ItemRow[]>(characterId, ["items"], async (id) => {
         const { data, error } = await supabase
             .from("character_items")
             .select("*")
-            .eq("character_id", id);
+            .eq("character_id", id)
+            .order("created_at", { ascending: true });
         if (error) throw error;
         return data;
     });

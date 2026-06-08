@@ -14,6 +14,47 @@ export type Database = {
   }
   public: {
     Tables: {
+      actions: {
+        Row: {
+          action_type: Database["public"]["Enums"]["action_type"]
+          amount: number
+          class_id: string
+          created_at: string
+          id: string
+          level: number
+          spellslot_level: number | null
+          updated_at: string
+        }
+        Insert: {
+          action_type: Database["public"]["Enums"]["action_type"]
+          amount: number
+          class_id: string
+          created_at?: string
+          id?: string
+          level: number
+          spellslot_level?: number | null
+          updated_at?: string
+        }
+        Update: {
+          action_type?: Database["public"]["Enums"]["action_type"]
+          amount?: number
+          class_id?: string
+          created_at?: string
+          id?: string
+          level?: number
+          spellslot_level?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "actions_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       character_features: {
         Row: {
           assigned_at: string
@@ -79,7 +120,10 @@ export type Database = {
           description: string
           id: string
           name: string
+          quantity: number
+          rarity: Database["public"]["Enums"]["item_rarity"]
           requires_attunement: boolean
+          tag: Database["public"]["Enums"]["item_tag"]
           updated_at: string
         }
         Insert: {
@@ -89,7 +133,10 @@ export type Database = {
           description: string
           id?: string
           name: string
+          quantity?: number
+          rarity?: Database["public"]["Enums"]["item_rarity"]
           requires_attunement?: boolean
+          tag?: Database["public"]["Enums"]["item_tag"]
           updated_at?: string
         }
         Update: {
@@ -99,7 +146,10 @@ export type Database = {
           description?: string
           id?: string
           name?: string
+          quantity?: number
+          rarity?: Database["public"]["Enums"]["item_rarity"]
           requires_attunement?: boolean
+          tag?: Database["public"]["Enums"]["item_tag"]
           updated_at?: string
         }
         Relationships: [
@@ -216,6 +266,8 @@ export type Database = {
           con_score: number
           copper: number
           created_at: string
+          death_save_fail: number
+          death_save_success: number
           dex_score: number
           experience: number
           eyes: string
@@ -261,6 +313,8 @@ export type Database = {
           con_score: number
           copper?: number
           created_at?: string
+          death_save_fail?: number
+          death_save_success?: number
           dex_score: number
           experience?: number
           eyes: string
@@ -306,6 +360,8 @@ export type Database = {
           con_score?: number
           copper?: number
           created_at?: string
+          death_save_fail?: number
+          death_save_success?: number
           dex_score?: number
           experience?: number
           eyes?: string
@@ -371,6 +427,42 @@ export type Database = {
           },
         ]
       }
+      class_spells: {
+        Row: {
+          class_id: string
+          created_at: string
+          spell_id: string
+          updated_at: string
+        }
+        Insert: {
+          class_id: string
+          created_at?: string
+          spell_id: string
+          updated_at?: string
+        }
+        Update: {
+          class_id?: string
+          created_at?: string
+          spell_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "class_spells_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "class_spells_spell_id_fkey"
+            columns: ["spell_id"]
+            isOneToOne: false
+            referencedRelation: "spells"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       classes: {
         Row: {
           created_at: string
@@ -408,6 +500,54 @@ export type Database = {
             columns: ["created_by_user_id"]
             isOneToOne: false
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      item_transfers: {
+        Row: {
+          claimed_at: string | null
+          claimed_by_character_id: string | null
+          created_at: string
+          expires_at: string
+          from_character_id: string
+          id: string
+          item_id: string
+          item_snapshot: Json
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by_character_id?: string | null
+          created_at?: string
+          expires_at?: string
+          from_character_id: string
+          id?: string
+          item_id: string
+          item_snapshot: Json
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by_character_id?: string | null
+          created_at?: string
+          expires_at?: string
+          from_character_id?: string
+          id?: string
+          item_id?: string
+          item_snapshot?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_transfers_from_character_id_fkey"
+            columns: ["from_character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_transfers_claimed_by_character_id_fkey"
+            columns: ["claimed_by_character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
             referencedColumns: ["id"]
           },
         ]
@@ -540,7 +680,7 @@ export type Database = {
           ritual: boolean
           rolls: string
           saving_throw: boolean
-          school_of_magic: string
+          school_of_magic: Database["public"]["Enums"]["school_of_magic"]
           tag: string
           updated_at: string
         }
@@ -559,7 +699,7 @@ export type Database = {
           ritual?: boolean
           rolls?: string
           saving_throw?: boolean
-          school_of_magic: string
+          school_of_magic: Database["public"]["Enums"]["school_of_magic"]
           tag?: string
           updated_at?: string
         }
@@ -578,7 +718,7 @@ export type Database = {
           ritual?: boolean
           rolls?: string
           saving_throw?: boolean
-          school_of_magic?: string
+          school_of_magic?: Database["public"]["Enums"]["school_of_magic"]
           tag?: string
           updated_at?: string
         }
@@ -798,10 +938,17 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      claim_item_transfer: {
+        Args: {
+          p_transfer_id: string
+          p_to_character_id: string
+        }
+        Returns: Json
+      }
     }
     Enums: {
       ability_score: "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA"
+      action_type: "add_spell" | "add_cantrip" | "add_spellslot"
       alignment:
         | "lawful_good"
         | "neutral_good"
@@ -820,6 +967,27 @@ export type Database = {
         | "race"
         | "character"
         | "background"
+        | "other"
+        | "feat"
+      item_rarity:
+        | "Common"
+        | "Uncommon"
+        | "Rare"
+        | "Very Rare"
+        | "Legendary"
+        | "Artifact"
+        | "None"
+      item_tag: "Weapon" | "Armor" | "Accessory" | "Scroll" | "Potion" | "Other"
+      school_of_magic:
+        | "Evocation"
+        | "Conjuration"
+        | "Abjuration"
+        | "Divination"
+        | "Enchantment"
+        | "Illusion"
+        | "Necromancy"
+        | "Transmutation"
+        | "Other"
       skill_name:
         | "Acrobatics"
         | "Animal Handling"
@@ -967,6 +1135,7 @@ export const Constants = {
   public: {
     Enums: {
       ability_score: ["STR", "DEX", "CON", "INT", "WIS", "CHA"],
+      action_type: ["add_spell", "add_cantrip", "add_spellslot"],
       alignment: [
         "lawful_good",
         "neutral_good",
@@ -986,6 +1155,29 @@ export const Constants = {
         "race",
         "character",
         "background",
+        "other",
+        "feat",
+      ],
+      item_rarity: [
+        "Common",
+        "Uncommon",
+        "Rare",
+        "Very Rare",
+        "Legendary",
+        "Artifact",
+        "None",
+      ],
+      item_tag: ["Weapon", "Armor", "Accessory", "Scroll", "Potion", "Other"],
+      school_of_magic: [
+        "Evocation",
+        "Conjuration",
+        "Abjuration",
+        "Divination",
+        "Enchantment",
+        "Illusion",
+        "Necromancy",
+        "Transmutation",
+        "Other",
       ],
       skill_name: [
         "Acrobatics",
