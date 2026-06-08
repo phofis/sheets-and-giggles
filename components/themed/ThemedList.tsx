@@ -33,7 +33,7 @@ export function ThemedList({
         titleText: { fontSize: 24 },
         listBody: { gap: 20 },
         row: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
-        labelContainer: { flexDirection: "row", alignItems: "center", gap: 12, flex: 1, minWidth: 0 },
+        labelContainer: { flexDirection: "row", alignItems: "center", gap: 12 },
         bullet: { width: 8, height: 8, borderRadius: 4 },
         bulletActive: { backgroundColor: c("semantic.warning") },
         bulletInactive: { backgroundColor: c("border.subtle") },
@@ -52,6 +52,7 @@ export function ThemedList({
 
     return (
         <View style={[styles.container, style]} {...rest}>
+            {/* Header */}
             {title && (
                 <View style={styles.header}>
                     {icon && (
@@ -63,9 +64,17 @@ export function ThemedList({
                 </View>
             )}
 
+            {/* List Content */}
             <View style={styles.listBody}>
                 {data.map((item, index) => (
-                    <View key={index} style={styles.row}>
+                    <EditableField
+                        key={index}
+                        isEditMode={isEditMode}
+                        onPress={
+                            onItemPress ? () => onItemPress(item, index) : undefined
+                        }
+                    >
+                        <View style={styles.row}>
                         <View style={styles.labelContainer}>
                             <View
                                 style={[
@@ -84,22 +93,15 @@ export function ThemedList({
                                 {item.label}
                             </ThemedText>
                         </View>
-                        <EditableField
-                            isEditMode={isEditMode}
-                            pencilPosition="leading"
-                            reservePencilSpace={!!onItemPress}
-                            onPress={
-                                onItemPress ? () => onItemPress(item, index) : undefined
-                            }
-                        >
-                            <ThemedText color="text.lively" style={styles.skillValue} variant="label">
-                                {item.value}
-                            </ThemedText>
-                        </EditableField>
-                    </View>
+                        <ThemedText color="text.lively" style={styles.skillValue} variant="label">
+                            {item.value}
+                        </ThemedText>
+                        </View>
+                    </EditableField>
                 ))}
             </View>
 
+            {/* Footer Action */}
             {footerLabel && (
                 <Pressable style={styles.footer} onPress={onFooterPress}>
                     <ThemedText color="text.lively" style={styles.footerText} variant="body">
