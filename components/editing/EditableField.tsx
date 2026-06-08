@@ -22,18 +22,34 @@ export function EditableField({
     pencilPosition = "trailing",
 }: Props) {
     const { styles, color } = useStyles((t) => ({
-        row: {
-            flexDirection: "row",
-            alignItems: "center",
-            gap: t.spacing.xs,
+        container: {
+            position: "relative",
+            alignSelf: "stretch",
         },
-        content: { flex: 1, minWidth: 0 },
-        contentNoFlex: { minWidth: 0 },
-        pencil: {
-            padding: 2,
+        content: { minWidth: 0, flex: 1 },
+        contentPaddedTrailing: {
+            paddingRight: PENCIL_SLOT_WIDTH + t.spacing.xs,
+        },
+        contentPaddedLeading: {
+            paddingLeft: PENCIL_SLOT_WIDTH + t.spacing.xs,
+        },
+        pencilTrailing: {
+            position: "absolute",
+            right: 0,
+            top: 0,
             width: PENCIL_SLOT_WIDTH,
             alignItems: "center",
             justifyContent: "center",
+            padding: 2,
+        },
+        pencilLeading: {
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: PENCIL_SLOT_WIDTH,
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 2,
         },
     }));
 
@@ -44,30 +60,33 @@ export function EditableField({
         return <View style={style}>{children}</View>;
     }
 
-    const pencilSlot = (
-        <View style={styles.pencil}>
-            {showPencil ? (
-                <Ionicons color={color("palette.secondary")} name="pencil" size={14} />
-            ) : null}
-        </View>
-    );
-
-    const contentStyle = reservePencilSpace ? styles.content : styles.contentNoFlex;
+    const isTrailing = pencilPosition === "trailing";
+    const contentPaddingStyle = shouldReserveSpace
+        ? isTrailing
+            ? styles.contentPaddedTrailing
+            : styles.contentPaddedLeading
+        : null;
+    const pencilStyle = isTrailing ? styles.pencilTrailing : styles.pencilLeading;
 
     return (
         <Pressable
             accessibilityRole="button"
             disabled={!showPencil}
             style={({ pressed }) => [
-                styles.row,
+                styles.container,
                 style,
                 showPencil && { opacity: pressed ? 0.85 : 1 },
             ]}
             onPress={showPencil ? onPress : undefined}
         >
-            {pencilPosition === "leading" ? pencilSlot : null}
-            <View style={contentStyle}>{children}</View>
-            {pencilPosition === "trailing" ? pencilSlot : null}
+            <View style={[styles.content, contentPaddingStyle]}>{children}</View>
+            {(showPencil || shouldReserveSpace) && (
+                <View pointerEvents={showPencil ? "auto" : "none"} style={pencilStyle}>
+                    {showPencil ? (
+                        <Ionicons color={color("palette.secondary")} name="pencil" size={14} />
+                    ) : null}
+                </View>
+            )}
         </Pressable>
     );
 }

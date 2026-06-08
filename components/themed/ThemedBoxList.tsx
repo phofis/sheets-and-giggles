@@ -56,13 +56,8 @@ export function ThemedBoxList({
         itemRow: { flexDirection: "row", alignItems: "flex-start", gap: theme.spacing.xs },
         itemBox: { flex: 1, minWidth: 0 },
         deleteButton: { padding: theme.spacing.sm, marginTop: theme.spacing.xs },
-        itemContent: {
-            flex: 1,
-            flexDirection: "row",
-            alignItems: "flex-start",
-            minWidth: 0,
-        },
-        textContainer: { flex: 1, minWidth: 0 },
+        itemContent: { flex: 1, minWidth: 0 },
+        editableField: { flex: 1, minWidth: 0 },
         itemTitle: { fontSize: 18, marginBottom: theme.spacing.xs },
         itemDescription: { lineHeight: 20, flexShrink: 1 },
     }));
@@ -108,32 +103,30 @@ export function ThemedBoxList({
                                 <EditableField
                                     isEditMode={isEditMode}
                                     reservePencilSpace={!!onItemPress}
-                                    style={styles.textContainer}
+                                    style={styles.editableField}
                                     onPress={
                                         onItemPress
                                             ? () => onItemPress(item, index)
                                             : undefined
                                     }
                                 >
-                                    <View style={styles.textContainer}>
-                                        {item.title.trim().length > 0 && (
-                                            <ThemedText
-                                                color="text.heading"
-                                                style={styles.itemTitle}
-                                                variant="label"
-                                            >
-                                                {item.title}
-                                            </ThemedText>
-                                        )}
-
+                                    {item.title.trim().length > 0 && (
                                         <ThemedText
                                             color="text.heading"
-                                            style={styles.itemDescription}
-                                            variant="body"
+                                            style={styles.itemTitle}
+                                            variant="label"
                                         >
-                                            {item.description}
+                                            {item.title}
                                         </ThemedText>
-                                    </View>
+                                    )}
+
+                                    <ThemedText
+                                        color="text.heading"
+                                        style={styles.itemDescription}
+                                        variant="body"
+                                    >
+                                        {item.description}
+                                    </ThemedText>
                                 </EditableField>
                             </View>
                         </BoxWithGlow>
