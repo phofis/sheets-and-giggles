@@ -1,8 +1,15 @@
-import { Image, ScrollView, TouchableOpacity, View, ActivityIndicator } from "react-native";
+import {
+    Image,
+    ScrollView,
+    TouchableOpacity,
+    View,
+    ActivityIndicator,
+} from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { ThemedText } from "@/components/themed";
 import { useAdventurers } from "@/hooks/useAdventurers";
 import AdventurerCard from "@/components/adventurers/AdventurerCard";
+import { router } from "expo-router";
 
 export default function MyAdventurers() {
     const { styles } = useStyles((t, c) => ({
@@ -54,19 +61,24 @@ export default function MyAdventurers() {
                 {isLoading ? (
                     <ActivityIndicator size="large" />
                 ) : (
-                <View style={styles.cardsContainer}>
-                    {adventurers.map((adv) => (
-                        <AdventurerCard key={adv.id} adv={adv} />
-                    ))}
-                    <TouchableOpacity style={styles.touchable}>
-                        <Image
-                            source={require("@/assets/images/AddIcon.png")}
-                        />
-                        <ThemedText color="card.glow" variant="body">
-                            Create New Adventurer
-                        </ThemedText>
-                    </TouchableOpacity>
-                </View>
+                    <View style={styles.cardsContainer}>
+                        {adventurers.map((adv) => (
+                            <AdventurerCard key={adv.id} adv={adv} />
+                        ))}
+                        <TouchableOpacity
+                            style={styles.touchable}
+                            onPress={() =>
+                                router.replace("/character-creation")
+                            }
+                        >
+                            <Image
+                                source={require("@/assets/images/AddIcon.png")}
+                            />
+                            <ThemedText color="card.glow" variant="body">
+                                Create New Adventurer
+                            </ThemedText>
+                        </TouchableOpacity>
+                    </View>
                 )}
             </ScrollView>
         </>

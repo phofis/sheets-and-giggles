@@ -3,7 +3,12 @@ import { ThemedText } from "../themed/ThemedText";
 import { ThemedView } from "../themed/ThemedView";
 import { CollapsibleCard } from "@/components/CollapsibleCard";
 import { Slider } from "@/components/Slider";
-import { ItemRow } from "@/hooks/data/useCharacterItems";
+import { ErrorModal } from "@/components/ErrorModal";
+import {
+    ItemRow,
+    useUpdateCharacterItem,
+    useDeleteCharacterItem,
+} from "@/hooks/data/useCharacterItems";
 import { Pressable } from "react-native";
 import {
     Sword,
@@ -14,12 +19,11 @@ import {
     Sparkles,
     Edit3,
     Trash2,
+    Share2,
 } from "lucide-react-native";
+import { useState } from "react";
+import { ItemShareModal } from "@/components/inventory/ItemShareModal";
 import { useCharacterId } from "@/context/CharacterIdContext";
-import {
-    useUpdateCharacterItem,
-    useDeleteCharacterItem,
-} from "@/hooks/data/useCharacterItems";
 import { useFieldEditorModals } from "@/hooks/editing/useFieldEditorModals";
 import { itemFormFields } from "@/components/inventory/InventoryToolbar";
 import { ThemeColorKey } from "@/constants/themes";
@@ -137,14 +141,16 @@ export function InventoryItemCard({
     }));
 
     const { openForm, modals } = useFieldEditorModals();
+    const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+    const [isAttunedWarningOpen, setIsAttunedWarningOpen] = useState(false);
 
     const iconByTag = {
-        Weapon: <Sword size={16} color={color("text.muted")} />,
-        Armor: <Shirt size={16} color={color("text.muted")} />,
-        Potion: <FlaskRound size={16} color={color("text.muted")} />,
-        Other: <Sparkles size={16} color={color("text.muted")} />,
-        Scroll: <Scroll size={16} color={color("text.muted")} />,
-        Accessory: <Medal size={16} color={color("text.muted")} />,
+        Weapon: <Sword color={color("text.muted")} size={16} />,
+        Armor: <Shirt color={color("text.muted")} size={16} />,
+        Potion: <FlaskRound color={color("text.muted")} size={16} />,
+        Other: <Sparkles color={color("text.muted")} size={16} />,
+        Scroll: <Scroll color={color("text.muted")} size={16} />,
+        Accessory: <Medal color={color("text.muted")} size={16} />,
     } as const;
     const colorByRarity = {
         None: "rarity.none",
@@ -235,11 +241,11 @@ export function InventoryItemCard({
                     }}
                 >
                     <Slider
-                        value={item.attuned}
-                        onValueChange={toggleAttuned}
-                        label="Attuned"
                         activeColor="semantic.success"
                         inactiveColor="text.muted"
+                        label="Attuned"
+                        value={item.attuned}
+                        onValueChange={toggleAttuned}
                     />
                 </Pressable>
             )}
@@ -293,6 +299,28 @@ export function InventoryItemCard({
                         {item.rarity}
                     </ThemedText>
                 )}
+                <Pressable
+                    style={[
+                        styles.editButton,
+                        item.attuned && { opacity: 0.4 },
+                    ]}
+                    onPress={(e) => {
+                        e.stopPropagation?.();
+                        if (item.attuned) {
+                            setIsAttunedWarningOpen(true);
+                        } else {
+                            setIsShareModalOpen(true);
+                        }
+                    }}
+                >
+                    <Share2
+                        color={color(
+                            item.attuned ? "text.muted" : "palette.secondary",
+                        )}
+                        size={16}
+                    />
+                </Pressable>
+
                 {isEditMode && (
                     <Pressable
                         style={styles.editButton}
@@ -301,7 +329,7 @@ export function InventoryItemCard({
                             openEditModal();
                         }}
                     >
-                        <Edit3 size={16} color={color("text.body")} />
+                        <Edit3 color={color("text.body")} size={16} />
                         <ThemedText
                             color="text.body"
                             style={styles.editButtonText}
@@ -319,7 +347,7 @@ export function InventoryItemCard({
                             deleteCharacterItem.mutate(item.id);
                         }}
                     >
-                        <Trash2 size={16} color={color("semantic.error")} />
+                        <Trash2 color={color("semantic.error")} size={16} />
                     </Pressable>
                 )}
             </ThemedView>
@@ -329,6 +357,17 @@ export function InventoryItemCard({
     return (
         <>
             {modals}
+            <ItemShareModal
+                isOpen={isShareModalOpen}
+                item={item}
+                onClose={() => setIsShareModalOpen(false)}
+            />
+            <ErrorModal
+                isOpen={isAttunedWarningOpen}
+                message={`You cannot share "${item.name}" while it is attuned. Remove attunement first, then try again.`}
+                title="🔒 Item Attuned"
+                onClose={() => setIsAttunedWarningOpen(false)}
+            />
             <CollapsibleCard
                 fullContent={longContent}
                 glowColor={colorByRarity[item.rarity] as ThemeColorKey}

@@ -43,6 +43,14 @@ export {
     useFeaturesCatalog,
 } from "./useCatalog";
 
+// Item transfers (QR sharing)
+export {
+    useCreateItemTransfer,
+    useClaimItemTransfer,
+    type ItemTransferRow,
+    type ItemTransferSnapshot,
+} from "./useItemTransfers";
+
 // Factory (for custom one-off hooks)
 export {
     useCharacterQuery,

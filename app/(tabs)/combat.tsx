@@ -10,69 +10,56 @@ import CombatActionCard, {
 } from "@/components/combat/CombatActionCard";
 import { EditScreenShell } from "@/components/editing/EditScreenShell";
 import { useCharacterId } from "@/context/CharacterIdContext";
-import { useCharacter } from "@/hooks/data/useCharacter";
-import { useCharacterItems, useCharacterSpells, useClasses } from "@/hooks/data";
+import {
+    useCharacter,
+    useCharacterFeatures,
+    useCharacterSpellSlots,
+    useClasses,
+} from "@/hooks/data";
 import { useCharacterEditor } from "@/hooks/editing/useCharacterEditor";
 import { useFieldEditorModals } from "@/hooks/editing/useFieldEditorModals";
+import type { FeatureRow } from "@/hooks/data/useCharacterFeatures";
 
-const MOCK_ACTIONS: CombatAction[] = [
-    {
-        id: "1",
-        name: "Divine Smite",
-        type: "Action",
-        range: "5ft",
-        effect: "2d8 Radiant",
-    },
-    {
-        id: "2",
-        name: "Lay on Hands",
-        type: "Action",
-        range: "Touch",
-        effect: "Heal up to 60",
-    },
-    {
-        id: "3",
-        name: "Shield of Faith",
-        type: "Bonus Action",
-        range: "V, S, M",
-        effect: "+2 AC",
-    },
-];
+const ORIGIN_TYPE_LABELS: Record<
+    NonNullable<FeatureRow["origin_type"]>,
+    string
+> = {
+    class: "Class Feature",
+    subclass: "Subclass Feature",
+    race: "Racial Feature",
+    character: "Character Trait",
+    background: "Background Feature",
+    feat: "Feat",
+    other: "Feature",
+};
+
+function featureToAction(feature: FeatureRow): CombatAction {
+    return {
+        id: feature.feature_id ?? "",
+        name: feature.feature_name ?? "Unknown",
+        type: feature.origin_type
+            ? ORIGIN_TYPE_LABELS[feature.origin_type]
+            : "Feature",
+        range: "—",
+        effect: feature.feature_description ?? "",
+    };
+}
 
 export default function CombatScreen() {
     const { styles } = useStyles((t) => ({
-        screen: {
-            flex: 1,
-        },
-        scroll: {
-            padding: t.spacing.lg,
-            gap: t.spacing.xl,
-        },
+        screen: { flex: 1 },
+        scroll: { padding: t.spacing.lg, gap: t.spacing.xl },
         header: {
             flexDirection: "row",
             justifyContent: "space-between",
             alignItems: "flex-end",
         },
-        headerLeft: {
-            gap: t.spacing.xxs,
-        },
-        headerRight: {
-            alignItems: "flex-end",
-        },
-        encounterLabel: {
-            fontSize: 11,
-            letterSpacing: 2,
-        },
-        characterName: {
-            fontSize: 32,
-            lineHeight: 38,
-        },
-        levelText: {
-            fontSize: 12,
-        },
-        classText: {
-            fontSize: 16,
-        },
+        headerLeft: { gap: t.spacing.xxs },
+        headerRight: { alignItems: "flex-end" },
+        encounterLabel: { fontSize: 11, letterSpacing: 2 },
+        characterName: { fontSize: 32, lineHeight: 38 },
+        levelText: { fontSize: 12 },
+        classText: { fontSize: 16 },
         sectionHeader: {
             flexDirection: "row",
             justifyContent: "space-between",
@@ -84,24 +71,30 @@ export default function CombatScreen() {
             paddingHorizontal: t.spacing.sm,
             paddingVertical: t.spacing.xxs,
         },
-        slotsText: {
-            fontSize: 12,
-        },
-        actionsGroup: {
-            gap: t.spacing.md,
-        },
+        slotsText: { fontSize: 12 },
+        actionsGroup: { gap: t.spacing.md },
     }));
 
     const characterId = useCharacterId();
     const [isEditMode, setIsEditMode] = useState(false);
+
     const { data: character } = useCharacter(characterId);
     const { data: availableClasses } = useClasses();
-    const characterClass = availableClasses?.find((cls) => character?.class_id === cls.id);
+    const { data: features } = useCharacterFeatures(characterId);
+    const { data: spellSlots } = useCharacterSpellSlots(characterId);
+
     const { updateCharacter } = useCharacterEditor(characterId);
     const { openNumeric, modals } = useFieldEditorModals();
 
-    useCharacterItems(characterId);
-    useCharacterSpells(characterId);
+    const characterClass = availableClasses?.find(
+        (cls) => character?.class_id === cls.id,
+    );
+    const combatActions: CombatAction[] = (features ?? []).map(featureToAction);
+    const totalSlotsLeft = (spellSlots ?? []).reduce(
+        (sum, s) => sum + s.current,
+        0,
+    );
+    const totalSlotsMax = (spellSlots ?? []).reduce((sum, s) => sum + s.max, 0);
 
     return (
         <EditScreenShell
@@ -109,9 +102,13 @@ export default function CombatScreen() {
             style={styles.screen}
             onToggleEditMode={() => setIsEditMode((v) => !v)}
         >
-            <ThemedView backgroundColor="surface.background" style={styles.screen}>
+            <ThemedView
+                backgroundColor="surface.background"
+                style={styles.screen}
+            >
                 {modals}
                 <ScrollView contentContainerStyle={styles.scroll}>
+                    {/* Header */}
                     <View style={styles.header}>
                         <View style={styles.headerLeft}>
                             <ThemedText
@@ -129,7 +126,10 @@ export default function CombatScreen() {
                             </ThemedText>
                         </View>
                         <View style={styles.headerRight}>
-                            <ThemedText color="text.muted" style={styles.levelText}>
+                            <ThemedText
+                                color="text.muted"
+                                style={styles.levelText}
+                            >
                                 LEVEL {character?.level}
                             </ThemedText>
                             <ThemedText
@@ -142,6 +142,7 @@ export default function CombatScreen() {
                         </View>
                     </View>
 
+                    {/* Hit Points */}
                     <HealthBar
                         currentHp={character?.hp_current ?? 0}
                         isEditMode={isEditMode}
@@ -153,7 +154,9 @@ export default function CombatScreen() {
                                 initialValue: character?.hp_current ?? 0,
                                 min: 0,
                                 onSubmit: (value) =>
-                                    updateCharacter.mutate({ hp_current: value }),
+                                    updateCharacter.mutate({
+                                        hp_current: value,
+                                    }),
                             })
                         }
                         onEditMaxHp={() =>
@@ -176,6 +179,7 @@ export default function CombatScreen() {
                         }
                     />
 
+                    {/* Combat Stats */}
                     <StatRow
                         armorClass={character?.armor_class ?? 0}
                         initiative={character?.initiative ?? 0}
@@ -187,7 +191,9 @@ export default function CombatScreen() {
                                 initialValue: character?.armor_class ?? 0,
                                 min: 0,
                                 onSubmit: (value) =>
-                                    updateCharacter.mutate({ armor_class: value }),
+                                    updateCharacter.mutate({
+                                        armor_class: value,
+                                    }),
                             })
                         }
                         onEditInitiative={() =>
@@ -195,7 +201,9 @@ export default function CombatScreen() {
                                 label: "Initiative",
                                 initialValue: character?.initiative ?? 0,
                                 onSubmit: (value) =>
-                                    updateCharacter.mutate({ initiative: value }),
+                                    updateCharacter.mutate({
+                                        initiative: value,
+                                    }),
                             })
                         }
                         onEditSpeed={() =>
@@ -209,23 +217,27 @@ export default function CombatScreen() {
                         }
                     />
 
+                    {/* Death Saves */}
                     <DeathSaves />
 
+                    {/* Combat Actions */}
                     <View style={styles.actionsGroup}>
                         <View style={styles.sectionHeader}>
                             <ThemedText color="text.heading" variant="headline">
                                 Combat Actions
                             </ThemedText>
-                            <View style={styles.slotsBadge}>
-                                <ThemedText
-                                    color="semantic.success"
-                                    style={styles.slotsText}
-                                >
-                                    2 Slots Left
-                                </ThemedText>
-                            </View>
+                            {totalSlotsMax > 0 && (
+                                <View style={styles.slotsBadge}>
+                                    <ThemedText
+                                        color="semantic.success"
+                                        style={styles.slotsText}
+                                    >
+                                        {totalSlotsLeft} / {totalSlotsMax} Slots
+                                    </ThemedText>
+                                </View>
+                            )}
                         </View>
-                        {MOCK_ACTIONS.map((action) => (
+                        {combatActions.map((action) => (
                             <CombatActionCard key={action.id} action={action} />
                         ))}
                     </View>

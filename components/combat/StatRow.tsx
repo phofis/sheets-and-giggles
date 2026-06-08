@@ -54,7 +54,11 @@ export default function StatRow({
 
     return (
         <View style={styles.row}>
-            <EditableField isEditMode={isEditMode} onPress={onEditArmorClass}>
+            <EditableField
+                isEditMode={isEditMode}
+                style={{ flex: 1 }}
+                onPress={onEditArmorClass}
+            >
                 <View style={styles.statBox}>
                     <ACIcon color="palette.tertiary" size={16} />
                     <ThemedText
@@ -69,7 +73,11 @@ export default function StatRow({
                     </ThemedText>
                 </View>
             </EditableField>
-            <EditableField isEditMode={isEditMode} onPress={onEditInitiative}>
+            <EditableField
+                isEditMode={isEditMode}
+                style={{ flex: 1 }}
+                onPress={onEditInitiative}
+            >
                 <View style={[styles.statBox, styles.statBoxHighlighted]}>
                     <InitiativeIcon />
                     <ThemedText
@@ -84,7 +92,11 @@ export default function StatRow({
                     </ThemedText>
                 </View>
             </EditableField>
-            <EditableField isEditMode={isEditMode} onPress={onEditSpeed}>
+            <EditableField
+                isEditMode={isEditMode}
+                style={{ flex: 1 }}
+                onPress={onEditSpeed}
+            >
                 <View style={styles.statBox}>
                     <SpeedIcon />
                     <ThemedText
