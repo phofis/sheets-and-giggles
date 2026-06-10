@@ -2,7 +2,7 @@ name: Build and Publish Debug APK
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 permissions:
   contents: write
