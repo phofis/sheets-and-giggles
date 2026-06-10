@@ -1,8 +1,8 @@
-name: Build and Release APK
+name: Build and Publish Debug APK
 
 on:
   push:
-    branches: [master]  # change to [main] if that's your default branch
+    branches: [main]
 
 permissions:
   contents: write
@@ -31,17 +31,13 @@ jobs:
         uses: android-actions/setup-android@v3
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci
 
       - name: Generate native Android project
         env:
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_KEY }}
         run: npx expo prebuild --platform android --no-install
-
-      - name: Decode keystore
-        run: |
-          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release.keystore
 
       - name: Build debug APK
         env:
@@ -51,15 +47,16 @@ jobs:
         run: |
           cd android
           ./gradlew assembleDebug
-      - name: Create GitHub Release
+
+      - name: Create GitHub Release (debug APK)
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-${{ github.run_number }}
-          name: Android build ${{ github.run_number }}
+          tag_name: android-debug-${{ github.run_number }}
+          name: Android debug build ${{ github.run_number }}
           body: |
-            Automated APK build from commit ${{ github.sha }}.
-          files: android/app/build/outputs/apk/release/app-release.apk
-          draft: false
-          prerelease: false
+            Debug APK for testing only (not for production).
+            Built from commit ${{ github.sha }}.
+          files: android/app/build/outputs/apk/debug/app-debug.apk
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
