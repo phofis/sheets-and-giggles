@@ -46,7 +46,7 @@
         "expo-font",
         {
           "fonts": [
-            "./assets/fonts/MaterialIcons.ttf"
+            "./assets/fonts/MaterialIcons-Regular.ttf"
           ]
         }
       ]
