@@ -1,8 +1,8 @@
-name: Build and Publish Debug APK
+name: Build and Publish Preview APK
 
 on:
   push:
-    branches: [main]
+    branches: [master]
 
 permissions:
   contents: write
@@ -27,6 +27,16 @@ jobs:
           distribution: temurin
           java-version: 17
 
+      - name: Check supabase url
+        run: test -n "$EXPO_PUBLIC_SUPABASE_URL" && echo "Supabase URL is set" || echo "Supabase URL is MISSING"
+        env:
+          EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
+
+      - name: Check supabase key
+        run: test -n "$EXPO_PUBLIC_SUPABASE_KEY" && echo "Supabase KEY is set" || echo "Supabase KEY is MISSING"
+        env:
+          EXPO_PUBLIC_SUPABASE_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_KEY }}
+
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
 
@@ -39,24 +49,23 @@ jobs:
           EXPO_PUBLIC_SUPABASE_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_KEY }}
         run: npx expo prebuild --platform android --no-install
 
-      - name: Build debug APK
+      - name: Build preview APK
         env:
-          NODE_ENV: production
           EXPO_PUBLIC_SUPABASE_URL: ${{ secrets.EXPO_PUBLIC_SUPABASE_URL }}
           EXPO_PUBLIC_SUPABASE_KEY: ${{ secrets.EXPO_PUBLIC_SUPABASE_KEY }}
         run: |
           cd android
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
-      - name: Create GitHub Release (debug APK)
+      - name: Create GitHub Release (preview APK)
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: android-debug-${{ github.run_number }}
-          name: Android debug build ${{ github.run_number }}
+          tag_name: android-preview-${{ github.run_number }}
+          name: Android preview build ${{ github.run_number }}
           body: |
-            Debug APK for testing only (not for production).
+            Preview APK for internal testing (standalone, embedded JS bundle).
             Built from commit ${{ github.sha }}.
-          files: android/app/build/outputs/apk/debug/app-debug.apk
+          files: android/app/build/outputs/apk/release/app-release.apk
           prerelease: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
