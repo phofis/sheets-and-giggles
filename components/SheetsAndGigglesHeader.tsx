@@ -19,13 +19,13 @@ export const MainHeader = () => {
         textContainer: {
             alignItems: "center",
             marginBottom: 16,
-            marginTop: 50,
+            marginTop: 30,
         },
         titleLine: {
             fontSize: 60,
             fontWeight: "800",
             textAlign: "center",
-            lineHeight: 64,
+            lineHeight: 84,
             // Implementation of the "Glow" effect
             textShadowColor: "rgba(255, 255, 255, 0.8)",
             textShadowOffset: { width: 0, height: 0 },
