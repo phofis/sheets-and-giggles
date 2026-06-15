@@ -82,7 +82,10 @@ export function Treasury({ isEditMode }: TreasuryProps) {
                                 <Coins size={24} color={m.color} />
                             </View>
                             <EditableField
+                                compact
                                 isEditMode={isEditMode}
+                                overlay
+                                overlayPosition="right"
                                 onPress={() =>
                                     openNumeric({
                                         label: `${m.label} amount`,
