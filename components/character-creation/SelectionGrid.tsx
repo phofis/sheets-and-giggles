@@ -51,11 +51,18 @@ export const SelectionGrid: React.FC<SelectionGridProps> = ({
                 aspectRatio: 1,
                 backgroundColor: c("card.background"),
                 borderRadius: theme.borderRadius.lg,
+                paddingVertical: theme.spacing.lg,
                 alignItems: "center",
                 justifyContent: "center",
                 gap: theme.spacing.md,
                 borderWidth: 1,
                 borderColor: "transparent",
+            },
+            centerFlexWrapper: {
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center",
+                gap: theme.spacing.sm,
             },
             cardActive: {
                 borderColor: activeColor,
@@ -115,16 +122,18 @@ export const SelectionGrid: React.FC<SelectionGridProps> = ({
                             style={[styles.card, isActive && styles.cardActive]}
                             onPress={() => onSelect(option.id)}
                         >
-                            <View style={styles.iconContainer}>
-                                {option.icon(iconVectorColor)}
-                            </View>
+                            <View style={styles.centerFlexWrapper}>
+                                <View style={styles.iconContainer}>
+                                    {option.icon(iconVectorColor)}
+                                </View>
 
-                            <ThemedText
-                                color={isActive ? "text.note" : "text.muted"}
-                                style={styles.label}
-                            >
-                                {option.label}
-                            </ThemedText>
+                                <ThemedText
+                                    color={isActive ? "text.note" : "text.muted"}
+                                    style={styles.label}
+                                >
+                                    {option.label}
+                                </ThemedText>
+                            </View>
                         </TouchableOpacity>
                     );
                 })}
