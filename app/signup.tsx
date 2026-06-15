@@ -53,7 +53,7 @@ export default function SignupScreen() {
     const { styles } = useStyles((t, c) => ({
         screen: { flex: 1, justifyContent: "center", alignItems: "center", gap: 24 },
         scrollView: { flex: 1, alignSelf: "stretch" },
-        scrollContentContainer: { flexGrow: 1 },
+        scrollContentContainer: { flexGrow: 1, paddingBottom: 50 },
         content: {
             alignSelf: "stretch",
             paddingHorizontal: t.spacing.lg,
@@ -129,7 +129,7 @@ export default function SignupScreen() {
                     </View>
 
                     {/* Terms of Service Section */}
-                    <View style={styles.termsRow}>
+                    {/* <View style={styles.termsRow}>
                         <Checkbox
                             buttonColor="palette.tertiary"
                             value={termsAccepted}
@@ -145,7 +145,7 @@ export default function SignupScreen() {
                                 <ThemedText color="text.lively" style={{ fontSize: 14 }}> Privacy Policy</ThemedText>
                             </TouchableOpacity>
                         </ThemedText>
-                    </View>
+                    </View> */}
 
                     <TouchableOpacity
                         activeOpacity={0.8}
@@ -183,10 +183,14 @@ function SignupFooter({ handleRerouteToLogin }: { handleRerouteToLogin: () => vo
     return (
         <View style={styles.footer}>
             <ThemedText color="text.muted">
-                Already have an account?
-                <TouchableOpacity onPress={handleRerouteToLogin}>
-                    <ThemedText color="text.lively" style={{ fontWeight: '700' }}> Sign in</ThemedText>
-                </TouchableOpacity>
+                Already have an account?{" "}
+                <ThemedText
+                    color="text.lively"
+                    style={{ fontWeight: '700' }}
+                    onPress={handleRerouteToLogin}
+                >
+                    Sign in
+                </ThemedText>
             </ThemedText>
         </View>
     );

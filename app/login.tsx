@@ -21,7 +21,7 @@ export default function LoginScreen() {
             gap: 24,
         },
         scrollView: { flex: 1, alignSelf: "stretch" },
-        scrollContentContainer: { flexGrow: 1 },
+        scrollContentContainer: { flexGrow: 1, paddingBottom: 50 },
         content: {
             alignSelf: "stretch",
             paddingHorizontal: t.spacing.lg,
@@ -109,9 +109,9 @@ export default function LoginScreen() {
                             activeOpacity={0.7}
                             onPress={handleForgotPassword}
                         >
-                            <ThemedText color="text.lively">
+                            {/* <ThemedText color="text.lively">
                                 Forgot password?
-                            </ThemedText>
+                            </ThemedText> */}
                         </TouchableOpacity>
                     </View>
 
