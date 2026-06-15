@@ -1,5 +1,6 @@
 import { ActivityIndicator, ScrollView, View } from "react-native";
 import { useState } from "react";
+import { useRouter } from "expo-router";
 
 import { ThemedView, ThemedList, ThemedHeadline } from "@/components/themed";
 import { ThemedFeatureContainer } from "@/components/themed/ThemedFeatureContainer";
@@ -83,6 +84,7 @@ export default function MainSheetScreen() {
     }));
 
     const characterId = useCharacterId();
+    const router = useRouter();
     const [isEditMode, setIsEditMode] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
 
@@ -138,6 +140,7 @@ export default function MainSheetScreen() {
                             <Header
                                 characterHeader={characterSheet.characterHeader}
                                 isEditMode={isEditMode}
+                                onLevelUp={() => router.push("/level-up")}
                                 onEditInspiration={() =>
                                     openNumeric({
                                         label: "Inspiration",

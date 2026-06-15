@@ -70,6 +70,8 @@ export default function LevelUpScreen() {
     const router = useRouter();
     const characterId = useCharacterId();
 
+    const goToCharacterSheet = () => router.push("/character-sheet");
+
     const { data: characterSheet, isLoading } = useCharacterSheet(characterId);
     const { updateCharacter } = useCharacterEditor(characterId);
 
@@ -227,7 +229,7 @@ export default function LevelUpScreen() {
             } as any,
             {
                 onSuccess: () => {
-                    router.back();
+                    goToCharacterSheet();
                 }
             }
         );
@@ -247,7 +249,7 @@ export default function LevelUpScreen() {
         <ThemedView style={styles.screen}>
             <ScrollView contentContainerStyle={styles.scrollContentContainer} showsVerticalScrollIndicator={false}>
 
-                <Header onBack={() => router.back()} title="Level Up" />
+                <Header onBack={goToCharacterSheet} title="Level Up" />
 
                 <SectionHeader
                     badgeText={badgeText}
