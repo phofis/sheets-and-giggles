@@ -43,6 +43,7 @@ export function useCreateCharacter() {
         onSuccess: () => {
             // Guarantee structural parity by invalidating the local deterministic cache
             queryClient.invalidateQueries({ queryKey: ["characters"] });
+            queryClient.invalidateQueries({ queryKey: ["adventurers"] });
         },
     });
 }
