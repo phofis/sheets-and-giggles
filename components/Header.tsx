@@ -76,24 +76,24 @@ export const Header = ({
             </ThemedView>
 
             <View style={styles.headerPills}>
-                <EditableField isEditMode={isEditMode} onPress={onEditLevel}>
-                    <ThemedStatContainer
-                        backgroundColor="buttonPrimary.background"
-                        label="Level"
-                        labelColor="buttonPrimary.text"
-                        mode="pill"
-                        value={`${characterHeader.level} ${characterHeader.class}`}
-                    />
-                </EditableField>
-                <EditableField isEditMode={isEditMode} onPress={onEditInspiration}>
-                    <ThemedStatContainer
-                        backgroundColor="buttonSecondary.background"
-                        label="Inspiration:"
-                        labelColor="buttonSecondary.text"
-                        mode="pill"
-                        value={characterHeader.inspiration}
-                    />
-                </EditableField>
+                <ThemedStatContainer
+                    backgroundColor="buttonPrimary.background"
+                    isEditMode={isEditMode}
+                    label="Level"
+                    labelColor="buttonPrimary.text"
+                    mode="pill"
+                    value={`${characterHeader.level} ${characterHeader.class}`}
+                    onPress={onEditLevel}
+                />
+                <ThemedStatContainer
+                    backgroundColor="buttonSecondary.background"
+                    isEditMode={isEditMode}
+                    label="Inspiration:"
+                    labelColor="buttonSecondary.text"
+                    mode="pill"
+                    value={characterHeader.inspiration}
+                    onPress={onEditInspiration}
+                />
             </View>
         </ThemedView>
     );

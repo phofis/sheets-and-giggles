@@ -56,6 +56,8 @@ export default function StatRow({
         <View style={styles.row}>
             <EditableField
                 isEditMode={isEditMode}
+                overlay
+                overlayPosition="top-right"
                 style={{ flex: 1 }}
                 onPress={onEditArmorClass}
             >
@@ -75,6 +77,8 @@ export default function StatRow({
             </EditableField>
             <EditableField
                 isEditMode={isEditMode}
+                overlay
+                overlayPosition="top-right"
                 style={{ flex: 1 }}
                 onPress={onEditInitiative}
             >
@@ -94,6 +98,8 @@ export default function StatRow({
             </EditableField>
             <EditableField
                 isEditMode={isEditMode}
+                overlay
+                overlayPosition="top-right"
                 style={{ flex: 1 }}
                 onPress={onEditSpeed}
             >

@@ -67,14 +67,7 @@ export function ThemedList({
             {/* List Content */}
             <View style={styles.listBody}>
                 {data.map((item, index) => (
-                    <EditableField
-                        key={index}
-                        isEditMode={isEditMode}
-                        onPress={
-                            onItemPress ? () => onItemPress(item, index) : undefined
-                        }
-                    >
-                        <View style={styles.row}>
+                    <View key={index} style={styles.row}>
                         <View style={styles.labelContainer}>
                             <View
                                 style={[
@@ -93,11 +86,19 @@ export function ThemedList({
                                 {item.label}
                             </ThemedText>
                         </View>
-                        <ThemedText color="text.lively" style={styles.skillValue} variant="label">
-                            {item.value}
-                        </ThemedText>
-                        </View>
-                    </EditableField>
+                        <EditableField
+                            compact
+                            isEditMode={isEditMode}
+                            pencilPosition="left"
+                            onPress={
+                                onItemPress ? () => onItemPress(item, index) : undefined
+                            }
+                        >
+                            <ThemedText color="text.lively" style={styles.skillValue} variant="label">
+                                {item.value}
+                            </ThemedText>
+                        </EditableField>
+                    </View>
                 ))}
             </View>
 

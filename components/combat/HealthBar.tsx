@@ -77,7 +77,12 @@ export default function HealthBar({
                 <ThemedText color="text.body" variant="label">
                     Health Points
                 </ThemedText>
-                <EditableField isEditMode={isEditMode} onPress={onEditTempHp}>
+                <EditableField
+                    compact
+                    isEditMode={isEditMode}
+                    pencilPosition="left"
+                    onPress={onEditTempHp}
+                >
                     <View style={styles.tempBadge}>
                         <ThemedText color="palette.secondary" variant="label">
                             TEMP HP{" "}
@@ -89,7 +94,12 @@ export default function HealthBar({
                 </EditableField>
             </View>
             <View style={styles.hpRow}>
-                <EditableField isEditMode={isEditMode} onPress={onEditCurrentHp}>
+                <EditableField
+                    compact
+                    isEditMode={isEditMode}
+                    pencilPosition="left"
+                    onPress={onEditCurrentHp}
+                >
                     <ThemedText
                         color="text.heading"
                         style={styles.hpValue}
@@ -98,7 +108,12 @@ export default function HealthBar({
                         {currentHp}
                     </ThemedText>
                 </EditableField>
-                <EditableField isEditMode={isEditMode} onPress={onEditMaxHp}>
+                <EditableField
+                    compact
+                    isEditMode={isEditMode}
+                    pencilPosition="right"
+                    onPress={onEditMaxHp}
+                >
                     <ThemedText color="text.muted" style={styles.hpMax}>
                         / {maxHp}
                     </ThemedText>

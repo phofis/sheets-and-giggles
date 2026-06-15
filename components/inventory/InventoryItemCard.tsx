@@ -9,7 +9,7 @@ import {
     useUpdateCharacterItem,
     useDeleteCharacterItem,
 } from "@/hooks/data/useCharacterItems";
-import { Pressable } from "react-native";
+import { Pressable, View } from "react-native";
 import {
     Sword,
     FlaskRound,
@@ -137,6 +137,18 @@ export function InventoryItemCard({
             alignItems: "center",
             gap: t.spacing.xs,
             flexShrink: 0,
+        },
+        actionSlot: {
+            width: 36,
+            height: 36,
+            alignItems: "center",
+            justifyContent: "center",
+        },
+        editActionSlot: {
+            minWidth: 64,
+            height: 36,
+            alignItems: "center",
+            justifyContent: "center",
         },
     }));
 
@@ -299,57 +311,62 @@ export function InventoryItemCard({
                         {item.rarity}
                     </ThemedText>
                 )}
-                <Pressable
-                    style={[
-                        styles.editButton,
-                        item.attuned && { opacity: 0.4 },
-                    ]}
-                    onPress={(e) => {
-                        e.stopPropagation?.();
-                        if (item.attuned) {
-                            setIsAttunedWarningOpen(true);
-                        } else {
-                            setIsShareModalOpen(true);
-                        }
-                    }}
-                >
-                    <Share2
-                        color={color(
-                            item.attuned ? "text.muted" : "palette.secondary",
+                <ThemedView style={styles.actionsContainer}>
+                    <View style={styles.actionSlot}>
+                        {isEditMode && (
+                            <Pressable
+                                style={styles.editButton}
+                                onPress={(e) => {
+                                    e.stopPropagation?.();
+                                    deleteCharacterItem.mutate(item.id);
+                                }}
+                            >
+                                <Trash2 color={color("semantic.error")} size={16} />
+                            </Pressable>
                         )}
-                        size={16}
-                    />
-                </Pressable>
-
-                {isEditMode && (
+                    </View>
+                    <View style={styles.editActionSlot}>
+                        {isEditMode && (
+                            <Pressable
+                                style={styles.editButton}
+                                onPress={(e) => {
+                                    e.stopPropagation?.();
+                                    openEditModal();
+                                }}
+                            >
+                                <Edit3 color={color("text.body")} size={16} />
+                                <ThemedText
+                                    color="text.body"
+                                    style={styles.editButtonText}
+                                    variant="body"
+                                >
+                                    Edit
+                                </ThemedText>
+                            </Pressable>
+                        )}
+                    </View>
                     <Pressable
-                        style={styles.editButton}
+                        style={[
+                            styles.editButton,
+                            item.attuned && { opacity: 0.4 },
+                        ]}
                         onPress={(e) => {
                             e.stopPropagation?.();
-                            openEditModal();
+                            if (item.attuned) {
+                                setIsAttunedWarningOpen(true);
+                            } else {
+                                setIsShareModalOpen(true);
+                            }
                         }}
                     >
-                        <Edit3 color={color("text.body")} size={16} />
-                        <ThemedText
-                            color="text.body"
-                            style={styles.editButtonText}
-                            variant="body"
-                        >
-                            Edit
-                        </ThemedText>
+                        <Share2
+                            color={color(
+                                item.attuned ? "text.muted" : "palette.secondary",
+                            )}
+                            size={16}
+                        />
                     </Pressable>
-                )}
-                {isEditMode && (
-                    <Pressable
-                        style={styles.editButton}
-                        onPress={(e) => {
-                            e.stopPropagation?.();
-                            deleteCharacterItem.mutate(item.id);
-                        }}
-                    >
-                        <Trash2 color={color("semantic.error")} size={16} />
-                    </Pressable>
-                )}
+                </ThemedView>
             </ThemedView>
         </ThemedView>
     );

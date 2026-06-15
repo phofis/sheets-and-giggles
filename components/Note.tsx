@@ -53,7 +53,7 @@ export const Note: React.FC<NoteProps> = ({
         },
         innerWrapper: { flex: 1, gap: 16 },
         header: { textTransform: "none", fontWeight: "400" },
-        contentContainer: { alignSelf: "stretch" },
+        contentContainer: { alignSelf: "stretch", flex: 1, minWidth: 0 },
         defaultText: { fontFamily: "Manrope", fontSize: 16, fontWeight: "300", lineHeight: 26 },
     }));
 
