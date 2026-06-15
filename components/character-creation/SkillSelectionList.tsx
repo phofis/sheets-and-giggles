@@ -43,12 +43,12 @@ export function SkillSelectionList({
         labelContainer: { flexDirection: "row", alignItems: "center", gap: 12 },
         bullet: { width: 12, height: 12, borderRadius: 6, borderWidth: 2 },
         bulletActive: {
-            backgroundColor: c("palette.tertiary"),
-            borderColor:c("palette.tertiary")
+            backgroundColor: c("palette.secondary"),
+            borderColor:c("palette.secondary")
         },
         bulletInactive: {
             backgroundColor: "transparent",
-            borderColor: c("border.subtle")
+            borderColor: c("palette.secondary")
         },
         bulletGlow: {
             shadowColor: c("palette.tertiary"),
@@ -57,8 +57,8 @@ export function SkillSelectionList({
             shadowRadius: 6,
             elevation: 5,
         },
-        skillLabel: { fontSize: 18, opacity: 0.9 },
-        skillLabelActive: { fontWeight: "bold", opacity: 1 },
+        skillLabel: { fontSize: 16, lineHeight: 22, opacity: 0.9 },
+        skillLabelActive: { fontSize: 16, lineHeight: 22, fontWeight: "bold", opacity: 1 },
         footer: { marginTop: 24, alignItems: "center" },
         footerText: { letterSpacing: 1.5, fontWeight: "700", fontSize: 12 },
     }));

@@ -38,7 +38,7 @@ export default function AdventurerHeader({ adventurer }: Props) {
         <View style={styles.upperView}>
             <ImageWithLevel image={adventurer.photoUri} level={adventurer.level} />
             <View style={styles.column}>
-                <ThemedText color="text.heading" style={{ fontSize: 24 }}>
+                <ThemedText color="text.heading" style={{ fontSize: 19, lineHeight: 25 }}>
                     {adventurer.name}
                 </ThemedText>
                 <ThemedText color="text.body" variant="body">

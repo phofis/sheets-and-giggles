@@ -56,7 +56,7 @@ export default function LandingActionCard({ title, description, buttonText, colo
         },
         buttonText: {
             fontSize: 18,
-            lineHeight: 22,
+            lineHeight: 25,
             fontWeight: '400',
             color: color("text.onSecondary"),
         }
