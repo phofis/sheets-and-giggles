@@ -7,13 +7,14 @@ import {
 import { SpellSlots } from "@/components/spells/SpellSlots";
 import { SpellToolbar } from "@/components/spells/SpellToolbar";
 import {
+    buildSpellFilterFormFields,
     matchesSpellFilters,
     parseSpellFilterValues,
-    spellFilterFormFields,
     type SpellFilters,
 } from "@/components/spells/spellFilters";
 import { useStyles } from "@/hooks/useStyles";
 import { useCharacterSpells } from "@/hooks/data/useCharacterSpells";
+import { useClasses, useClassSpells } from "@/hooks/data";
 import { useFieldEditorModals } from "@/hooks/editing/useFieldEditorModals";
 import { useCharacterId } from "@/context/CharacterIdContext";
 import { EditScreenShell } from "@/components/editing/EditScreenShell";
@@ -47,28 +48,40 @@ export default function SpellsScreen() {
     }));
 
     const { data: spells } = useCharacterSpells(characterId);
+    const { data: classes } = useClasses();
+    const { data: classSpellsForFilter } = useClassSpells(filters.classId);
+
+    const classOptions = useMemo(
+        () => (classes ?? []).map((c) => ({ id: c.id, name: c.name })),
+        [classes],
+    );
+
+    const classSpellIds = useMemo(
+        () =>
+            filters.classId && classSpellsForFilter
+                ? new Set(classSpellsForFilter.map((s) => s.id))
+                : null,
+        [filters.classId, classSpellsForFilter],
+    );
 
     const filteredSpells = useMemo(
         () =>
             (spells ?? []).filter((entry) =>
-                matchesSpellFilters(entry.spells, search, filters),
+                matchesSpellFilters(
+                    entry.spells,
+                    search,
+                    filters,
+                    classSpellIds,
+                ),
             ),
-        [spells, search, filters],
+        [spells, search, filters, classSpellIds],
     );
 
     const openFilterModal = () => {
         openForm({
             title: "Filter spells",
             submitLabel: "Apply filters",
-            fields: spellFilterFormFields.map((field) => ({
-                ...field,
-                initialValue:
-                    field.name === "level"
-                        ? filters.level === undefined
-                            ? ""
-                            : String(filters.level)
-                        : (filters.school ?? ""),
-            })),
+            fields: buildSpellFilterFormFields({ filters, classOptions }),
             onSubmit: (values) => setFilters(parseSpellFilterValues(values)),
         });
     };
