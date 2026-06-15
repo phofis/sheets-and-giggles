@@ -1,14 +1,21 @@
 import { ActivityIndicator, ScrollView, View } from "react-native";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "expo-router";
 
-import { ThemedView, ThemedList, ThemedHeadline } from "@/components/themed";
+import { ThemedView, ThemedList, ThemedHeadline, ThemedText } from "@/components/themed";
 import { ThemedFeatureContainer } from "@/components/themed/ThemedFeatureContainer";
 import { ThemedTwoColumnList } from "@/components/themed/ThemedTwoColumnList";
 import { AbilityGrid } from "@/components/characterSheet/AbilityGrid";
 import { Header } from "@/components/Header";
 import { SavingThrowsIcon } from "@/components/icons";
 import { EditScreenShell } from "@/components/editing/EditScreenShell";
+import { FeatureToolbar } from "@/components/features/FeatureToolbar";
+import {
+    buildFeatureFilterFormFields,
+    matchesFeatureFilters,
+    parseFeatureFilterValues,
+    type FeatureFilters,
+} from "@/components/features/featureFilters";
 
 import { useStyles } from "@/hooks/useStyles";
 import { useCharacterSheet, CharacterSheet } from "@/hooks/useCharacterSheet";
@@ -80,13 +87,22 @@ export default function MainSheetScreen() {
             marginTop: theme.spacing.xxl,
             textAlign: "center",
         },
+        toolbarSpacing: {
+            marginBottom: theme.spacing.md,
+        },
         list: { width: "95%" },
+        empty: {
+            marginTop: theme.spacing.xl,
+            textAlign: "center",
+        },
     }));
 
     const characterId = useCharacterId();
     const router = useRouter();
     const [isEditMode, setIsEditMode] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [search, setSearch] = useState("");
+    const [filters, setFilters] = useState<FeatureFilters>({});
 
     const {
         data: characterSheet = defaultCharacterSheet,
@@ -95,12 +111,29 @@ export default function MainSheetScreen() {
     const { data: features, isLoading: isLoadingFeatures } =
         useCharacterFeatures(characterId);
     const { updateCharacter } = useCharacterEditor(characterId);
-    const { openText, openNumeric, modals } = useFieldEditorModals();
+    const { openText, openNumeric, openForm, modals } = useFieldEditorModals();
 
     const isLoading = isLoadingCharacterSheet || isLoadingFeatures;
     const displayedSkills = isExpanded
         ? characterSheet.allSkills
         : characterSheet.proficientSkills;
+
+    const filteredFeatures = useMemo(
+        () =>
+            (features ?? []).filter((feature) =>
+                matchesFeatureFilters(feature, search, filters),
+            ),
+        [features, search, filters],
+    );
+
+    const openFilterModal = () => {
+        openForm({
+            title: "Filter features",
+            submitLabel: "Apply filters",
+            fields: buildFeatureFilterFormFields({ filters }),
+            onSubmit: (values) => setFilters(parseFeatureFilterValues(values)),
+        });
+    };
 
     const handleSavingThrowPress = (item: ListItem) => {
         const key = item.editId as AbilityKey | undefined;
@@ -227,13 +260,40 @@ export default function MainSheetScreen() {
                             >
                                 Your Features
                             </ThemedHeadline>
+                            <View style={styles.toolbarSpacing}>
+                                <FeatureToolbar
+                                    search={search}
+                                    searchPlaceholder="Search your features..."
+                                    onAddPressOverride={() =>
+                                        router.push("/feature-list" as never)
+                                    }
+                                    onAssignFeature={() => {}}
+                                    onFilterPress={openFilterModal}
+                                    onSearchChange={setSearch}
+                                />
+                            </View>
                             <View style={styles.list}>
-                                {(features ?? []).map((feature) => (
-                                    <ThemedFeatureContainer
-                                        key={feature.feature_name}
-                                        feature={feature}
-                                    />
-                                ))}
+                                {filteredFeatures.length === 0 ? (
+                                    <ThemedText
+                                        color="text.muted"
+                                        style={styles.empty}
+                                        variant="body"
+                                    >
+                                        {features?.length
+                                            ? "No features match your search."
+                                            : "No features yet. Tap + to browse the catalog."}
+                                    </ThemedText>
+                                ) : (
+                                    filteredFeatures.map((feature) => (
+                                        <ThemedFeatureContainer
+                                            key={
+                                                feature.feature_id ??
+                                                feature.feature_name
+                                            }
+                                            feature={feature}
+                                        />
+                                    ))
+                                )}
                             </View>
                         </ThemedView>
                     )}
