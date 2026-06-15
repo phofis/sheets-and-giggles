@@ -1,5 +1,10 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { ScrollView, View, TouchableOpacity, ActivityIndicator } from "react-native";
+import {
+    ScrollView,
+    View,
+    TouchableOpacity,
+    ActivityIndicator,
+} from "react-native";
 import { useRouter } from "expo-router";
 
 import { ThemedView, ThemedText } from "@/components/themed";
@@ -18,46 +23,20 @@ import type { AbilityScores } from "@/app/character-creation";
 import { SelectionList } from "@/components/level-up/SelectionList";
 import type { SelectableItem } from "@/components/level-up/SelectableItemCard";
 
+import {
+    useCharacter,
+    useClasses,
+    useClassSpells,
+    useLevelUpAvailableFeatures,
+    useAssignFeature,
+    useCharacterSpells,
+    useLearnSpell,
+    type CharacterPatch,
+} from "@/hooks/data";
+
 // Assume these imports map to your component repository
 import { SelectionSectionCard } from "@/components/character-creation/SelectionSectionCard";
 import { DynamicStringListCard } from "@/components/character-creation/DynamicStringListCard";
-
-// ─── Static Mock Vectors ─────────────────────────────────────────────────────
-
-const MOCK_FEATURES: SelectableItem[] = [
-    {
-        id: "feat_sentinel",
-        name: "Sentinel",
-        description: "You have mastered techniques to take advantage of every drop in any enemy's guard..."
-    },
-    {
-        id: "feat_tough",
-        name: "Tough",
-        description: "Your hit point maximum increases by an amount equal to twice your level..."
-    }
-];
-
-const MOCK_SUBCLASSES: SelectableItem[] = [
-    {
-        id: "sub_hunter",
-        name: "Hunter",
-        description: "You have mastered techniques to take advantage of every drop in any enemy's guard..."
-    },
-    {
-        id: "sub_gloom",
-        name: "Gloom Stalker",
-        description: "Your hit point maximum increases by an amount equal to twice your level..."
-    }
-];
-
-// C: The local mocked spell catalog
-const MOCK_SPELLS_CATALOG = [
-    { id: "spell_fireball", name: "Fireball" },
-    { id: "spell_shield", name: "Shield" },
-    { id: "spell_magic_missile", name: "Magic Missile" },
-    { id: "spell_cure_wounds", name: "Cure Wounds" },
-    { id: "spell_invisibility", name: "Invisibility" },
-];
 
 // ─── Formal Type Boundaries ──────────────────────────────────────────────────
 export type StrictAbilityScores = Record<keyof AbilityScores, number>;
@@ -72,13 +51,57 @@ export default function LevelUpScreen() {
 
     const goToCharacterSheet = () => router.push("/character-sheet");
 
-    const { data: characterSheet, isLoading } = useCharacterSheet(characterId);
+
+    const { data: characterSheet, isLoading: isLoadingSheet } =
+        useCharacterSheet(characterId);
+    const { data: character, isLoading: isLoadingCharacter } =
+        useCharacter(characterId);
+    const { data: classes, isLoading: isLoadingClasses } = useClasses();
     const { updateCharacter } = useCharacterEditor(characterId);
+    const assignFeature = useAssignFeature(characterId);
+    const learnSpell = useLearnSpell(characterId);
+
+    const { data: classSpells, isLoading: isLoadingClassSpells } =
+        useClassSpells(character?.class_id);
+    const { data: knownSpells } = useCharacterSpells(characterId);
+
+    const currentClass = useMemo(
+        () => classes?.find((c) => c.id === character?.class_id),
+        [classes, character?.class_id],
+    );
+
+    const targetLevel = character ? character.level + 1 : undefined;
+
+    const needsSubclass =
+        !!character &&
+        !!currentClass &&
+        !character.subclass_id &&
+        targetLevel === currentClass.subclass_level;
+
+    const [selectedSubclassId, setSelectedSubclassId] = useState<string | null>(
+        null,
+    );
+    const effectiveSubclassId = character?.subclass_id ?? selectedSubclassId;
+
+    const { data: availableFeatures, isLoading: isLoadingFeatures } =
+        useLevelUpAvailableFeatures(
+            characterId,
+            character?.class_id,
+            effectiveSubclassId,
+            targetLevel,
+        );
 
     const { styles } = useStyles((theme, c) => ({
-        screen: { flex: 1, backgroundColor: c("surface.background") || "#11111b" },
+        screen: {
+            flex: 1,
+            backgroundColor: c("surface.background") || "#11111b",
+        },
         centered: { flex: 1, justifyContent: "center", alignItems: "center" },
-        scrollContentContainer: { paddingHorizontal: theme.spacing.lg, paddingTop: theme.spacing.xl, paddingBottom: 90 },
+        scrollContentContainer: {
+            paddingHorizontal: theme.spacing.lg,
+            paddingTop: theme.spacing.xl,
+            paddingBottom: 90,
+        },
         fabContainer: {
             position: "absolute",
             bottom: theme.spacing.xl,
@@ -110,22 +133,36 @@ export default function LevelUpScreen() {
         spellsAccent: { color: c("palette.tertiary") || "#cba6f7" },
     }));
 
-    const [baseScores, setBaseScores] = useState<StrictAbilityScores | null>(null);
-    const [abilityScores, setAbilityScores] = useState<StrictAbilityScores | null>(null);
-    const [hpIncrease, setHpIncrease] = useState<number>(9);
-    const [savingThrowProficiencies, setSavingThrowProficiencies] = useState<(keyof AbilityScores)[]>(["dex"]);
+    const [baseScores, setBaseScores] = useState<StrictAbilityScores | null>(
+        null,
+    );
+    const [abilityScores, setAbilityScores] =
+        useState<StrictAbilityScores | null>(null);
+    const [hpIncrease, setHpIncrease] = useState<number>(1);
+    const [savingThrowProficiencies, setSavingThrowProficiencies] = useState<
+        (keyof AbilityScores)[]
+    >(["dex"]);
 
-    const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(null);
-    const [selectedSubclassId, setSelectedSubclassId] = useState<string | null>(null);
+    const [selectedFeatureId, setSelectedFeatureId] = useState<string | null>(
+        null,
+    );
     const [spells, setSpells] = useState<string[]>([]);
 
     useEffect(() => {
         if (characterSheet && !baseScores) {
             const initialScalars = {} as StrictAbilityScores;
-            const keys: Array<keyof AbilityScores> = ["str", "dex", "con", "int", "wis", "cha"];
+            const keys: (keyof AbilityScores)[] = [
+                "str",
+                "dex",
+                "con",
+                "int",
+                "wis",
+                "cha",
+            ];
 
             keys.forEach((k) => {
-                const uppercaseKey = k.toUpperCase() as keyof typeof characterSheet.abilities;
+                const uppercaseKey =
+                    k.toUpperCase() as keyof typeof characterSheet.abilities;
                 const node = characterSheet.abilities?.[uppercaseKey];
                 initialScalars[k] = node?.score ?? 10;
             });
@@ -135,23 +172,64 @@ export default function LevelUpScreen() {
         }
     }, [characterSheet, baseScores]);
 
-    const spentPoints = abilityScores && baseScores
-        ? (Object.keys(abilityScores) as Array<keyof AbilityScores>).reduce(
-            (sum, k) => sum + (abilityScores[k] - baseScores[k]),
-            0
-        )
-        : 0;
+    // Default HP bump to 1 + CON modifier (the bare-minimum convention).
+    useEffect(() => {
+        if (character) {
+            const conMod = Math.floor((character.con_score - 10) / 2);
+            setHpIncrease(Math.max(1, 1 + conMod));
+        }
+    }, [character]);
+
+    const spentPoints =
+        abilityScores && baseScores
+            ? (Object.keys(abilityScores) as (keyof AbilityScores)[]).reduce(
+                  (sum, k) => sum + (abilityScores[k] - baseScores[k]),
+                  0,
+              )
+            : 0;
 
     const availablePoints = TOTAL_ASI_POINTS - spentPoints;
 
-    const hasInvalidReductions = abilityScores && baseScores
-        ? (Object.keys(abilityScores) as Array<keyof AbilityScores>).some(k => abilityScores[k] < baseScores[k])
-        : false;
+    const hasInvalidReductions =
+        abilityScores && baseScores
+            ? (Object.keys(abilityScores) as (keyof AbilityScores)[]).some(
+                  (k) => abilityScores[k] < baseScores[k],
+              )
+            : false;
 
-    const isFormValid = availablePoints === 0 && !hasInvalidReductions && selectedFeatureId !== null && selectedSubclassId !== null;
+    const featureItems: SelectableItem[] = useMemo(
+        () =>
+            (availableFeatures ?? []).map((f) => ({
+                id: f.id,
+                name: f.name,
+                description: f.description,
+            })),
+        [availableFeatures],
+    );
+
+    const subclassItems: SelectableItem[] = useMemo(
+        () =>
+            (currentClass?.subclasses ?? []).map((s) => ({
+                id: s.subclass_id,
+                name: s.name,
+                description: s.short_description,
+            })),
+        [currentClass?.subclasses],
+    );
+
+    const featureSelectionValid =
+        featureItems.length === 0 || selectedFeatureId !== null;
+    const subclassSelectionValid =
+        !needsSubclass || selectedSubclassId !== null;
+
+    const isFormValid =
+        availablePoints === 0 &&
+        !hasInvalidReductions &&
+        featureSelectionValid &&
+        subclassSelectionValid;
 
     let badgeText = `${availablePoints} Points Available`;
-    let badgeType: "warning" | "error" | "default" | "default" = "default";
+    let badgeType: "warning" | "error" | "default" = "default";
 
     if (hasInvalidReductions) {
         badgeText = "Cannot reduce base scores";
@@ -164,18 +242,33 @@ export default function LevelUpScreen() {
         badgeType = "default";
     }
 
-
     const availableSpellOptions = useMemo(() => {
-        return MOCK_SPELLS_CATALOG
-            .filter(spell => !spells.includes(spell.id))
-            .map(spell => ({
+        const knownIds = new Set((knownSpells ?? []).map((s) => s.spell_id));
+        return (classSpells ?? [])
+            .filter(
+                (spell) =>
+                    !knownIds.has(spell.id) && !spells.includes(spell.id),
+            )
+            .map((spell) => ({
                 id: spell.id,
                 label: spell.name,
                 value: spell.id,
             }));
-    }, [spells]);
+    }, [classSpells, knownSpells, spells]);
 
-    const handleScoreChange = <K extends keyof AbilityScores>(key: K, proposedValue: number) => {
+    const selectedSpellNames = useMemo(
+        () =>
+            spells.map((spellId) => {
+                const found = (classSpells ?? []).find((s) => s.id === spellId);
+                return found ? found.name : spellId;
+            }),
+        [spells, classSpells],
+    );
+
+    const handleScoreChange = <K extends keyof AbilityScores>(
+        key: K,
+        proposedValue: number,
+    ) => {
         setAbilityScores((prev) => {
             if (!prev) return prev;
             const clampedValue = Math.min(proposedValue, SCORE_CAP);
@@ -185,7 +278,7 @@ export default function LevelUpScreen() {
 
     const handleToggleProficiency = (key: keyof AbilityScores) => {
         setSavingThrowProficiencies((prev) =>
-            prev.includes(key) ? prev.filter((p) => p !== key) : [...prev, key]
+            prev.includes(key) ? prev.filter((p) => p !== key) : [...prev, key],
         );
     };
 
@@ -194,52 +287,78 @@ export default function LevelUpScreen() {
     };
 
     const handleFeatureSelect = (id: string) => {
-        // console.log(`[LevelUp Routing] Feature Selected: ${id}`);
         setSelectedFeatureId(id);
     };
 
     const handleSubclassSelect = (id: string) => {
-        // console.log(`[LevelUp Routing] Subclass Selected: ${id}`);
         setSelectedSubclassId(id);
+        // Clear feature pick when subclass changes since the catalog shifts.
+        setSelectedFeatureId(null);
     };
 
     const handleAddSpell = (spellId: string) => {
-        console.log(`[LevelUp Routing] Spell Added: ${spellId}`);
-        setSpells(prev => [...prev, spellId]);
+        setSpells((prev) => [...prev, spellId]);
     };
 
     const handleRemoveSpell = (index: number) => {
-        setSpells(prev => prev.filter((_, i) => i !== index));
+        setSpells((prev) => prev.filter((_, i) => i !== index));
     };
 
-    const handleSubmit = () => {
-        if (!characterId || !abilityScores || !characterSheet) {
-            console.error("Invariant Violation: Identity or state vector undefined.");
+    const handleSubmit = async () => {
+        if (!characterId || !character || !abilityScores || !targetLevel) {
+            console.error(
+                "Invariant Violation: Identity or state vector undefined.",
+            );
             return;
         }
 
-        updateCharacter.mutate(
-            {
-                str_score: abilityScores.str,
-                dex_score: abilityScores.dex,
-                con_score: abilityScores.con,
-                int_score: abilityScores.int,
-                wis_score: abilityScores.wis,
-                cha_score: abilityScores.cha,
-            } as any,
-            {
-                onSuccess: () => {
-                    goToCharacterSheet();
-                }
+        const patch: CharacterPatch = {
+            level: targetLevel,
+            hp_max: character.hp_max + hpIncrease,
+            hp_current: character.hp_current + hpIncrease,
+            str_score: abilityScores.str,
+            dex_score: abilityScores.dex,
+            con_score: abilityScores.con,
+            int_score: abilityScores.int,
+            wis_score: abilityScores.wis,
+            cha_score: abilityScores.cha,
+        };
+        if (needsSubclass && selectedSubclassId) {
+            patch.subclass_id = selectedSubclassId;
+        }
+
+        try {
+            await updateCharacter.mutateAsync(patch);
+            if (selectedFeatureId) {
+                await assignFeature.mutateAsync({
+                    feature_id: selectedFeatureId,
+                    assigned_source: "level_up",
+                });
             }
-        );
+            for (const spellId of spells) {
+                await learnSpell.mutateAsync({ spell_id: spellId });
+            }
+            router.back();
+        } catch (e) {
+            console.error("Level up failed", e);
+        }
     };
 
-    if (isLoading || !abilityScores) {
+    const isLoading =
+        isLoadingSheet ||
+        isLoadingCharacter ||
+        isLoadingClasses ||
+        !abilityScores ||
+        !character;
+
+    if (isLoading) {
         return (
             <ThemedView style={styles.screen}>
                 <View style={styles.centered}>
-                    <ActivityIndicator size="large" color={styles.fabNext.backgroundColor as string} />
+                    <ActivityIndicator
+                        color={styles.fabNext.backgroundColor as string}
+                        size="large"
+                    />
                 </View>
             </ThemedView>
         );
@@ -247,9 +366,14 @@ export default function LevelUpScreen() {
 
     return (
         <ThemedView style={styles.screen}>
-            <ScrollView contentContainerStyle={styles.scrollContentContainer} showsVerticalScrollIndicator={false}>
-
-                <Header onBack={goToCharacterSheet} title="Level Up" />
+            <ScrollView
+                contentContainerStyle={styles.scrollContentContainer}
+                showsVerticalScrollIndicator={false}
+            >
+                <Header
+                    title={`Level Up → ${targetLevel}`}
+                    onBack={goToCharacterSheet}
+                />
 
                 <SectionHeader
                     badgeText={badgeText}
@@ -267,37 +391,64 @@ export default function LevelUpScreen() {
                 <SectionHeader title="Hit Points" />
 
                 <IncreaseCard
+                    value={hpIncrease}
                     onDecrease={() => handleHpChange(-1)}
                     onIncrease={() => handleHpChange(1)}
-                    value={hpIncrease}
                 />
 
-                <SelectionList
-                    isRequired={true}
-                    items={MOCK_FEATURES}
-                    selectedId={selectedFeatureId}
-                    title="Pick 1 Feature"
-                    onSelect={handleFeatureSelect}
-                />
+                {needsSubclass && (
+                    <SelectionList
+                        isRequired
+                        items={subclassItems}
+                        selectedId={selectedSubclassId}
+                        title="Pick Subclass"
+                        onSelect={handleSubclassSelect}
+                    />
+                )}
 
-                <SelectionList
-                    isRequired={true}
-                    items={MOCK_SUBCLASSES}
-                    selectedId={selectedSubclassId}
-                    title="Pick Subclass"
-                    onSelect={handleSubclassSelect}
-                />
-    
+                {isLoadingFeatures ? (
+                    <View style={{ paddingVertical: 24 }}>
+                        <ActivityIndicator />
+                    </View>
+                ) : featureItems.length > 0 ? (
+                    <SelectionList
+                        isRequired
+                        items={featureItems}
+                        selectedId={selectedFeatureId}
+                        title={`Pick 1 Feature (Level ${targetLevel})`}
+                        onSelect={handleFeatureSelect}
+                    />
+                ) : (
+                    <>
+                        <SectionHeader
+                            title={`Features (Level ${targetLevel})`}
+                        />
+                        <ThemedText color="text.muted">
+                            No new class features unlock at this level.
+                        </ThemedText>
+                    </>
+                )}
+
                 <SectionHeader title="Pick Spells" />
 
-                <SelectionSectionCard
-                    iconColor={styles.cardIcon.color}
-                    iconLigature="menu_book"
-                    options={availableSpellOptions}
-                    selectedValue={null}
-                    title="Available Spells to Learn"
-                    onSelect={handleAddSpell}
-                />
+                {isLoadingClassSpells ? (
+                    <View style={{ paddingVertical: 16 }}>
+                        <ActivityIndicator />
+                    </View>
+                ) : (classSpells ?? []).length === 0 ? (
+                    <ThemedText color="text.muted">
+                        No class spells are available for this class.
+                    </ThemedText>
+                ) : (
+                    <SelectionSectionCard
+                        iconColor={styles.cardIcon.color}
+                        iconLigature="menu_book"
+                        options={availableSpellOptions}
+                        selectedValue={null}
+                        title="Available Spells to Learn"
+                        onSelect={handleAddSpell}
+                    />
+                )}
 
                 <DynamicStringListCard
                     accentColor={styles.spellsAccent.color}
@@ -306,39 +457,38 @@ export default function LevelUpScreen() {
                     emptySubtitle="Select a spell from the catalog above to add it to your spellbook."
                     emptyTitle="No spells selected."
                     iconLigature="auto_awesome"
-                    items={spells.map(spellId => {
-                        const foundSpell = MOCK_SPELLS_CATALOG.find(s => s.id === spellId);
-                        return foundSpell ? foundSpell.name : spellId;
-                    })}
+                    items={selectedSpellNames}
                     title="Selected Spells"
-                    onAddItem={(item) => setSpells(prev => [...prev, item])}
+                    onAddItem={(item) => setSpells((prev) => [...prev, item])}
                     onRemove={handleRemoveSpell}
                 />
 
                 {/* ─── Terminal Action Node ─── */}
                 <View style={styles.fabContainer}>
                     <TouchableOpacity
-                        disabled={!isFormValid}
-                        onPress={handleSubmit}
+                        disabled={
+                            !isFormValid ||
+                            updateCharacter.isPending ||
+                            assignFeature.isPending ||
+                            learnSpell.isPending
+                        }
                         style={[
                             styles.fabNext,
                             // Increase padding for a wider, more prominent "Save" button
                             { paddingHorizontal: 24 },
-                            (!isFormValid) && { opacity: 0.5 }
+                            (!isFormValid ||
+                                updateCharacter.isPending ||
+                                assignFeature.isPending ||
+                                learnSpell.isPending) && { opacity: 0.5 },
                         ]}
+                        onPress={handleSubmit}
                     >
-
                         <ThemedText style={{ fontWeight: "900", fontSize: 16 }}>
                             ✓ Level Up
                         </ThemedText>
-
                     </TouchableOpacity>
                 </View>
-
             </ScrollView>
-
-
-
         </ThemedView>
     );
 }
