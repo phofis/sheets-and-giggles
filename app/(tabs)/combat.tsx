@@ -218,7 +218,18 @@ export default function CombatScreen() {
                     />
 
                     {/* Death Saves */}
-                    <DeathSaves />
+                    <DeathSaves
+                        failures={character?.death_save_fail ?? 0}
+                        successes={character?.death_save_success ?? 0}
+                        onFailuresChange={(value) =>
+                            updateCharacter.mutate({ death_save_fail: value })
+                        }
+                        onSuccessesChange={(value) =>
+                            updateCharacter.mutate({
+                                death_save_success: value,
+                            })
+                        }
+                    />
 
                     {/* Combat Actions */}
                     <View style={styles.actionsGroup}>
