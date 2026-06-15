@@ -47,6 +47,10 @@ export default function TabsLayout() {
                     }}
                 />
             ))}
+            <Tabs.Screen
+                name="level-up"
+                options={{ href: null, tabBarStyle: { display: "none" } }}
+            />
         </Tabs>
     );
 }

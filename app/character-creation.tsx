@@ -73,6 +73,7 @@ export interface CharacterDraftState {
     abilityScores: AbilityScores;
     combatStats: CombatStats;
     skills: CharacterRow["proficient_skills"];
+    level: CharacterRow["level"];
 
     // Step 4
     spells: string[];
@@ -116,6 +117,7 @@ export default function CharacterCreationScreen() {
         abilityScores: { str: 10, dex: 10, con: 10, int: 10, wis: 10, cha: 10 },
         combatStats: { hp: 10, ac: 10, initiative: 0, speed: 30 },
         skills: [],
+        level: 0,
 
         // Step 4
         spells: [],

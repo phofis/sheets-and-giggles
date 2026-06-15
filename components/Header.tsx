@@ -1,6 +1,7 @@
 import { ThemedHeadline, ThemedStatContainer, ThemedText, ThemedView } from "@/components/themed";
 import { EditableField } from "@/components/editing/EditableField";
-import { View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Pressable, View } from "react-native";
 import { useStyles } from "@/hooks/useStyles";
 import { CharacterHeader } from "@/types/character";
 
@@ -10,6 +11,7 @@ type Props = {
     onEditName?: () => void;
     onEditLevel?: () => void;
     onEditInspiration?: () => void;
+    onLevelUp?: () => void;
 };
 
 export const Header = ({
@@ -18,8 +20,9 @@ export const Header = ({
     onEditName,
     onEditLevel,
     onEditInspiration,
+    onLevelUp,
 }: Props) => {
-    const { styles } = useStyles((theme, c) => ({
+    const { styles, color } = useStyles((theme, c) => ({
         screen: { flex: 1, marginBottom: 20, marginTop: 35 },
         scrollView: { flex: 1, alignSelf: "stretch" },
         scrollContentContainer: { flexGrow: 1 },
@@ -50,21 +53,62 @@ export const Header = ({
         },
         cardMetaLabel: { fontSize: 11, lineHeight: 16, fontWeight: "600", opacity: 0.85 },
         cardValue: { marginTop: 4, fontSize: 18, lineHeight: 26, textAlign: "left" },
+        labelRow: {
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "space-between",
+            alignSelf: "stretch",
+            marginBottom: 8,
+        },
         labelContainer: {
             alignSelf: "flex-start",
             paddingHorizontal: 6,
             paddingVertical: 2,
-            marginBottom: 8,
         },
         labelText: { fontSize: 12, fontWeight: "bold", textTransform: "uppercase" },
+        levelUpButton: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: 4,
+            paddingHorizontal: theme.spacing.sm,
+            paddingVertical: theme.spacing.xs,
+            borderRadius: theme.borderRadius.full,
+            backgroundColor: c("buttonPrimary.background"),
+        },
+        levelUpText: {
+            fontSize: 12,
+            fontWeight: "bold",
+        },
     }));
 
     return (
         <ThemedView>
-            <ThemedView style={styles.labelContainer}>
-                <ThemedText color="text.muted" style={styles.labelText}>
-                    IDENTITY PROFILE
-                </ThemedText>
+            <ThemedView style={styles.labelRow}>
+                <ThemedView style={styles.labelContainer}>
+                    <ThemedText color="text.muted" style={styles.labelText}>
+                        IDENTITY PROFILE
+                    </ThemedText>
+                </ThemedView>
+                {onLevelUp ? (
+                    <Pressable
+                        accessibilityLabel="Level Up"
+                        accessibilityRole="button"
+                        style={({ pressed }) => [
+                            styles.levelUpButton,
+                            { opacity: pressed ? 0.7 : 1 },
+                        ]}
+                        onPress={onLevelUp}
+                    >
+                        <Ionicons
+                            color={color("buttonPrimary.text")}
+                            name="arrow-up"
+                            size={14}
+                        />
+                        <ThemedText color="buttonPrimary.text" style={styles.levelUpText}>
+                            Level Up
+                        </ThemedText>
+                    </Pressable>
+                ) : null}
             </ThemedView>
 
             <ThemedView style={styles.heading}>
