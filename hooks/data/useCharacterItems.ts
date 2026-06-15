@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useId } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { supabase } from "@/lib/supabase";
 import type { Database } from "@/types/supabase";
@@ -10,15 +10,16 @@ type ItemUpdate = Database["public"]["Tables"]["character_items"]["Update"];
 
 export function useCharacterItems(characterId: string | undefined) {
     const queryClient = useQueryClient();
+    // Unique per hook instance so two components calling this hook do not try
+    // to share (and re-subscribe to) the same Supabase Realtime channel —
+    // attaching another `.on()` after `.subscribe()` throws.
+    const instanceId = useId();
 
-    // Keep the local cache in sync when another device deletes or inserts an
-    // item (e.g. after a QR transfer).  One channel per character; Supabase
-    // deduplicates channels with the same name automatically.
     useEffect(() => {
         if (!characterId) return;
 
         const channel = supabase
-            .channel(`character-items:${characterId}`)
+            .channel(`character-items:${characterId}:${instanceId}`)
             .on(
                 "postgres_changes",
                 {
@@ -46,13 +47,13 @@ export function useCharacterItems(characterId: string | undefined) {
                 },
             )
             .subscribe((status, err) => {
-                console.log(`[realtime character-items:${characterId}] status:`, status, err ?? "");
+                console.log(`[realtime character-items:${characterId}:${instanceId}] status:`, status, err ?? "");
             });
 
         return () => {
             supabase.removeChannel(channel);
         };
-    }, [characterId, queryClient]);
+    }, [characterId, instanceId, queryClient]);
 
     return useCharacterQuery<ItemRow[]>(characterId, ["items"], async (id) => {
         const { data, error } = await supabase

@@ -112,6 +112,35 @@ export type Database = {
           },
         ]
       }
+      character_combat_actions: {
+        Row: {
+          character_id: string
+          created_at: string
+          source_id: string
+          source_type: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          source_id: string
+          source_type: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          source_id?: string
+          source_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_combat_actions_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       character_items: {
         Row: {
           attuned: boolean

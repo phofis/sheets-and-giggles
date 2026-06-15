@@ -35,6 +35,14 @@ export {
     useResetSpellSlots,
 } from "./useCharacterSpellSlots";
 
+export {
+    useCharacterCombatActions,
+    useAddCombatAction,
+    useRemoveCombatAction,
+    type CharacterCombatActionRow,
+    type CombatActionSourceType,
+} from "./useCharacterCombatActions";
+
 // Catalogs
 export {
     useRaces,
