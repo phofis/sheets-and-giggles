@@ -1,24 +1,36 @@
-import { ScrollView, View } from "react-native";
-import { useState } from "react";
+import { ScrollView, View, Pressable } from "react-native";
+import { useMemo, useState } from "react";
+import { Plus, X } from "lucide-react-native";
 import { ThemedView, ThemedText } from "@/components/themed";
 import { useStyles } from "@/hooks/useStyles";
+import { useAppTheme } from "@/hooks/useAppTheme";
 import HealthBar from "@/components/combat/HealthBar";
 import StatRow from "@/components/combat/StatRow";
 import DeathSaves from "@/components/combat/DeathSaves";
 import CombatActionCard, {
     CombatAction,
 } from "@/components/combat/CombatActionCard";
+import { CombatActionPickerModal } from "@/components/combat/CombatActionPickerModal";
+import { InventoryItemCard } from "@/components/inventory/InventoryItemCard";
+import { SpellCard } from "@/components/spells/SpellCard";
 import { EditScreenShell } from "@/components/editing/EditScreenShell";
 import { useCharacterId } from "@/context/CharacterIdContext";
 import {
+    useAddCombatAction,
     useCharacter,
+    useCharacterCombatActions,
     useCharacterFeatures,
+    useCharacterItems,
+    useCharacterSpells,
     useCharacterSpellSlots,
     useClasses,
+    useRemoveCombatAction,
 } from "@/hooks/data";
 import { useCharacterEditor } from "@/hooks/editing/useCharacterEditor";
 import { useFieldEditorModals } from "@/hooks/editing/useFieldEditorModals";
 import type { FeatureRow } from "@/hooks/data/useCharacterFeatures";
+import type { ItemRow } from "@/hooks/data/useCharacterItems";
+import type { CharacterSpellWithDetails } from "@/hooks/data/useCharacterSpells";
 
 const ORIGIN_TYPE_LABELS: Record<
     NonNullable<FeatureRow["origin_type"]>,
@@ -45,8 +57,26 @@ function featureToAction(feature: FeatureRow): CombatAction {
     };
 }
 
+type ResolvedCombatAction =
+    | {
+          sourceType: "feature";
+          sourceId: string;
+          feature: FeatureRow;
+      }
+    | {
+          sourceType: "item";
+          sourceId: string;
+          item: ItemRow;
+      }
+    | {
+          sourceType: "spell";
+          sourceId: string;
+          spell: CharacterSpellWithDetails;
+      };
+
 export default function CombatScreen() {
-    const { styles } = useStyles((t) => ({
+    const { color } = useAppTheme();
+    const { styles } = useStyles((t, c) => ({
         screen: { flex: 1 },
         scroll: { padding: t.spacing.lg, gap: t.spacing.xl },
         header: {
@@ -66,6 +96,11 @@ export default function CombatScreen() {
             justifyContent: "space-between",
             alignItems: "center",
         },
+        sectionHeaderRight: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: t.spacing.sm,
+        },
         slotsBadge: {
             borderWidth: 1,
             borderRadius: t.borderRadius.sm,
@@ -73,24 +108,106 @@ export default function CombatScreen() {
             paddingVertical: t.spacing.xxs,
         },
         slotsText: { fontSize: 12 },
+        addButton: {
+            width: 36,
+            height: 36,
+            borderRadius: t.borderRadius.full,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: c("surface.surfaceElevated"),
+        },
         actionsGroup: { gap: t.spacing.md },
+        actionRow: {
+            flexDirection: "row",
+            alignItems: "center",
+            gap: t.spacing.sm,
+        },
+        actionCardWrapper: { flex: 1 },
+        removeButton: {
+            width: 36,
+            height: 36,
+            borderRadius: t.borderRadius.full,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: c("surface.surfaceElevated"),
+        },
+        emptyState: {
+            paddingVertical: t.spacing.lg,
+            alignItems: "center",
+        },
     }));
 
     const characterId = useCharacterId();
     const [isEditMode, setIsEditMode] = useState(false);
+    const [isPickerOpen, setIsPickerOpen] = useState(false);
 
     const { data: character } = useCharacter(characterId);
     const { data: availableClasses } = useClasses();
     const { data: features } = useCharacterFeatures(characterId);
+    const { data: items } = useCharacterItems(characterId);
+    const { data: spells } = useCharacterSpells(characterId);
     const { data: spellSlots } = useCharacterSpellSlots(characterId);
+    const { data: pinnedCombatActions } =
+        useCharacterCombatActions(characterId);
 
     const { updateCharacter } = useCharacterEditor(characterId);
     const { openNumeric, modals } = useFieldEditorModals();
+    const addCombatAction = useAddCombatAction(characterId);
+    const removeCombatAction = useRemoveCombatAction(characterId);
 
     const characterClass = availableClasses?.find(
         (cls) => character?.class_id === cls.id,
     );
-    const combatActions: CombatAction[] = (features ?? []).map(featureToAction);
+
+    const combatActions = useMemo<ResolvedCombatAction[]>(() => {
+        const featureById = new Map(
+            (features ?? [])
+                .filter((f) => !!f.feature_id)
+                .map((f) => [f.feature_id as string, f]),
+        );
+        const itemById = new Map((items ?? []).map((i) => [i.id, i]));
+        const spellById = new Map((spells ?? []).map((s) => [s.spell_id, s]));
+
+        return (pinnedCombatActions ?? []).flatMap(
+            (pin): ResolvedCombatAction[] => {
+                if (pin.source_type === "feature") {
+                    const feature = featureById.get(pin.source_id);
+                    if (!feature) return [];
+                    return [
+                        {
+                            sourceType: "feature",
+                            sourceId: pin.source_id,
+                            feature,
+                        },
+                    ];
+                }
+                if (pin.source_type === "item") {
+                    const item = itemById.get(pin.source_id);
+                    if (!item) return [];
+                    return [
+                        {
+                            sourceType: "item",
+                            sourceId: pin.source_id,
+                            item,
+                        },
+                    ];
+                }
+                if (pin.source_type === "spell") {
+                    const spell = spellById.get(pin.source_id);
+                    if (!spell) return [];
+                    return [
+                        {
+                            sourceType: "spell",
+                            sourceId: pin.source_id,
+                            spell,
+                        },
+                    ];
+                }
+                return [];
+            },
+        );
+    }, [features, items, spells, pinnedCombatActions]);
+
     const totalSlotsLeft = (spellSlots ?? []).reduce(
         (sum, s) => sum + s.current,
         0,
@@ -238,22 +355,92 @@ export default function CombatScreen() {
                             <ThemedText color="text.heading" variant="headline">
                                 Combat Actions
                             </ThemedText>
-                            {totalSlotsMax > 0 && (
-                                <View style={styles.slotsBadge}>
-                                    <ThemedText
-                                        color="semantic.success"
-                                        style={styles.slotsText}
-                                    >
-                                        {totalSlotsLeft} / {totalSlotsMax} Slots
-                                    </ThemedText>
-                                </View>
-                            )}
+                            <View style={styles.sectionHeaderRight}>
+                                {totalSlotsMax > 0 && (
+                                    <View style={styles.slotsBadge}>
+                                        <ThemedText
+                                            color="semantic.success"
+                                            style={styles.slotsText}
+                                        >
+                                            {totalSlotsLeft} / {totalSlotsMax}{" "}
+                                            Slots
+                                        </ThemedText>
+                                    </View>
+                                )}
+                                <Pressable
+                                    accessibilityLabel="Add combat action"
+                                    accessibilityRole="button"
+                                    style={styles.addButton}
+                                    onPress={() => setIsPickerOpen(true)}
+                                >
+                                    <Plus
+                                        color={color("text.body")}
+                                        size={18}
+                                    />
+                                </Pressable>
+                            </View>
                         </View>
-                        {combatActions.map((action) => (
-                            <CombatActionCard key={action.id} action={action} />
+                        {combatActions.length === 0 && (
+                            <View style={styles.emptyState}>
+                                <ThemedText color="text.muted">
+                                    Tap + to add a feature, item, or spell.
+                                </ThemedText>
+                            </View>
+                        )}
+                        {combatActions.map((entry) => (
+                            <View
+                                key={`${entry.sourceType}:${entry.sourceId}`}
+                                style={styles.actionRow}
+                            >
+                                <View style={styles.actionCardWrapper}>
+                                    {entry.sourceType === "feature" && (
+                                        <CombatActionCard
+                                            action={featureToAction(
+                                                entry.feature,
+                                            )}
+                                        />
+                                    )}
+                                    {entry.sourceType === "item" && (
+                                        <InventoryItemCard
+                                            isEditMode={false}
+                                            item={entry.item}
+                                        />
+                                    )}
+                                    {entry.sourceType === "spell" && (
+                                        <SpellCard spell={entry.spell} />
+                                    )}
+                                </View>
+                                {isEditMode && (
+                                    <Pressable
+                                        accessibilityLabel="Remove combat action"
+                                        accessibilityRole="button"
+                                        style={styles.removeButton}
+                                        onPress={() =>
+                                            removeCombatAction.mutate({
+                                                source_type: entry.sourceType,
+                                                source_id: entry.sourceId,
+                                            })
+                                        }
+                                    >
+                                        <X
+                                            color={color("semantic.error")}
+                                            size={18}
+                                        />
+                                    </Pressable>
+                                )}
+                            </View>
                         ))}
                     </View>
                 </ScrollView>
+                <CombatActionPickerModal
+                    features={features ?? []}
+                    isOpen={isPickerOpen}
+                    items={items ?? []}
+                    pinned={pinnedCombatActions ?? []}
+                    spells={spells ?? []}
+                    onClose={() => setIsPickerOpen(false)}
+                    onPick={(input) => addCombatAction.mutate(input)}
+                />
             </ThemedView>
         </EditScreenShell>
     );

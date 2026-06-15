@@ -9,6 +9,7 @@ type ToolbarProps = {
     onSearchChange: (value: string) => void;
     onAddPress?: () => void;
     onFilterPress?: () => void;
+    placeholder?: string;
 };
 
 export function Toolbar({
@@ -16,8 +17,9 @@ export function Toolbar({
     onSearchChange,
     onAddPress,
     onFilterPress,
+    placeholder = "Search items...",
 }: ToolbarProps) {
-    const { styles, color} = useStyles((t, c) => ({
+    const { styles, color } = useStyles((t, c) => ({
         container: {
             flexDirection: "row",
             alignItems: "center",
@@ -55,30 +57,28 @@ export function Toolbar({
     return (
         <View style={styles.container}>
             <View style={styles.searchContainer}>
-                <Search size={18} color={color("text.muted" )}/>
+                <Search size={18} color={color("text.muted")} />
 
                 <TextInput
                     value={search}
                     onChangeText={onSearchChange}
-                    placeholder="Search items..."
+                    placeholder={placeholder}
                     placeholderTextColor={color("text.muted")}
                     style={styles.input}
                 />
             </View>
 
-            <Pressable
-                style={styles.actionButton}
-                onPress={onFilterPress}
-            >
-                <Filter size={18} color={color("text.body")} />
-            </Pressable>
+            {onFilterPress && (
+                <Pressable style={styles.actionButton} onPress={onFilterPress}>
+                    <Filter size={18} color={color("text.body")} />
+                </Pressable>
+            )}
 
-            <Pressable
-                style={styles.actionButton}
-                onPress={onAddPress}
-            >
-                <Plus size={18} color={color("text.body")} />
-            </Pressable>
+            {onAddPress && (
+                <Pressable style={styles.actionButton} onPress={onAddPress}>
+                    <Plus size={18} color={color("text.body")} />
+                </Pressable>
+            )}
         </View>
     );
 }
