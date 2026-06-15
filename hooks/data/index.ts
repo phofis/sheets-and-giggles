@@ -15,6 +15,8 @@ export {
     useCharacterFeatures,
     useAssignFeature,
     useUnassignFeature,
+    useLevelUpAvailableFeatures,
+    type FeatureCatalogRow,
 } from "./useCharacterFeatures";
 export {
     useCharacterItems,
@@ -48,6 +50,7 @@ export {
     useRaces,
     useClasses,
     useSpellsCatalog,
+    useClassSpells,
     useFeaturesCatalog,
 } from "./useCatalog";
 

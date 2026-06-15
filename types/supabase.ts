@@ -55,6 +55,42 @@ export type Database = {
           },
         ]
       }
+      character_combat_actions: {
+        Row: {
+          character_id: string
+          created_at: string
+          source_id: string
+          source_type: string
+        }
+        Insert: {
+          character_id: string
+          created_at?: string
+          source_id: string
+          source_type: string
+        }
+        Update: {
+          character_id?: string
+          created_at?: string
+          source_id?: string
+          source_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_combat_actions_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_combat_actions_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "v_character_levelup_available_features"
+            referencedColumns: ["character_id"]
+          },
+        ]
+      }
       character_features: {
         Row: {
           assigned_at: string
@@ -109,35 +145,6 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "v_character_levelup_available_features"
             referencedColumns: ["feature_id"]
-          },
-        ]
-      }
-      character_combat_actions: {
-        Row: {
-          character_id: string
-          created_at: string
-          source_id: string
-          source_type: string
-        }
-        Insert: {
-          character_id: string
-          created_at?: string
-          source_id: string
-          source_type: string
-        }
-        Update: {
-          character_id?: string
-          created_at?: string
-          source_id?: string
-          source_type?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "character_combat_actions_character_id_fkey"
-            columns: ["character_id"]
-            isOneToOne: false
-            referencedRelation: "characters"
-            referencedColumns: ["id"]
           },
         ]
       }
@@ -360,7 +367,7 @@ export type Database = {
           initiative: number
           inspiration?: number
           int_score: number
-          level: number
+          level?: number
           name: string
           personality_traits?: string[]
           photo_uri?: string | null
@@ -533,54 +540,6 @@ export type Database = {
           },
         ]
       }
-      item_transfers: {
-        Row: {
-          claimed_at: string | null
-          claimed_by_character_id: string | null
-          created_at: string
-          expires_at: string
-          from_character_id: string
-          id: string
-          item_id: string
-          item_snapshot: Json
-        }
-        Insert: {
-          claimed_at?: string | null
-          claimed_by_character_id?: string | null
-          created_at?: string
-          expires_at?: string
-          from_character_id: string
-          id?: string
-          item_id: string
-          item_snapshot: Json
-        }
-        Update: {
-          claimed_at?: string | null
-          claimed_by_character_id?: string | null
-          created_at?: string
-          expires_at?: string
-          from_character_id?: string
-          id?: string
-          item_id?: string
-          item_snapshot?: Json
-        }
-        Relationships: [
-          {
-            foreignKeyName: "item_transfers_from_character_id_fkey"
-            columns: ["from_character_id"]
-            isOneToOne: false
-            referencedRelation: "characters"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "item_transfers_claimed_by_character_id_fkey"
-            columns: ["claimed_by_character_id"]
-            isOneToOne: false
-            referencedRelation: "characters"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       features: {
         Row: {
           class_id: string | null
@@ -652,6 +611,68 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "races"
             referencedColumns: ["id"]
+          },
+        ]
+      }
+      item_transfers: {
+        Row: {
+          claimed_at: string | null
+          claimed_by_character_id: string | null
+          created_at: string
+          expires_at: string
+          from_character_id: string
+          id: string
+          item_id: string
+          item_snapshot: Json
+        }
+        Insert: {
+          claimed_at?: string | null
+          claimed_by_character_id?: string | null
+          created_at?: string
+          expires_at?: string
+          from_character_id: string
+          id?: string
+          item_id: string
+          item_snapshot: Json
+        }
+        Update: {
+          claimed_at?: string | null
+          claimed_by_character_id?: string | null
+          created_at?: string
+          expires_at?: string
+          from_character_id?: string
+          id?: string
+          item_id?: string
+          item_snapshot?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "item_transfers_claimed_by_character_id_fkey"
+            columns: ["claimed_by_character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_transfers_claimed_by_character_id_fkey"
+            columns: ["claimed_by_character_id"]
+            isOneToOne: false
+            referencedRelation: "v_character_levelup_available_features"
+            referencedColumns: ["character_id"]
+          },
+          {
+            foreignKeyName: "item_transfers_from_character_id_fkey"
+            columns: ["from_character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "item_transfers_from_character_id_fkey"
+            columns: ["from_character_id"]
+            isOneToOne: false
+            referencedRelation: "v_character_levelup_available_features"
+            referencedColumns: ["character_id"]
           },
         ]
       }
@@ -968,16 +989,18 @@ export type Database = {
     }
     Functions: {
       claim_item_transfer: {
-        Args: {
-          p_transfer_id: string
-          p_to_character_id: string
-        }
+        Args: { p_to_character_id: string; p_transfer_id: string }
         Returns: Json
       }
     }
     Enums: {
       ability_score: "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA"
-      action_type: "add_spell" | "add_cantrip" | "add_spellslot"
+      action_type:
+        | "add_spell"
+        | "add_cantrip"
+        | "add_spellslot"
+        | "choose_subclass"
+        | "stat_increase"
       alignment:
         | "lawful_good"
         | "neutral_good"
@@ -1164,7 +1187,13 @@ export const Constants = {
   public: {
     Enums: {
       ability_score: ["STR", "DEX", "CON", "INT", "WIS", "CHA"],
-      action_type: ["add_spell", "add_cantrip", "add_spellslot"],
+      action_type: [
+        "add_spell",
+        "add_cantrip",
+        "add_spellslot",
+        "choose_subclass",
+        "stat_increase",
+      ],
       alignment: [
         "lawful_good",
         "neutral_good",

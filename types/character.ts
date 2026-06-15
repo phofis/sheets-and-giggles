@@ -217,7 +217,7 @@ export function mapDraftToDTO(
         initiative: draft.combatStats.initiative,
         speed: draft.combatStats.speed,
 
-        level: 1,
+        level: 0,
         experience: 0,
         proficiency_bonus: 2,
         inspiration: 0,

@@ -5,14 +5,16 @@ import { ThemedHeadline, ThemedText, ThemedView } from "@/components/themed";
 import { CatalogSpellCard } from "@/components/spells/CatalogSpellCard";
 import { SpellToolbar } from "@/components/spells/SpellToolbar";
 import {
+    buildSpellFilterFormFields,
     matchesSpellFilters,
     parseSpellFilterValues,
-    spellFilterFormFields,
     type SpellFilters,
 } from "@/components/spells/spellFilters";
 import { useCharacterId } from "@/context/CharacterIdContext";
 import {
     useCharacterSpells,
+    useClasses,
+    useClassSpells,
     useLearnSpell,
     useSpellsCatalog,
 } from "@/hooks/data";
@@ -28,6 +30,8 @@ export default function SpellListScreen() {
 
     const { data: catalog = [], isLoading, error } = useSpellsCatalog();
     const { data: characterSpells = [] } = useCharacterSpells(characterId);
+    const { data: classes } = useClasses();
+    const { data: classSpellsForFilter } = useClassSpells(filters.classId);
     const learnSpell = useLearnSpell(characterId);
 
     const learnedSpellIds = useMemo(
@@ -35,9 +39,25 @@ export default function SpellListScreen() {
         [characterSpells],
     );
 
+    const classOptions = useMemo(
+        () => (classes ?? []).map((c) => ({ id: c.id, name: c.name })),
+        [classes],
+    );
+
+    const classSpellIds = useMemo(
+        () =>
+            filters.classId && classSpellsForFilter
+                ? new Set(classSpellsForFilter.map((s) => s.id))
+                : null,
+        [filters.classId, classSpellsForFilter],
+    );
+
     const filteredSpells = useMemo(
-        () => catalog.filter((spell) => matchesSpellFilters(spell, search, filters)),
-        [catalog, search, filters],
+        () =>
+            catalog.filter((spell) =>
+                matchesSpellFilters(spell, search, filters, classSpellIds),
+            ),
+        [catalog, search, filters, classSpellIds],
     );
 
     const { styles } = useStyles((t) => ({
@@ -74,15 +94,7 @@ export default function SpellListScreen() {
         openForm({
             title: "Filter spells",
             submitLabel: "Apply filters",
-            fields: spellFilterFormFields.map((field) => ({
-                ...field,
-                initialValue:
-                    field.name === "level"
-                        ? filters.level === undefined
-                            ? ""
-                            : String(filters.level)
-                        : filters.school ?? "",
-            })),
+            fields: buildSpellFilterFormFields({ filters, classOptions }),
             onSubmit: (values) => setFilters(parseSpellFilterValues(values)),
         });
     };
@@ -101,7 +113,10 @@ export default function SpellListScreen() {
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <ThemedView style={styles.list}>
-                    <ThemedHeadline color="text.heading" style={styles.headline}>
+                    <ThemedHeadline
+                        color="text.heading"
+                        style={styles.headline}
+                    >
                         Spell Catalog
                     </ThemedHeadline>
 
