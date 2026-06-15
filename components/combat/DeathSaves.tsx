@@ -4,7 +4,6 @@ import { HighlightedView } from "../HighlightedView";
 import { ThemedText } from "../themed";
 import Svg, { Circle, Path } from "react-native-svg";
 import { useAppTheme } from "@/hooks/useAppTheme";
-import { useState } from "react";
 import { ButtonRow } from "../ButtonRow";
 
 function CheckCircle({
@@ -57,18 +56,25 @@ function CheckCircle({
     );
 }
 
+interface DeathSavesProps {
+    successes: number;
+    failures: number;
+    onSuccessesChange: (value: number) => void;
+    onFailuresChange: (value: number) => void;
+}
 
-
-export default function DeathSaves() {
-    const [successes, setSuccesses] = useState(0);
-    const [failures, setFailures] = useState(0);
-
+export default function DeathSaves({
+    successes,
+    failures,
+    onSuccessesChange,
+    onFailuresChange,
+}: DeathSavesProps) {
     const toggleSuccess = (index: number) => {
-        setSuccesses(index < successes ? index : index + 1);
+        onSuccessesChange(index < successes ? index : index + 1);
     };
 
     const toggleFailure = (index: number) => {
-        setFailures(index < failures ? index : index + 1);
+        onFailuresChange(index < failures ? index : index + 1);
     };
 
     const { styles } = useStyles((t, c) => ({
